@@ -8,7 +8,7 @@
 <meta name="keywords" content="claw machine online, win prizes free, online arcade, claw game, grab prizes, free claw machine, claw pizza">
 <meta property="og:title" content="Claw.Pizza - Grab Your Slice. Win Real Prizes.">
 <meta property="og:description" content="Free online claw machines with real prizes. Play now - no download needed!">
-<meta property="og:image" content="https://spunkeroo.github.io/claw-pizza/og-image.svg">
+<meta property="og:image" content="https://spunkeroo.github.io/claw-pizza/og-image.png">
 <meta property="og:url" content="https://spunkeroo.github.io/claw-pizza/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Claw.Pizza">
@@ -16,7 +16,7 @@
 <meta name="twitter:site" content="@SpunkArt13">
 <meta name="twitter:title" content="Claw.Pizza - Free Online Claw Machine | Win Real Prizes">
 <meta name="twitter:description" content="Grab plushies, toys & more in our free online claw machines. Provably fair, instant play!">
-<meta name="twitter:image" content="https://spunkeroo.github.io/claw-pizza/og-image.svg">
+<meta name="twitter:image" content="https://spunkeroo.github.io/claw-pizza/og-image.png">
 <link rel="canonical" href="https://spunkeroo.github.io/claw-pizza/">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -98,6 +98,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes progress-fill { from { width: 0; } to { width: 100%; } }
 @keyframes ticker-scroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes grab-ready-pulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 30px rgba(230,57,70,0.4); }
+  50% { transform: scale(1.12); box-shadow: 0 0 50px rgba(230,57,70,0.8), 0 0 80px rgba(255,183,3,0.3); }
+}
+@keyframes crosshair-pulse {
+  0%,100% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+}
+@keyframes tutorial-fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes card-lift { from { transform: translateY(0) scale(1); } to { transform: translateY(-4px) scale(1.02); } }
 @keyframes confetti-border {
   0% { border-color: var(--pepperoni); }
@@ -416,18 +425,105 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 .hud-timer { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0.5rem 1rem; border-radius: 20px; font-variant-numeric: tabular-nums; font-weight: 600; border: 1px solid var(--glass-border); }
 .hud-bottom { display: flex; justify-content: center; align-items: flex-end; gap: 2rem; pointer-events: auto; }
 .grab-button {
-  width: 80px; height: 80px; border-radius: 50%; background: var(--pepperoni);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 0.9rem; color: #fff;
+  width: 88px; height: 88px; border-radius: 50%; background: var(--pepperoni);
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px;
+  font-weight: 900; font-size: 0.75rem; color: #fff; letter-spacing: 1px; text-transform: uppercase;
   animation: glow-pulse 2s ease infinite;
   transition: transform var(--transition);
   box-shadow: 0 0 30px rgba(230,57,70,0.4);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  min-width: 88px; min-height: 88px;
 }
+.grab-button.ready { animation: grab-ready-pulse 1.2s ease infinite; }
 .grab-button:hover { transform: scale(1.1); }
+.grab-button:active { transform: scale(0.95); }
 .grab-button svg { width: 32px; height: 32px; }
+.grab-button .grab-label { font-size: 0.65rem; letter-spacing: 2px; margin-top: 2px; }
 .joystick-area { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); position: absolute; bottom: 2rem; left: 2rem; display: none; }
 .joystick-knob { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.15); position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
 .provably-fair-toggle { position: absolute; bottom: 1rem; right: 1rem; pointer-events: auto; }
+
+/* ---- Claw Crosshair / Target Indicator ---- */
+.claw-crosshair {
+  position: absolute; pointer-events: none; z-index: 5;
+  width: 48px; height: 48px;
+  transform: translate(-50%, -50%);
+  animation: crosshair-pulse 1.5s ease infinite;
+  display: none;
+}
+.claw-crosshair svg { width: 100%; height: 100%; }
+.claw-crosshair.visible { display: block; }
+
+/* ---- Drop Zone Shadow ---- */
+.claw-drop-shadow {
+  position: absolute; pointer-events: none; z-index: 4;
+  width: 40px; height: 16px;
+  background: radial-gradient(ellipse, rgba(230,57,70,0.5) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+.claw-drop-shadow.visible { display: block; }
+
+/* ---- Tap Hint ---- */
+.tap-hint {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none; z-index: 6;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  padding: 0.75rem 1.5rem; border-radius: 24px;
+  font-size: 0.9rem; font-weight: 600; color: #fff;
+  border: 1px solid rgba(255,183,3,0.3);
+  opacity: 0; transition: opacity 0.4s ease;
+  white-space: nowrap;
+}
+.tap-hint.visible { opacity: 1; }
+
+/* ---- Tutorial Overlay ---- */
+.claw-tutorial-overlay {
+  position: absolute; inset: 0; z-index: 50;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  animation: fade-in 0.3s ease; pointer-events: auto;
+}
+.claw-tutorial-content {
+  text-align: center; max-width: 320px; padding: 2rem 1.5rem;
+  animation: tutorial-fade-in 0.5s ease;
+}
+.claw-tutorial-content h3 {
+  font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--mozzarella);
+}
+.claw-tutorial-steps {
+  display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem;
+}
+.claw-tutorial-step {
+  display: flex; align-items: center; gap: 1rem; text-align: left;
+}
+.claw-tutorial-step .step-num {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--pepperoni); color: #fff; font-weight: 900; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.claw-tutorial-step .step-text {
+  font-size: 0.95rem; color: var(--text); line-height: 1.4;
+}
+.claw-tutorial-step .step-text strong { color: var(--mozzarella); }
+.claw-tutorial-dismiss {
+  background: var(--mozzarella); color: #000; border: none; border-radius: 24px;
+  padding: 0.75rem 2.5rem; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s ease;
+  min-height: 48px; min-width: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.claw-tutorial-dismiss:hover { transform: scale(1.05); background: #ffc933; }
+
+/* ---- Position Indicator Line ---- */
+.claw-position-line {
+  position: absolute; top: 0; width: 2px; height: 100%;
+  background: linear-gradient(to bottom, rgba(255,183,3,0.6), transparent 80%);
+  pointer-events: none; z-index: 3; display: none;
+  transform: translateX(-50%);
+}
+.claw-position-line.visible { display: block; }
 
 /* ---- Result Modal ---- */
 .result-modal {
@@ -1556,6 +1652,23 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 <!-- ==================== PLAY PAGE ==================== -->
 <div class="page" id="page-play">
   <div class="play-canvas-container" id="play-canvas">
+    <!-- Crosshair target indicator -->
+    <div class="claw-crosshair" id="claw-crosshair">
+      <svg viewBox="0 0 48 48" fill="none" stroke="#FFB703" stroke-width="2">
+        <circle cx="24" cy="24" r="14" stroke-dasharray="4 3" opacity="0.8"/>
+        <line x1="24" y1="4" x2="24" y2="16" opacity="0.6"/>
+        <line x1="24" y1="32" x2="24" y2="44" opacity="0.6"/>
+        <line x1="4" y1="24" x2="16" y2="24" opacity="0.6"/>
+        <line x1="32" y1="24" x2="44" y2="24" opacity="0.6"/>
+        <circle cx="24" cy="24" r="3" fill="#FFB703" opacity="0.8"/>
+      </svg>
+    </div>
+    <!-- Drop zone shadow -->
+    <div class="claw-drop-shadow" id="claw-drop-shadow"></div>
+    <!-- Position line -->
+    <div class="claw-position-line" id="claw-position-line"></div>
+    <!-- Tap hint -->
+    <div class="tap-hint" id="claw-tap-hint">Tap to position the claw, then press GRAB</div>
     <div class="play-hud">
       <div class="hud-top">
         <div class="hud-credits">
@@ -1568,6 +1681,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
       <div class="hud-bottom">
         <button class="grab-button" id="btn-grab" aria-label="Grab">
           <svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.5"><path d="M16 4 V12"/><path d="M10 8 L16 14 L22 8"/><path d="M8 14 Q8 22 16 24 Q24 22 24 14"/></svg>
+          <span class="grab-label">GRAB</span>
         </button>
       </div>
     </div>
@@ -1575,6 +1689,27 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
       <div class="joystick-knob"></div>
     </div>
     <button class="btn btn-sm btn-secondary provably-fair-toggle" id="btn-pf-toggle">Provably Fair</button>
+    <!-- Tutorial overlay (first time) -->
+    <div class="claw-tutorial-overlay" id="claw-tutorial" style="display:none;">
+      <div class="claw-tutorial-content">
+        <h3>How to Play</h3>
+        <div class="claw-tutorial-steps">
+          <div class="claw-tutorial-step">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Tap</strong> anywhere to position the claw over a prize</div>
+          </div>
+          <div class="claw-tutorial-step">
+            <div class="step-num">2</div>
+            <div class="step-text">Press the <strong>GRAB</strong> button to drop the claw</div>
+          </div>
+          <div class="claw-tutorial-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Win prizes!</strong> The claw grabs and you win</div>
+          </div>
+        </div>
+        <button class="claw-tutorial-dismiss" id="claw-tutorial-dismiss">Got it!</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1588,7 +1723,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
     <div class="result-prize-name" id="win-prize-name">AirPods Pro</div>
     <p style="color:var(--text-dim);font-size:0.9rem;">Value: <strong style="color:var(--mozzarella);">$249</strong></p>
     <div class="result-share-btns">
-      <button class="btn btn-sm btn-secondary">
+      <button class="btn btn-sm btn-secondary" onclick="(function(){var p=document.getElementById('win-prize-name').textContent;var t=encodeURIComponent('I just won '+p+' on CLAW.PIZZA! \uD83C\uDF55\uD83C\uDFAF\n\nFree online claw machine with REAL prizes!\n\n@SpunkArt13 #ClawPizza #GrabYourSlice #WinPrizes #FreePrizes');var u=encodeURIComponent('https://spunkeroo.github.io/claw-pizza/');window.open('https://twitter.com/intent/tweet?text='+t+'&url='+u,'_blank','width=600,height=400')})()">
         <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         Share on X
       </button>
@@ -1920,7 +2055,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
         <div class="referral-link-box">
           <input type="text" value="https://claw.pizza/?ref=user123" readonly id="referral-link" aria-label="Referral link">
           <button class="btn btn-secondary btn-sm" id="btn-copy-ref">Copy</button>
-          <button class="btn btn-sm" style="background:#000;color:#fff;" id="btn-share-x">
+          <button class="btn btn-sm" style="background:#000;color:#fff;" id="btn-share-x" onclick="(function(){var ref=document.getElementById('referral-link').value;var t=encodeURIComponent('Play CLAW.PIZZA - the free online claw machine with REAL prizes! \uD83C\uDF55\uD83C\uDFAE\n\nGrab plushies, gift cards & more. No catch!\n\n@SpunkArt13 #ClawPizza #GrabYourSlice #WinPrizes #FreePrizes');window.open('https://twitter.com/intent/tweet?text='+t+'&url='+encodeURIComponent(ref),'_blank','width=600,height=400')})()">
             <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             Share
           </button>
@@ -2089,7 +2224,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--pepperoni)" stroke-width="2"><path d="M24 8 V20"/><path d="M16 14 L24 22 L32 14"/><path d="M12 22 Q12 34 24 38 Q36 34 36 22"/></svg>
           </div>
           <h3 class="step-title">Position the Claw</h3>
-          <p class="step-desc">Use the joystick or mouse to move the claw over your target prize. Timing and precision matter.</p>
+          <p class="step-desc">Tap or click where you want the claw to go. It glides smoothly to your target. You can also use WASD or swipe to fine-tune.</p>
         </div>
         <div class="step-card">
           <div class="step-number">3</div>
@@ -2479,12 +2614,12 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     </div>
     <div class="share-preview">YOUR WIN IMAGE</div>
     <div style="display:flex;gap:0.75rem;justify-content:center;">
-      <button class="btn btn-sm" style="background:#000;color:#fff;">
+      <button class="btn btn-sm" style="background:#000;color:#fff;" onclick="(function(){var t=encodeURIComponent('I just won a prize on CLAW.PIZZA! \uD83C\uDF55\uD83C\uDFAF\n\nFree online claw machine with REAL prizes. Play now!\n\n@SpunkArt13 #ClawPizza #GrabYourSlice #WinPrizes #FreePrizes');var u=encodeURIComponent('https://spunkeroo.github.io/claw-pizza/');window.open('https://twitter.com/intent/tweet?text='+t+'&url='+u,'_blank','width=600,height=400')})()">
         <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         Share on X
       </button>
-      <button class="btn btn-sm btn-secondary">Download Image</button>
-      <button class="btn btn-sm btn-secondary">Copy Link</button>
+      <button class="btn btn-sm btn-secondary" onclick="(function(){if(typeof ClawApp!=='undefined'&&ClawApp.shareWin)ClawApp.shareWin('Prize','0','classic')})()">Download Image</button>
+      <button class="btn btn-sm btn-secondary" onclick="navigator.clipboard.writeText('https://spunkeroo.github.io/claw-pizza/').then(function(){alert('Link copied!')})">Copy Link</button>
     </div>
   </div>
 </div>
@@ -2723,6 +2858,18 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   // Virtual joystick state
   let joystick = { active: false, el: null, knob: null, startX: 0, startY: 0, dx: 0, dy: 0 };
   let grabButton = null;
+
+  // Click-to-position state
+  let targetClawX = null;  // null = no target, use keyboard/joystick
+  let targetClawZ = null;
+  let smoothMoveSpeed = 5.0;  // speed for smooth glide to target
+  let crosshairEl = null;
+  let dropShadowEl = null;
+  let positionLineEl = null;
+  let tapHintEl = null;
+  let tutorialShown = false;
+  let raycaster = null;
+  let raycastPlane = null;  // invisible plane at rail height for click projection
 
   // LED strips
   let ledStrips = [];
@@ -3662,12 +3809,269 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     if (keysDown['s'] || keysDown['arrowdown']) mz += 1;
     moveInput.x = mx;
     moveInput.z = mz;
+
+    // Cancel click-to-position if keyboard is being used
+    if (mx !== 0 || mz !== 0) {
+      targetClawX = null;
+      targetClawZ = null;
+    }
   }
 
-  // ─── VIRTUAL JOYSTICK (Mobile) ─────────────────────────────────────
+  // ─── CLICK-TO-POSITION & CONTROLS ────────────────────────────────
+
+  function screenToMachineCoords(clientX, clientY) {
+    // Convert screen click to machine X/Z coordinates using raycasting
+    if (!camera || !renderer || !container) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    const ndcX = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const ndcY = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+    if (!raycaster) raycaster = new THREE.Raycaster();
+    if (!raycastPlane) {
+      // Invisible plane at rail height for projection
+      const planeGeo = new THREE.PlaneGeometry(MACHINE.width * 2, MACHINE.depth * 2);
+      const planeMat = new THREE.MeshBasicMaterial({ visible: false });
+      raycastPlane = new THREE.Mesh(planeGeo, planeMat);
+      raycastPlane.rotation.x = -Math.PI / 2;
+      raycastPlane.position.y = MACHINE.railY;
+      scene.add(raycastPlane);
+    }
+
+    raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), camera);
+    const hits = raycaster.intersectObject(raycastPlane);
+    if (hits.length > 0) {
+      const p = hits[0].point;
+      const halfW = MACHINE.width / 2 - 0.3;
+      const halfD = MACHINE.depth / 2 - 0.3;
+      return {
+        x: Math.max(-halfW, Math.min(halfW, p.x)),
+        z: Math.max(-halfD, Math.min(halfD, p.z))
+      };
+    }
+    return null;
+  }
+
+  function machineToScreenCoords(mx, mz) {
+    // Project machine coords to screen position for crosshair overlay
+    if (!camera || !renderer) return null;
+    const vec = new THREE.Vector3(mx, MACHINE.railY, mz);
+    vec.project(camera);
+    const rect = renderer.domElement.getBoundingClientRect();
+    return {
+      x: ((vec.x + 1) / 2) * rect.width + rect.left,
+      y: ((-vec.y + 1) / 2) * rect.height + rect.top
+    };
+  }
+
+  function machineToScreenLocal(mx, mz) {
+    // Same as machineToScreenCoords but relative to container
+    if (!camera || !renderer) return null;
+    const vec = new THREE.Vector3(mx, MACHINE.railY, mz);
+    vec.project(camera);
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    return {
+      x: ((vec.x + 1) / 2) * w,
+      y: ((-vec.y + 1) / 2) * h
+    };
+  }
+
+  function dropShadowScreenPos(mx, mz) {
+    // Project to the pit floor for the shadow
+    if (!camera || !renderer) return null;
+    const vec = new THREE.Vector3(mx, 0.1, mz);
+    vec.project(camera);
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    return {
+      x: ((vec.x + 1) / 2) * w,
+      y: ((-vec.y + 1) / 2) * h
+    };
+  }
+
+  function updateCrosshairPosition() {
+    if (!crosshairEl || !dropShadowEl || !positionLineEl) return;
+    if (state !== STATES.MOVING) {
+      crosshairEl.classList.remove('visible');
+      dropShadowEl.classList.remove('visible');
+      positionLineEl.classList.remove('visible');
+      return;
+    }
+    const screenPos = machineToScreenLocal(clawX, clawZ);
+    if (screenPos) {
+      crosshairEl.style.left = screenPos.x + 'px';
+      crosshairEl.style.top = screenPos.y + 'px';
+      crosshairEl.classList.add('visible');
+
+      positionLineEl.style.left = screenPos.x + 'px';
+      positionLineEl.classList.add('visible');
+    }
+    const shadowPos = dropShadowScreenPos(clawX, clawZ);
+    if (shadowPos) {
+      dropShadowEl.style.left = shadowPos.x + 'px';
+      dropShadowEl.style.top = shadowPos.y + 'px';
+      dropShadowEl.classList.add('visible');
+    }
+  }
+
+  function hapticFeedback(pattern) {
+    // Trigger haptic on supported mobile devices
+    if (navigator.vibrate) {
+      try { navigator.vibrate(pattern || 15); } catch (e) { /* ignore */ }
+    }
+  }
+
+  function showTutorialIfNeeded() {
+    if (tutorialShown) return;
+    try {
+      if (localStorage.getItem('claw_tutorial_seen')) { tutorialShown = true; return; }
+    } catch (e) {}
+    const tut = document.getElementById('claw-tutorial');
+    if (!tut) return;
+    tut.style.display = 'flex';
+    const dismiss = document.getElementById('claw-tutorial-dismiss');
+    if (dismiss) {
+      dismiss.addEventListener('click', () => {
+        tut.style.display = 'none';
+        tutorialShown = true;
+        try { localStorage.setItem('claw_tutorial_seen', '1'); } catch (e) {}
+        hapticFeedback(20);
+      });
+      dismiss.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        tut.style.display = 'none';
+        tutorialShown = true;
+        try { localStorage.setItem('claw_tutorial_seen', '1'); } catch (e) {}
+        hapticFeedback(20);
+      }, { passive: false });
+    }
+  }
+
+  function handleCanvasClick(clientX, clientY) {
+    if (state !== STATES.MOVING) return;
+    const coords = screenToMachineCoords(clientX, clientY);
+    if (!coords) return;
+
+    // Set target for smooth movement
+    targetClawX = coords.x;
+    targetClawZ = coords.z;
+    hapticFeedback(10);
+  }
+
+  function processClickToPosition(dt) {
+    // Smooth glide to click target
+    if (state !== STATES.MOVING) {
+      targetClawX = null;
+      targetClawZ = null;
+      return;
+    }
+    if (targetClawX === null || targetClawZ === null) return;
+
+    // If keyboard or joystick is active, cancel click target
+    if ((moveInput.x !== 0 || moveInput.z !== 0) && !joystick.active && targetClawX !== null) {
+      // Keyboard overrides click target
+      targetClawX = null;
+      targetClawZ = null;
+      return;
+    }
+
+    const dx = targetClawX - clawX;
+    const dz = targetClawZ - clawZ;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+
+    if (dist < 0.05) {
+      clawX = targetClawX;
+      clawZ = targetClawZ;
+      targetClawX = null;
+      targetClawZ = null;
+      updateClawPosition();
+      return;
+    }
+
+    const step = smoothMoveSpeed * dt;
+    if (step >= dist) {
+      clawX = targetClawX;
+      clawZ = targetClawZ;
+      targetClawX = null;
+      targetClawZ = null;
+    } else {
+      clawX += (dx / dist) * step;
+      clawZ += (dz / dist) * step;
+    }
+
+    // Bounds
+    const halfW = MACHINE.width / 2 - 0.3;
+    const halfD = MACHINE.depth / 2 - 0.3;
+    clawX = Math.max(-halfW, Math.min(halfW, clawX));
+    clawZ = Math.max(-halfD, Math.min(halfD, clawZ));
+
+    cableLength = MACHINE.cableMinLen;
+    updateClawPosition();
+  }
 
   function createVirtualControls() {
-    // Use existing HTML joystick area if available
+    // --- Click/tap to position (PRIMARY control) ---
+    crosshairEl = document.getElementById('claw-crosshair');
+    dropShadowEl = document.getElementById('claw-drop-shadow');
+    positionLineEl = document.getElementById('claw-position-line');
+    tapHintEl = document.getElementById('claw-tap-hint');
+
+    if (renderer && renderer.domElement) {
+      // Mouse click to position
+      renderer.domElement.addEventListener('click', (e) => {
+        handleCanvasClick(e.clientX, e.clientY);
+      });
+
+      // Touch tap to position (prevent conflicts with joystick)
+      renderer.domElement.addEventListener('touchstart', (e) => {
+        if (state !== STATES.MOVING) return;
+        // Only handle single finger taps on the canvas
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          // Check if touch is on UI elements
+          const target = e.target;
+          if (target === renderer.domElement || target.closest('.play-canvas-container') === container) {
+            handleCanvasClick(touch.clientX, touch.clientY);
+            hapticFeedback(10);
+          }
+        }
+      }, { passive: true });
+
+      // Swipe to fine-tune on mobile
+      let swipeStartX = 0, swipeStartY = 0, swiping = false;
+      renderer.domElement.addEventListener('touchstart', (e) => {
+        if (state !== STATES.MOVING || e.touches.length !== 1) return;
+        swipeStartX = e.touches[0].clientX;
+        swipeStartY = e.touches[0].clientY;
+        swiping = true;
+      }, { passive: true });
+
+      renderer.domElement.addEventListener('touchmove', (e) => {
+        if (!swiping || state !== STATES.MOVING || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const deltaX = (touch.clientX - swipeStartX) * 0.008;
+        const deltaZ = (touch.clientY - swipeStartY) * 0.008;
+
+        if (Math.abs(deltaX) > 0.001 || Math.abs(deltaZ) > 0.001) {
+          targetClawX = null;
+          targetClawZ = null;
+          clawX += deltaX;
+          clawZ += deltaZ;
+          const halfW = MACHINE.width / 2 - 0.3;
+          const halfD = MACHINE.depth / 2 - 0.3;
+          clawX = Math.max(-halfW, Math.min(halfW, clawX));
+          clawZ = Math.max(-halfD, Math.min(halfD, clawZ));
+          updateClawPosition();
+          swipeStartX = touch.clientX;
+          swipeStartY = touch.clientY;
+        }
+      }, { passive: true });
+
+      renderer.domElement.addEventListener('touchend', () => { swiping = false; }, { passive: true });
+      renderer.domElement.addEventListener('touchcancel', () => { swiping = false; }, { passive: true });
+    }
+
+    // --- Joystick (secondary, mobile) ---
     const existingJoy = document.querySelector('.joystick-area');
     const existingKnob = document.querySelector('.joystick-knob');
 
@@ -3682,6 +4086,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         joystick.active = true;
         joystick.startX = rect.left + rect.width / 2;
         joystick.startY = rect.top + rect.height / 2;
+        targetClawX = null; targetClawZ = null;
       }, { passive: false });
 
       existingJoy.addEventListener('touchmove', (e) => {
@@ -3711,19 +4116,28 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       existingJoy.addEventListener('touchcancel', endJoy);
     }
 
-    // Use existing grab button
+    // --- Grab button ---
     const existingGrab = document.getElementById('btn-grab');
     if (existingGrab) {
       existingGrab.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (state === STATES.MOVING) dropClaw();
+        if (state === STATES.MOVING) {
+          hapticFeedback([20, 30, 40]);
+          dropClaw();
+        }
       }, { passive: false });
       existingGrab.addEventListener('click', (e) => {
         e.preventDefault();
-        if (state === STATES.MOVING) dropClaw();
+        if (state === STATES.MOVING) {
+          hapticFeedback([20, 30, 40]);
+          dropClaw();
+        }
       });
       grabButton = existingGrab;
     }
+
+    // Show tutorial for first-time users
+    showTutorialIfNeeded();
   }
 
   function showMobileControls(show) {
@@ -3733,10 +4147,29 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     // Don't hide the HTML grab button, it's always visible in the HUD
   }
 
+  function updateGrabButtonState() {
+    if (!grabButton) return;
+    if (state === STATES.MOVING) {
+      grabButton.classList.add('ready');
+    } else {
+      grabButton.classList.remove('ready');
+    }
+  }
+
+  function showTapHint() {
+    if (!tapHintEl) tapHintEl = document.getElementById('claw-tap-hint');
+    if (tapHintEl) {
+      tapHintEl.classList.add('visible');
+      setTimeout(() => { if (tapHintEl) tapHintEl.classList.remove('visible'); }, 3000);
+    }
+  }
+
   function processJoystickInput() {
     if (state !== STATES.MOVING || !joystick.active) return;
     moveInput.x = joystick.dx;
     moveInput.z = joystick.dy;
+    targetClawX = null;
+    targetClawZ = null;
   }
 
   // ─── TIMER ─────────────────────────────────────────────────────────
@@ -3799,18 +4232,30 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     updateClawPosition();
 
     moveTimer = MACHINE.moveTimeLimit;
+    targetClawX = null;
+    targetClawZ = null;
     setState(STATES.MOVING);
     showTimer();
     showMobileControls(true);
+    showTapHint();
+    updateGrabButtonState();
 
     return true;
   }
 
   function dropClaw() {
     if (state !== STATES.MOVING) return;
+    hapticFeedback([20, 40, 60]);
     setState(STATES.DROPPING);
     hideTimer();
     showMobileControls(false);
+    targetClawX = null;
+    targetClawZ = null;
+    updateGrabButtonState();
+    if (crosshairEl) crosshairEl.classList.remove('visible');
+    if (dropShadowEl) dropShadowEl.classList.remove('visible');
+    if (positionLineEl) positionLineEl.classList.remove('visible');
+    if (tapHintEl) tapHintEl.classList.remove('visible');
   }
 
   function updateStateMachine(dt) {
@@ -3825,21 +4270,30 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         processKeyboardInput();
         processJoystickInput();
 
-        // Apply movement
-        const moveX = moveInput.x * MACHINE.moveSpeed * dt;
-        const moveZ = moveInput.z * MACHINE.moveSpeed * dt;
+        // Click-to-position smooth glide (does nothing if no target)
+        processClickToPosition(dt);
 
-        clawX += moveX;
-        clawZ += moveZ;
+        // Apply keyboard/joystick movement (only if no click target active)
+        if (targetClawX === null) {
+          const moveX = moveInput.x * MACHINE.moveSpeed * dt;
+          const moveZ = moveInput.z * MACHINE.moveSpeed * dt;
 
-        // Bounds
-        const halfW = MACHINE.width / 2 - 0.3;
-        const halfD = MACHINE.depth / 2 - 0.3;
-        clawX = Math.max(-halfW, Math.min(halfW, clawX));
-        clawZ = Math.max(-halfD, Math.min(halfD, clawZ));
+          clawX += moveX;
+          clawZ += moveZ;
 
-        cableLength = MACHINE.cableMinLen;
-        updateClawPosition();
+          // Bounds
+          const halfW = MACHINE.width / 2 - 0.3;
+          const halfD = MACHINE.depth / 2 - 0.3;
+          clawX = Math.max(-halfW, Math.min(halfW, clawX));
+          clawZ = Math.max(-halfD, Math.min(halfD, clawZ));
+
+          cableLength = MACHINE.cableMinLen;
+          updateClawPosition();
+        }
+
+        // Update visual indicators
+        updateCrosshairPosition();
+        updateGrabButtonState();
 
         // Timer
         moveTimer -= dt;
@@ -4194,6 +4648,15 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     timerEl = null;
     joystick = { active: false, el: null, knob: null, startX: 0, startY: 0, dx: 0, dy: 0 };
     grabButton = null;
+    targetClawX = null;
+    targetClawZ = null;
+    crosshairEl = null;
+    dropShadowEl = null;
+    positionLineEl = null;
+    tapHintEl = null;
+    raycaster = null;
+    if (raycastPlane && scene) { try { scene.remove(raycastPlane); } catch(e) {} }
+    raycastPlane = null;
   }
 
   // ─── EXPORT ────────────────────────────────────────────────────────
@@ -4216,6 +4679,12 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         const halfD = MACHINE.depth / 2 - 0.3;
         clawZ = Math.max(-halfD, Math.min(halfD, clawZ));
         updateClawPosition();
+      }
+    },
+    moveClawTo: function(x, z) {
+      if (state === STATES.MOVING) {
+        targetClawX = x;
+        targetClawZ = z;
       }
     },
     dropClaw: dropClaw,
@@ -5296,10 +5765,11 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     }, 'image/png');
 
     const refCode = getReferralCode();
+    const siteURL = 'https://spunkeroo.github.io/claw-pizza/?ref=' + refCode;
     const tweetText = encodeURIComponent(
-      `Just grabbed ${prizeName} from the ${machineTier || 'classic'} machine on @ClawPizza! \uD83C\uDF55\uD83C\uDFAF\n\nPlay free \u2192 claw.pizza/?ref=${refCode}`
+      `Just grabbed ${prizeName} from the ${machineTier || 'classic'} machine on CLAW.PIZZA! \uD83C\uDF55\uD83C\uDFAF\n\nFree online claw machine with REAL prizes. Play free \u2192\n\n@SpunkArt13 #ClawPizza #GrabYourSlice #WinPrizes #FreePrizes`
     );
-    const tweetURL = `https://twitter.com/intent/tweet?text=${tweetText}`;
+    const tweetURL = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(siteURL)}`;
     window.open(tweetURL, '_blank', 'width=600,height=400');
 
     const shared = ls('claw_shares_today', { date: dayKey(), count: 0 });
@@ -5860,7 +6330,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       updateStreak();
       recordPlay(machine.tier);
       updateCreditDisplays();
-      showToast('Move the claw with WASD/arrows, then press Space or GRAB!', 'info');
+      showToast('Tap where you want the claw, then press GRAB!', 'info');
       return;
     }
 

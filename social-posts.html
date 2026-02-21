@@ -132,6 +132,21 @@
   }
   .svg-card svg { width: 100%; height: auto; border-radius: 8px; }
   .svg-card p { margin-top: 10px; color: var(--text-muted); font-size: 0.85em; }
+  .download-btn {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .download-btn:hover { background: #c1303b; transform: translateY(-1px); }
+  .download-btn:active { transform: scale(0.97); }
   .hashtag-list {
     display: flex;
     flex-wrap: wrap;
@@ -872,7 +887,7 @@ Month 2 is going to be even BIGGER &#x1F680;
 <!-- SECTION 3: SVG SOCIAL CARDS -->
 <!-- ============================================ -->
 <div class="section-title" id="svgs"><span class="num">3</span> SVG Social Cards</div>
-<p style="color:var(--text-muted);margin-bottom:20px;">Right-click any card and "Save Image As" to download. Each is 1200x628px, optimized for X/Twitter and Facebook sharing.</p>
+<p style="color:var(--text-muted);margin-bottom:20px;">Each card is 1200x628px, optimized for X/Twitter and Facebook sharing. Click "Download PNG" to save as a high-quality PNG image.</p>
 
 <div class="svg-grid">
 
@@ -911,6 +926,7 @@ Month 2 is going to be even BIGGER &#x1F680;
     <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
   </svg>
   <p>Launch Card - "Grab Your Slice" (1200x628)</p>
+  <button class="download-btn" onclick="downloadSvgAsPng(this)">Download PNG</button>
 </div>
 
 <!-- SVG 2: Free Credits Promo -->
@@ -952,6 +968,7 @@ Month 2 is going to be even BIGGER &#x1F680;
     <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
   </svg>
   <p>Free Credits Promo Card with code FREEPIZZA (1200x628)</p>
+  <button class="download-btn" onclick="downloadSvgAsPng(this)">Download PNG</button>
 </div>
 
 <!-- SVG 3: I Won! -->
@@ -997,6 +1014,7 @@ Month 2 is going to be even BIGGER &#x1F680;
     <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
   </svg>
   <p>"I WON!" Winner Celebration Template (1200x628)</p>
+  <button class="download-btn" onclick="downloadSvgAsPng(this)">Download PNG</button>
 </div>
 
 <!-- SVG 4: Challenge Card -->
@@ -1038,6 +1056,7 @@ Month 2 is going to be even BIGGER &#x1F680;
     <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
   </svg>
   <p>"3 Wins in a Row" Challenge Card (1200x628)</p>
+  <button class="download-btn" onclick="downloadSvgAsPng(this)">Download PNG</button>
 </div>
 
 <!-- SVG 5: Social Proof -->
@@ -1092,6 +1111,7 @@ Month 2 is going to be even BIGGER &#x1F680;
     <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
   </svg>
   <p>"Join 1,000+ Players" Social Proof Card (1200x628)</p>
+  <button class="download-btn" onclick="downloadSvgAsPng(this)">Download PNG</button>
 </div>
 
 <!-- SVG 6: Referral Card -->
@@ -1144,6 +1164,7 @@ Month 2 is going to be even BIGGER &#x1F680;
     <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
   </svg>
   <p>"Refer Friends, Win More" Referral Promo Card (1200x628)</p>
+  <button class="download-btn" onclick="downloadSvgAsPng(this)">Download PNG</button>
 </div>
 
 </div>
@@ -1356,6 +1377,37 @@ Sound fun? claw.pizza</div>
 </div>
 
 <script>
+function downloadSvgAsPng(btn) {
+  const svgCard = btn.closest('.svg-card');
+  const svgEl = svgCard.querySelector('svg');
+  const svgData = new XMLSerializer().serializeToString(svgEl);
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 628;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 1200, 628);
+    URL.revokeObjectURL(url);
+
+    canvas.toBlob(function(blob) {
+      const pngUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const label = svgCard.querySelector('p').textContent.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
+      a.href = pngUrl;
+      a.download = 'claw-pizza-' + label + '.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(pngUrl); }, 5000);
+    }, 'image/png');
+  };
+  img.src = url;
+}
+
 function copyCard(btn) {
   const card = btn.closest('.card');
   const textEl = card.querySelector('.card-text');
