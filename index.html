@@ -3,22 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0a0a0f">
-<meta name="description" content="Claw.Pizza - Grab Your Slice! Win real prizes playing claw machines online. Provably fair, instant play, free daily credits.">
-<meta name="keywords" content="claw machine, online claw, win prizes, pizza, provably fair, free to play, arcade">
-<meta property="og:title" content="Claw.Pizza - Grab Your Slice">
-<meta property="og:description" content="Win real prizes playing claw machines online. Provably fair. Play free.">
-<meta property="og:image" content="https://claw.pizza/og-image.png">
-<meta property="og:url" content="https://claw.pizza">
+<meta name="theme-color" content="#E63946">
+<meta name="description" content="Play free online claw machine games and win real prizes! Grab plushies, toys, and more. No download needed. Skill-based, provably fair.">
+<meta name="keywords" content="claw machine online, win prizes free, online arcade, claw game, grab prizes, free claw machine, claw pizza">
+<meta property="og:title" content="Claw.Pizza - Grab Your Slice. Win Real Prizes.">
+<meta property="og:description" content="Free online claw machines with real prizes. Play now - no download needed!">
+<meta property="og:image" content="https://spunkeroo.github.io/claw-pizza/og-image.svg">
+<meta property="og:url" content="https://spunkeroo.github.io/claw-pizza/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Claw.Pizza">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Claw.Pizza - Grab Your Slice">
-<meta name="twitter:description" content="Win real prizes playing claw machines online. Provably fair. Play free.">
-<meta name="twitter:image" content="https://claw.pizza/og-image.png">
+<meta name="twitter:site" content="@SpunkArt13">
+<meta name="twitter:title" content="Claw.Pizza - Free Online Claw Machine | Win Real Prizes">
+<meta name="twitter:description" content="Grab plushies, toys & more in our free online claw machines. Provably fair, instant play!">
+<meta name="twitter:image" content="https://spunkeroo.github.io/claw-pizza/og-image.svg">
+<link rel="canonical" href="https://spunkeroo.github.io/claw-pizza/">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
-<title>Claw.Pizza - Grab Your Slice</title>
+<title>Claw.Pizza - Free Online Claw Machine | Win Real Prizes</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Claw.Pizza",
+  "url": "https://spunkeroo.github.io/claw-pizza/",
+  "description": "Free online claw machine games with real prizes",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Organization", "name": "Spunkeroo", "url": "https://spunkart.com" }
+}
+</script>
 <style>
 :root {
   --pepperoni: #E63946;
@@ -271,6 +287,79 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 .live-feed-name { font-weight: 600; font-size: 0.85rem; }
 .live-feed-prize { font-size: 0.8rem; color: var(--mozzarella); }
 .live-feed-time { font-size: 0.7rem; color: var(--text-dim); flex-shrink: 0; }
+
+/* ---- Auto-Update Live Sections ---- */
+.live-bar {
+  display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap;
+  background: linear-gradient(135deg, rgba(230,57,70,0.08), rgba(255,183,3,0.08));
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 1rem 1.5rem; margin-bottom: 1rem;
+}
+.live-bar-item {
+  display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; font-weight: 600;
+  white-space: nowrap;
+}
+.live-bar-value { color: var(--mozzarella); font-weight: 800; font-size: 1.1rem; }
+.live-bar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--basil); animation: pulse 1.5s ease infinite; }
+
+.winners-ticker-wrap {
+  overflow: hidden; position: relative;
+  background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 0.75rem 0; margin-bottom: 1.5rem;
+}
+.winners-ticker-track {
+  display: flex; gap: 3rem; animation: ticker-h-scroll 30s linear infinite; white-space: nowrap;
+}
+.winners-ticker-item { font-size: 0.85rem; color: var(--text); flex-shrink: 0; }
+.winners-ticker-item .winner-prize { color: var(--mozzarella); font-weight: 600; }
+@keyframes ticker-h-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.stats-counter-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;
+}
+.stats-counter-card {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 1.25rem; text-align: center; transition: transform var(--transition);
+}
+.stats-counter-card:hover { transform: translateY(-2px); }
+.stats-counter-val { font-size: 1.6rem; font-weight: 800; color: var(--mozzarella); margin-bottom: 0.25rem; }
+.stats-counter-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.news-ticker-section { margin-bottom: 1.5rem; }
+.news-ticker-header {
+  display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;
+  font-weight: 700; font-size: 0.9rem; color: var(--pepperoni);
+}
+.news-ticker-list {
+  background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 0.75rem 1rem; min-height: 44px; overflow: hidden; position: relative;
+}
+.news-ticker-item {
+  display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
+  animation: fade-in 0.4s ease;
+}
+.news-ticker-item .news-time { color: var(--text-dim); font-size: 0.75rem; flex-shrink: 0; }
+.news-ticker-item .news-badge {
+  background: var(--pepperoni); color: #fff; font-size: 0.65rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0; text-transform: uppercase;
+}
+
+.prize-pool-bar {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  background: linear-gradient(135deg, rgba(45,198,83,0.08), rgba(255,183,3,0.08));
+  border: 1px solid rgba(45,198,83,0.2); border-radius: var(--radius);
+  padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+}
+.prize-pool-count { font-size: 1.3rem; font-weight: 800; color: var(--basil); }
+.prize-pool-timer { font-size: 0.8rem; color: var(--text-dim); }
+
+@media (max-width: 768px) {
+  .live-bar { gap: 1rem; padding: 0.75rem 1rem; flex-direction: column; }
+  .stats-counter-grid { grid-template-columns: 1fr; }
+}
+@media (min-width: 768px) {
+  .stats-counter-grid { grid-template-columns: repeat(3, 1fr); }
+}
 
 /* ---- Faucet Banner ---- */
 .faucet-banner {
@@ -619,6 +708,34 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 .footer-bottom p { font-size: 0.75rem; color: var(--text-dim); }
 .footer-affiliate { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.5rem; font-style: italic; }
 
+/* ---- Network Footer ---- */
+.network-footer { background: linear-gradient(180deg, var(--surface) 0%, #0d0d14 100%); border-top: 2px solid var(--pepperoni); padding: 3rem 0 1.5rem; }
+.network-footer .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.network-footer-brand { text-align: center; margin-bottom: 2rem; }
+.network-footer-brand h3 { font-size: 1.1rem; color: var(--mozzarella); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.25rem; }
+.network-footer-brand span { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
+.network-section { margin-bottom: 1.5rem; }
+.network-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--pepperoni); margin-bottom: 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(230,57,70,0.2); font-weight: 700; }
+.network-links { display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem; }
+.network-links a { font-size: 0.75rem; color: var(--text-dim); padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: all var(--transition); white-space: nowrap; }
+.network-links a:hover { color: var(--mozzarella); background: rgba(255,183,3,0.08); border-color: rgba(255,183,3,0.2); }
+.network-links a.highlight { color: var(--mozzarella); font-weight: 600; background: rgba(255,183,3,0.06); }
+.network-footer-bottom { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); }
+.network-footer-bottom p { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 0.3rem; }
+.network-footer-bottom a { color: var(--mozzarella); }
+.network-footer-bottom .twitter-link { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--text-dim); font-size: 0.75rem; margin-bottom: 0.5rem; transition: color var(--transition); }
+.network-footer-bottom .twitter-link:hover { color: var(--mozzarella); }
+.network-footer-bottom .twitter-link svg { width: 14px; height: 14px; }
+@media (min-width: 768px) {
+  .network-sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; }
+}
+@media (min-width: 1024px) {
+  .network-sections-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+}
+
+/* ---- Powered by Spunkeroo watermark ---- */
+.spunkeroo-watermark { position: fixed; bottom: 8px; right: 12px; font-size: 0.6rem; color: rgba(255,255,255,0.12); letter-spacing: 1px; text-transform: uppercase; pointer-events: none; z-index: 1; font-weight: 600; }
+
 /* ---- Responsive ---- */
 @media (min-width: 480px) {
   .profile-stats-grid { grid-template-columns: repeat(4, 1fr); }
@@ -651,7 +768,357 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 @media (min-width: 1440px) {
   .container { max-width: 1360px; }
 }
+
+/* ---- Cross-Promo Banner ---- */
+.cross-promo-banner {
+  background: linear-gradient(135deg, rgba(230,57,70,0.15), rgba(255,183,3,0.15));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0 auto 2rem;
+  max-width: 900px;
+  font-size: 0.9rem;
+  animation: fade-in 0.5s ease;
+}
+.cross-promo-banner .promo-emoji { font-size: 1.2rem; }
+.cross-promo-banner a { color: var(--mozzarella); font-weight: 600; text-decoration: underline; }
+.cross-promo-banner a:hover { color: var(--pepperoni); }
+.cross-promo-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.cross-promo-links a { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.05); text-decoration: none !important; }
+
+/* ---- Prize Showcase (Amazon Affiliates) ---- */
+.prize-showcase { padding: 3rem 0; }
+.prize-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 768px) { .prize-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .prize-grid { grid-template-columns: repeat(4, 1fr); } }
+.prize-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.prize-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(230,57,70,0.2); }
+.prize-card-img {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #1e1e2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+}
+.prize-card-img .price-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--basil);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.prize-card-body {
+  padding: 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.prize-card-name { font-size: 0.85rem; font-weight: 600; line-height: 1.3; }
+.prize-card-price { font-size: 0.8rem; color: var(--basil); font-weight: 700; }
+.btn-amazon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #FF9900;
+  color: #111;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+  margin-top: auto;
+}
+.btn-amazon:hover { background: #e68a00; color: #111; transform: scale(1.03); }
+.btn-amazon svg { width: 14px; height: 14px; }
+
+/* ---- Tip Jar ---- */
+.tip-jar-section { padding: 3rem 0; }
+.tip-jar-card {
+  background: linear-gradient(135deg, rgba(255,183,3,0.08), rgba(230,57,70,0.08));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.tip-jar-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.tip-jar-card p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.tip-tiers {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.tip-tier {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+  min-width: 100px;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.tip-tier:hover { border-color: var(--mozzarella); transform: translateY(-2px); }
+.tip-tier-emoji { font-size: 1.5rem; margin-bottom: 0.25rem; }
+.tip-tier-name { font-size: 0.8rem; font-weight: 600; }
+.tip-tier-amount { font-size: 0.75rem; color: var(--text-dim); }
+.tip-btc-address {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  word-break: break-all;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+  user-select: all;
+}
+.btn-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--mozzarella);
+  color: #111;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-tip:hover { background: var(--pepperoni); color: #fff; transform: scale(1.05); }
+
+/* ---- Credit Packs ---- */
+.credit-packs-section { padding: 3rem 0; }
+.credit-packs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 768px) { .credit-packs-grid { grid-template-columns: repeat(4, 1fr); } }
+.credit-pack-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.credit-pack-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(255,183,3,0.15); }
+.credit-pack-card.featured { border-color: var(--mozzarella); }
+.credit-pack-card.featured::before {
+  content: 'BEST VALUE';
+  position: absolute;
+  top: 12px;
+  right: -30px;
+  background: var(--pepperoni);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 32px;
+  transform: rotate(45deg);
+}
+.credit-pack-badge {
+  display: inline-block;
+  background: rgba(255,183,3,0.15);
+  color: var(--mozzarella);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 50px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+.credit-pack-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.credit-pack-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+.credit-pack-amount { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+.credit-pack-price { font-size: 1.5rem; font-weight: 800; color: var(--mozzarella); margin-bottom: 0.75rem; }
+.btn-coming-soon {
+  display: inline-block;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  border: 1px dashed var(--glass-border);
+  cursor: default;
+}
+
+/* ---- Spin Wheel Modal ---- */
+.spin-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.3s ease;
+}
+.spin-modal-overlay.active { display: flex; }
+.spin-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+}
+.spin-modal h2 { margin-bottom: 0.5rem; font-size: 1.5rem; }
+.spin-modal .spin-subtitle { color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem; }
+.spin-modal .spin-close {
+  position: absolute; top: 12px; right: 16px;
+  background: none; color: var(--text-dim); font-size: 1.5rem;
+  cursor: pointer; line-height: 1;
+}
+.spin-modal .spin-close:hover { color: var(--text); }
+.spin-wheel-container {
+  position: relative;
+  width: 300px; height: 300px;
+  margin: 0 auto 1.5rem;
+}
+.spin-wheel {
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  position: relative;
+  background: conic-gradient(
+    #E63946 0deg 45deg,
+    #FFB703 45deg 90deg,
+    #D4451A 90deg 135deg,
+    #F4A261 135deg 180deg,
+    #8B4513 180deg 225deg,
+    #FF6B35 225deg 270deg,
+    #CC3300 270deg 315deg,
+    #FFC857 315deg 360deg
+  );
+  border: 4px solid var(--mozzarella);
+  box-shadow: 0 0 20px rgba(255,183,3,0.3);
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+.spin-wheel.spinning {
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+.spin-wheel-label {
+  position: absolute;
+  width: 50%;
+  height: 0;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0% 0%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 18px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+.spin-pointer {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid var(--pepperoni);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  z-index: 2;
+}
+.spin-center-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background: var(--pepperoni);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  border: 3px solid #fff;
+  cursor: pointer;
+  z-index: 3;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(230,57,70,0.5);
+}
+.spin-center-btn:hover { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 4px 20px rgba(230,57,70,0.7); }
+.spin-center-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: translate(-50%, -50%); }
+.spin-result {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mozzarella);
+  min-height: 2rem;
+  margin-bottom: 0.5rem;
+}
+.spin-cooldown { color: var(--text-dim); font-size: 0.85rem; }
+.daily-spin-btn {
+  background: linear-gradient(135deg, var(--pepperoni), var(--mozzarella));
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: pulse 2s ease infinite;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.daily-spin-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(230,57,70,0.5); }
 </style>
+
+<!-- Google Analytics GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
 </head>
 <body>
 
@@ -693,6 +1160,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
     <li><a href="#" data-page="prizes">Prizes</a></li>
     <li><a href="#" data-page="leaderboard">Leaderboard</a></li>
     <li><a href="#" data-page="how">How It Works</a></li>
+    <li><a href="#" onclick="ClawApp.showSpinWheel();return false;">Daily Spin</a></li>
   </ul>
   <div class="nav-right">
     <div class="credit-display">
@@ -746,6 +1214,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
       <button class="btn btn-primary btn-lg btn-glow" data-page="machines">Play Free</button>
       <button class="btn btn-outline btn-lg" data-page="how">How It Works</button>
     </div>
+    <div style="margin-top:1rem;">
+      <button class="daily-spin-btn" onclick="ClawApp.showSpinWheel()">&#x1F3B0; Daily Spin - Free Credits!</button>
+    </div>
     <div class="stats-row">
       <div class="stat-item">
         <div class="stat-value" id="stat-prizes">1,247</div>
@@ -761,6 +1232,19 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
       </div>
     </div>
   </section>
+
+  <!-- Cross-Promotion Banner -->
+  <div class="container">
+    <div class="cross-promo-banner">
+      <span class="promo-emoji">&#x1F3B0;</span>
+      <span>Love claw games? Try our crypto casino at <a href="https://spunk.bet" target="_blank" rel="noopener" onclick="clawTrack('referral_click','spunk_bet')">spunk.bet</a> &mdash; Free daily SPUNK tokens!</span>
+      <div class="cross-promo-links">
+        <a href="https://predict.horse" target="_blank" rel="noopener" onclick="clawTrack('referral_click','predict_horse')">predict.horse</a>
+        <a href="https://predict.pics" target="_blank" rel="noopener" onclick="clawTrack('referral_click','predict_pics')">predict.pics</a>
+        <a href="https://predict.surf" target="_blank" rel="noopener" onclick="clawTrack('referral_click','predict_surf')">predict.surf</a>
+      </div>
+    </div>
+  </div>
 
   <!-- Featured Machines Carousel -->
   <section class="carousel-section">
@@ -3764,7 +4248,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     getCredits: getCredits,
     addCredits: addCredits,
     spendCredits: spendCredits,
-    claimFaucet: claimFaucet,
+    claimFaucet: function() {
+      if (window.ClawApp && window.ClawApp.claimFaucet) return window.ClawApp.claimFaucet();
+    },
     // Tier info
     getTiers: function () { return Object.assign({}, TIERS); },
     getCurrentTier: function () { return currentTier; },
@@ -4217,6 +4703,12 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     const c = getCredits();
     $$('[data-credits]').forEach(el => { el.textContent = c; });
     $$('.credit-count').forEach(el => { el.textContent = c; });
+    const navCredits = $('#nav-credits');
+    if (navCredits) navCredits.textContent = c;
+    const hudCredits = $('#hud-credit-count');
+    if (hudCredits) hudCredits.textContent = c;
+    const profileCredits = $('#profile-credits');
+    if (profileCredits) profileCredits.textContent = c;
   }
 
   // ── Faucet ───────────────────────────────────────────────────
@@ -4277,7 +4769,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       target.classList.add('active');
     }
 
-    $$('.nav-link, .tab-link, .bottom-tab').forEach(link => {
+    $$('.nav-links a[data-page], .tab-item[data-page]').forEach(link => {
       link.classList.toggle('active', link.dataset.page === page);
     });
 
@@ -4861,7 +5353,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   }
 
   function renderLiveFeed(entries) {
-    const container = $('#live-feed');
+    const container = $('#live-feed-list');
     if (!container) return;
 
     if (!entries || entries.length === 0) {
@@ -5223,7 +5715,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   let selectedMachineId = null;
 
   function renderMachines(filterTier = null) {
-    const container = $('#machines-grid');
+    const container = $('#machine-grid');
     if (!container) return;
 
     const machines = filterTier ? MACHINES.filter(m => m.tier === filterTier) : MACHINES;
@@ -5998,6 +6490,106 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     console.log('[claw.pizza] App initialized');
   }
 
+  // ── Daily Spin Wheel ─────────────────────────────────────────
+  const SPIN_SEGMENTS = [10, 25, 50, 75, 100, 150, 250, 500];
+  const SEGMENT_ANGLE = 360 / SPIN_SEGMENTS.length; // 45 deg each
+
+  function canSpin() {
+    const lastSpin = ls('claw_last_spin', 0);
+    return Date.now() - lastSpin >= 24 * 60 * 60 * 1000;
+  }
+
+  function showSpinWheel() {
+    const modal = document.getElementById('spin-modal');
+    const btn = document.getElementById('spin-btn');
+    const resultEl = document.getElementById('spin-result');
+    const cooldownEl = document.getElementById('spin-cooldown');
+    const wheel = document.getElementById('spin-wheel');
+
+    // Reset wheel visual (no transition)
+    wheel.style.transition = 'none';
+    wheel.style.transform = 'rotate(0deg)';
+
+    resultEl.textContent = '';
+    cooldownEl.textContent = '';
+
+    if (canSpin()) {
+      btn.disabled = false;
+      btn.textContent = 'SPIN!';
+    } else {
+      btn.disabled = true;
+      btn.textContent = 'WAIT';
+      const lastSpin = ls('claw_last_spin', 0);
+      const remaining = 24 * 60 * 60 * 1000 - (Date.now() - lastSpin);
+      const h = Math.floor(remaining / 3600000);
+      const m = Math.floor((remaining % 3600000) / 60000);
+      cooldownEl.textContent = `Next spin in ${h}h ${m}m`;
+    }
+
+    modal.classList.add('active');
+  }
+
+  function spinWheel() {
+    if (!canSpin()) {
+      showToast('You already spun today! Come back in 24 hours.', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('spin-btn');
+    const wheel = document.getElementById('spin-wheel');
+    const resultEl = document.getElementById('spin-result');
+    const cooldownEl = document.getElementById('spin-cooldown');
+
+    btn.disabled = true;
+    btn.textContent = '...';
+    resultEl.textContent = '';
+
+    // Pick random segment
+    const segmentIndex = Math.floor(Math.random() * SPIN_SEGMENTS.length);
+    const prize = SPIN_SEGMENTS[segmentIndex];
+
+    // Calculate target rotation:
+    // Wheel spins clockwise. The pointer is at top (0deg / 360deg).
+    // Segment 0 covers 0-45deg from top. We want the winning segment center under the pointer.
+    // Center of segment i is at i * 45 + 22.5 degrees from start.
+    // We rotate CW, so target = fullSpins + (360 - segmentCenter) to land that segment at top.
+    const fullSpins = 5 + Math.floor(Math.random() * 3); // 5-7 full rotations
+    const segmentCenter = segmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const targetDeg = fullSpins * 360 + (360 - segmentCenter);
+
+    // Reset first, then spin
+    wheel.style.transition = 'none';
+    wheel.style.transform = 'rotate(0deg)';
+
+    // Force reflow
+    void wheel.offsetHeight;
+
+    wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+    wheel.style.transform = `rotate(${targetDeg}deg)`;
+
+    // After spin completes
+    setTimeout(() => {
+      // Award credits
+      addCredits(prize);
+      lsSet('claw_last_spin', Date.now());
+
+      resultEl.textContent = `You won ${prize} credits!`;
+      cooldownEl.textContent = 'Come back tomorrow for another spin!';
+      btn.textContent = 'DONE';
+      showToast(`Daily Spin: +${prize} credits!`, 'success');
+
+      // Log to Firebase
+      const userId = getUserId();
+      fbPush('spins', {
+        userId: userId,
+        prize: prize,
+        timestamp: Date.now(),
+        date: new Date().toISOString()
+      });
+
+    }, 4200);
+  }
+
   // ── Public API ───────────────────────────────────────────────
 
   window.ClawApp = {
@@ -6017,6 +6609,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     promptPromoCode,
     showRewardedAd,
     submitWaitlist,
+    spinWheel,
+    canSpin,
+    showSpinWheel,
     renderLeaderboard,
     renderMachines,
 
@@ -6068,6 +6663,31 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 })();
 
 </script>
+<!-- Daily Spin Wheel Modal -->
+<div class="spin-modal-overlay" id="spin-modal">
+  <div class="spin-modal">
+    <button class="spin-close" onclick="document.getElementById('spin-modal').classList.remove('active')">&times;</button>
+    <h2>&#x1F3B0; Daily Spin</h2>
+    <p class="spin-subtitle">Spin once per day for free credits!</p>
+    <div class="spin-wheel-container">
+      <div class="spin-pointer"></div>
+      <div class="spin-wheel" id="spin-wheel">
+        <div class="spin-wheel-label" style="transform: rotate(-67.5deg) translateY(-50%);">10</div>
+        <div class="spin-wheel-label" style="transform: rotate(-22.5deg) translateY(-50%);">25</div>
+        <div class="spin-wheel-label" style="transform: rotate(22.5deg) translateY(-50%);">50</div>
+        <div class="spin-wheel-label" style="transform: rotate(67.5deg) translateY(-50%);">75</div>
+        <div class="spin-wheel-label" style="transform: rotate(112.5deg) translateY(-50%);">100</div>
+        <div class="spin-wheel-label" style="transform: rotate(157.5deg) translateY(-50%);">150</div>
+        <div class="spin-wheel-label" style="transform: rotate(202.5deg) translateY(-50%);">250</div>
+        <div class="spin-wheel-label" style="transform: rotate(247.5deg) translateY(-50%);">500</div>
+      </div>
+      <button class="spin-center-btn" id="spin-btn" onclick="ClawApp.spinWheel()">SPIN!</button>
+    </div>
+    <div class="spin-result" id="spin-result"></div>
+    <div class="spin-cooldown" id="spin-cooldown"></div>
+  </div>
+</div>
+
 <script>
 // Service worker registration (ClawApp.init() is auto-called in its IIFE)
 if ('serviceWorker' in navigator) {

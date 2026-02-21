@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAW.PIZZA - Social Media Launch Kit</title>
+<style>
+  :root {
+    --red: #E63946;
+    --yellow: #FFD166;
+    --cream: #FFF8F0;
+    --dark: #1a1a2e;
+    --darker: #0f0f1e;
+    --card-bg: #16213e;
+    --card-border: #2a2a4a;
+    --text: #e0e0e0;
+    --text-muted: #8888aa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--darker);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .hero {
+    background: linear-gradient(135deg, var(--red) 0%, #b71c1c 50%, var(--dark) 100%);
+    padding: 60px 20px;
+    text-align: center;
+    border-bottom: 4px solid var(--yellow);
+  }
+  .hero h1 {
+    font-size: 3em;
+    color: var(--yellow);
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+  }
+  .hero p {
+    font-size: 1.3em;
+    color: var(--cream);
+    opacity: 0.9;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+  .section-title {
+    font-size: 1.8em;
+    color: var(--yellow);
+    margin: 40px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--red);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title .num {
+    background: var(--red);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7em;
+    flex-shrink: 0;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--yellow); }
+  .card-label {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .card-text {
+    font-size: 1.05em;
+    white-space: pre-wrap;
+    color: var(--cream);
+    user-select: all;
+  }
+  .card-meta {
+    margin-top: 10px;
+    font-size: 0.8em;
+    color: var(--text-muted);
+  }
+  .copy-btn {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .copy-btn:hover { background: #c1303b; }
+  .copy-btn:active { transform: scale(0.95); }
+  .copy-btn.copied { background: #2ecc71; }
+  .tag {
+    display: inline-block;
+    background: rgba(230,57,70,0.2);
+    color: var(--red);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+  }
+  .tag.yellow { background: rgba(255,209,102,0.15); color: var(--yellow); }
+  .tag.green { background: rgba(46,204,113,0.15); color: #2ecc71; }
+  .svg-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .svg-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .svg-card svg { width: 100%; height: auto; border-radius: 8px; }
+  .svg-card p { margin-top: 10px; color: var(--text-muted); font-size: 0.85em; }
+  .hashtag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .hashtag {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .hashtag:hover { border-color: var(--yellow); background: rgba(255,209,102,0.1); }
+  .hashtag.primary { color: var(--yellow); }
+  .hashtag.secondary { color: var(--red); }
+  .hashtag.trending { color: #2ecc71; }
+  .sub-label {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--yellow);
+    margin: 16px 0 8px;
+  }
+  .toc {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+  }
+  .toc h3 { color: var(--yellow); margin-bottom: 12px; }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    display: block;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--card-border);
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--yellow); }
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2em; }
+    .section-title { font-size: 1.3em; }
+    .day-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>CLAW.PIZZA Social Launch Kit</h1>
+  <p>Copy-paste ready content for a viral launch</p>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>Contents</h3>
+  <a href="#thread">1. Launch Announcement Thread (10 Tweets)</a>
+  <a href="#daily">2. Daily Post Templates (30 Days)</a>
+  <a href="#svgs">3. SVG Social Cards (6 Cards)</a>
+  <a href="#bios">4. Bio / Link Templates</a>
+  <a href="#hashtags">5. Hashtag Strategy</a>
+  <a href="#dms">6. Influencer DM Templates</a>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 1: LAUNCH THREAD -->
+<!-- ============================================ -->
+<div class="section-title" id="thread"><span class="num">1</span> Launch Announcement Thread</div>
+
+<div class="card">
+  <div class="card-label">Tweet 1 / 10 &mdash; The Hook</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">I built an online claw machine where you win REAL prizes.
+
+It's free to play. No catch.
+
+Here's how it works &#x1F9F5;&#x1F447;</div>
+  <div class="card-meta">247 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 2 / 10 &mdash; The Concept</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">It's called claw.pizza &#x1F355;&#x1F3AE;
+
+A real claw machine. In your browser. On your phone.
+
+Drop the claw, grab a prize, get it shipped to you.
+
+No downloads. No signups. Just play. &#x1F680;</div>
+  <div class="card-meta">207 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 3 / 10 &mdash; How It Works</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">How it works:
+
+&#x1F3AF; Position the claw
+&#x1F447; Drop it
+&#x1F4E6; Win a real prize
+&#x1F69A; We ship it to you
+
+The physics are real. The tension is real. The prizes are VERY real.
+
+claw.pizza</div>
+  <div class="card-meta">201 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 4 / 10 &mdash; The Prizes</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">What can you win? &#x1F381;
+
+&#x1F355; Pizza gift cards
+&#x1F3AE; Gaming gear
+&#x1F4B0; Cash prizes
+&#x1F3A8; Rare collectibles
+&#x2B50; Limited drops every week
+
+New prizes added constantly. The good stuff goes FAST.</div>
+  <div class="card-meta">217 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 5 / 10 &mdash; Free Credits</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F4B8; "But how is it free?"
+
+You get FREE credits every day just for showing up.
+
+Share with friends? More credits.
+Win a game? More credits.
+Refer someone? WAY more credits.
+
+The grind is real (and free). &#x1F525;</div>
+  <div class="card-meta">228 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 6 / 10 &mdash; Provably Fair</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x2696;&#xFE0F; "Is it rigged?"
+
+Every single grab is provably fair.
+
+You can verify each result yourself. The claw physics aren't faked.
+
+No hidden algorithms stealing your wins. If you grab it, you WIN it. Period.</div>
+  <div class="card-meta">218 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 7 / 10 &mdash; Mobile First</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F4F1; Works perfectly on your phone.
+
+Sitting in class? Grab a prize.
+On the bus? Grab a prize.
+Can't sleep at 2am? Grab. A. Prize.
+
+No app store. No download. Just claw.pizza in your browser. That's it.</div>
+  <div class="card-meta">223 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 8 / 10 &mdash; Community</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">The best part? This community &#x1F91D;
+
+&#x1F3C6; Leaderboards to flex on
+&#x1F4F8; Share your wins for bonus credits
+&#x1F389; Weekly tournaments with huge prizes
+&#x1F4AC; Live chat while you play
+
+It's an arcade, not just a game.</div>
+  <div class="card-meta">237 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 9 / 10 &mdash; Promo Code CTA</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F6A8; LAUNCH SPECIAL &#x1F6A8;
+
+Use code FREEPIZZA at claw.pizza for bonus starting credits.
+
+This code won't last forever. First 1,000 players only.
+
+Go grab your slice: claw.pizza &#x1F355;&#x1F3AE;</div>
+  <div class="card-meta">204 chars</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Tweet 10 / 10 &mdash; Engagement CTA</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F525; GIVEAWAY &#x1F525;
+
+RT this thread + Follow @SpunkArt13 for a chance to win 1,000 bonus credits!
+
+Picking 10 winners in 48 hours.
+
+Tag a friend who'd love a free claw machine &#x1F447;&#x1F447;&#x1F447;</div>
+  <div class="card-meta">207 chars</div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: DAILY POSTS -->
+<!-- ============================================ -->
+<div class="section-title" id="daily"><span class="num">2</span> Daily Post Templates (30 Days)</div>
+
+<div class="sub-label">Winner Spotlights (Days 1, 6, 11, 16, 21, 26)</div>
+<div class="day-grid">
+
+<div class="card">
+  <span class="tag yellow">Day 1</span><span class="tag">Winner Spotlight</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F3C6; FIRST WINNER ALERT &#x1F3C6;
+
+Someone just grabbed their first prize on claw.pizza within MINUTES of launch!
+
+The claw machine is hot. Are you next?
+
+&#x1F355; claw.pizza
+#ClawPizza #GrabYourSlice #WinPrizes</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 6</span><span class="tag">Winner Spotlight</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+This player just won their 3rd prize this week on claw.pizza &#x1F631;
+
+Their strategy? "I just kept going for the corners."
+
+Want their luck? Start grabbing: claw.pizza &#x1F3AF;
+
+#ClawPizza #WinPrizes #FreeGames</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 11</span><span class="tag">Winner Spotlight</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F4E6; Another prize shipped!
+
+Our players have now won over [X] prizes in less than 2 weeks.
+
+Every single one shipped free. Every single grab provably fair.
+
+Your turn: claw.pizza &#x1F355;
+
+#ClawPizza #GrabYourSlice</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 16</span><span class="tag">Winner Spotlight</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+"I didn't think I'd actually win something from a free game"
+
+Neither did we at first. Then we shipped 100+ prizes &#x1F69A;
+
+Real claw. Real prizes. Really free.
+
+claw.pizza &#x1F3AE;
+
+#ClawPizza #FreePrizes</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 21</span><span class="tag">Winner Spotlight</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F451; Player of the week:
+
+Won 5 times. Referred 12 friends. Earned 50,000 credits.
+
+This is what happens when you take claw.pizza seriously &#x1F4AA;
+
+Think you can beat that? Let's see it.
+
+#ClawPizza #GrabYourSlice</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 26</span><span class="tag">Winner Spotlight</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+One month of claw.pizza. The stats are WILD:
+
+&#x1F3AF; [X] total grabs
+&#x1F381; [X] prizes won
+&#x1F69A; [X] prizes shipped
+&#x1F30D; Players from [X] countries
+
+And we're just getting started &#x1F680;
+
+#ClawPizza #WinPrizes</div>
+</div>
+
+</div>
+
+<div class="sub-label">Challenge Posts (Days 2, 7, 12, 17, 22, 27)</div>
+<div class="day-grid">
+
+<div class="card">
+  <span class="tag yellow">Day 2</span><span class="tag green">Challenge</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F3AF; CHALLENGE: Win on your first try.
+
+Screenshot it. Post it. Tag @SpunkArt13.
+
+Best screenshot wins 500 bonus credits &#x1F4B0;
+
+claw.pizza
+
+#ClawPizza #GrabYourSlice #Challenge</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 7</span><span class="tag green">Challenge</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F525; CHALLENGE: 3 wins in a row.
+
+Think you have the skill? Prove it.
+
+Post your streak screenshot. Tag @SpunkArt13.
+
+Top streaker gets 2,000 bonus credits &#x1F3C6;
+
+claw.pizza
+
+#ClawPizza #Challenge</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 12</span><span class="tag green">Challenge</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x23F1;&#xFE0F; SPEED CHALLENGE
+
+Fastest grab from click to win.
+
+Record your screen. Post the clip. Tag @SpunkArt13.
+
+Fastest claw in the west gets 1,000 credits &#x1F920;
+
+claw.pizza
+
+#ClawPizza #SpeedRun</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 17</span><span class="tag green">Challenge</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F91D; BUDDY CHALLENGE
+
+Get a friend to sign up using your referral link. Both of you play at the same time.
+
+First duo to BOTH win gets 3,000 credits EACH &#x1F389;
+
+claw.pizza
+
+#ClawPizza #BuddyChallenge</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 22</span><span class="tag green">Challenge</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F3B0; LUCKY NUMBER CHALLENGE
+
+What's your total win count on claw.pizza?
+
+Drop it below &#x1F447;
+
+Closest to our secret number wins 5,000 credits.
+
+Hint: it's between 1 and 50 &#x1F440;
+
+#ClawPizza #WinPrizes</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 27</span><span class="tag green">Challenge</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F3C6; TOURNAMENT ANNOUNCEMENT
+
+This weekend: The Great Grab-Off
+
+Most wins in 24 hours takes home a MASSIVE prize bundle.
+
+Free entry. Just play on claw.pizza Saturday 12pm-Sunday 12pm ET.
+
+#ClawPizza #Tournament</div>
+</div>
+
+</div>
+
+<div class="sub-label">Behind the Scenes (Days 3, 10, 18, 25)</div>
+<div class="day-grid">
+
+<div class="card">
+  <span class="tag yellow">Day 3</span><span class="tag">BTS</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Building claw.pizza from scratch was wild.
+
+The hardest part? Making the claw physics feel REAL in a browser.
+
+After 200+ iterations, every grab now feels like the arcade.
+
+Except this one's free &#x1F355;
+
+#ClawPizza #BuildInPublic</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 10</span><span class="tag">BTS</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Packing prizes at 2am because someone in Tokyo just won &#x1F30F;
+
+This is what building claw.pizza looks like.
+
+Real prizes. Real shipping. Real late nights.
+
+Worth every second &#x1F4AA;
+
+#ClawPizza #BuildInPublic #IndieHacker</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 18</span><span class="tag">BTS</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+New prize drop incoming &#x1F440;
+
+Just received a shipment of [prizes] for the claw.pizza machine.
+
+Loading them up tonight. They'll be live by morning.
+
+Set your alarms. The early bird gets the grab &#x1F414;
+
+#ClawPizza</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 25</span><span class="tag">BTS</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Things I've learned building claw.pizza:
+
+1. People LOVE free stuff
+2. Claw physics are harder than rocket science
+3. Shipping prizes worldwide is an adventure
+4. This community is incredible
+
+Thank you all &#x2764;&#xFE0F;
+
+#ClawPizza #IndieHacker</div>
+</div>
+
+</div>
+
+<div class="sub-label">Engagement Questions (Days 4, 8, 13, 19, 23, 28)</div>
+<div class="day-grid">
+
+<div class="card">
+  <span class="tag yellow">Day 4</span><span class="tag">Engagement</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+What's the #1 prize you want to see in the claw.pizza machine?
+
+Drop it below &#x1F447;
+
+Most liked answer gets added this week &#x1F381;
+
+#ClawPizza #GrabYourSlice</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 8</span><span class="tag">Engagement</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Be honest: how many tries before your first win on claw.pizza? &#x1F3AE;
+
+&#x1F525; 1 try (legend)
+&#x1F3AF; 2-5 tries (skilled)
+&#x1F4AA; 6-10 tries (persistent)
+&#x1F602; 10+ tries (the claw chooses)
+
+#ClawPizza #OnlineArcade</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 13</span><span class="tag">Engagement</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Hot take: Online claw machines are MORE fun than real ones.
+
+&#x2764;&#xFE0F; = Agree
+&#x1F504; = Disagree
+
+My reason: you don't need quarters and you play from bed &#x1F6CF;&#xFE0F;
+
+claw.pizza
+
+#ClawPizza #ClawMachine</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 19</span><span class="tag">Engagement</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+If you could put ANYTHING in the claw.pizza machine, what would it be?
+
+Wrong answers only &#x1F447;&#x1F602;
+
+#ClawPizza #GrabYourSlice</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 23</span><span class="tag">Engagement</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Are you a:
+
+A) Careful planner &#x1F9D0; (line up the perfect grab)
+B) Chaos agent &#x1F525; (spam the button and pray)
+
+Your claw.pizza strategy says a lot about you &#x1F3AE;
+
+#ClawPizza #Gaming</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 28</span><span class="tag">Engagement</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Rate claw.pizza 1-10 and tell me why &#x1F447;
+
+Every response gets 100 bonus credits.
+
+Yes, really. We read everything &#x1F440;
+
+#ClawPizza #FreePrizes #FreeGames</div>
+</div>
+
+</div>
+
+<div class="sub-label">Meme / Humor Posts (Days 5, 14, 20, 29)</div>
+<div class="day-grid">
+
+<div class="card">
+  <span class="tag yellow">Day 5</span><span class="tag">Meme</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+POV: You're explaining claw.pizza to your friends
+
+"So it's a claw machine..."
+"Online?"
+"Yeah"
+"And the prizes are real?"
+"Yeah"
+"And it's free?"
+"Yeah"
+"...what's the catch?"
+"There isn't one"
+"&#x1F928;"
+
+#ClawPizza</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 14</span><span class="tag">Meme</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Me at 3am: I should sleep
+
+The claw.pizza machine: &#x1F355;&#x1F3AE;
+
+Me at 5am: just one more grab
+
+The sun: &#x2600;&#xFE0F;
+
+Me: &#x1F440;
+
+#ClawPizza #GrabYourSlice #Gaming</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 20</span><span class="tag">Meme</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Things that grip better than my claw.pizza skills:
+
+- Wet soap
+- A toddler's handshake
+- Socks on hardwood
+
+I'll get better. Probably. Maybe.
+
+...one more try &#x1F3AF;
+
+#ClawPizza #ClawMachine</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 29</span><span class="tag">Meme</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+"I don't have a claw machine addiction"
+
+My screen time report: claw.pizza - 47 hours this week
+
+&#x1F355;&#x1F3AE;&#x1F480;
+
+At least it's free... right? RIGHT?
+
+#ClawPizza #OnlineArcade #Gaming</div>
+</div>
+
+</div>
+
+<div class="sub-label">Promo Code Drops (Days 9, 15, 24, 30)</div>
+<div class="day-grid">
+
+<div class="card">
+  <span class="tag yellow">Day 9</span><span class="tag green">Promo</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F6A8; SECRET CODE DROP &#x1F6A8;
+
+Use code GRABBER at claw.pizza for 500 bonus credits.
+
+Only works for the next 24 hours. Only first 200 users.
+
+GO GO GO &#x1F3C3;&#x200D;&#x2642;&#xFE0F;&#x1F4A8;
+
+#ClawPizza #FreeCredits #giveaway</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 15</span><span class="tag green">Promo</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+Halfway through launch month &#x1F389;
+
+To celebrate: code HALFGRAB at claw.pizza = 750 bonus credits
+
+RT this and I'll DM 5 people an EXTRA 1,000 credits &#x1F4B0;
+
+#ClawPizza #GrabYourSlice #giveaway #freestuff</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 24</span><span class="tag green">Promo</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+&#x1F355; PIZZA FRIDAY &#x1F355;
+
+Code: PIZZAFRIDAY at claw.pizza
+
+DOUBLE credits on every daily login this weekend.
+
+Tell your friends. Tell your enemies. Tell your mom.
+
+Everyone eats &#x1F354; (or grabs &#x1F3AF;)
+
+#ClawPizza #FreePrizes</div>
+</div>
+
+<div class="card">
+  <span class="tag yellow">Day 30</span><span class="tag green">Promo</span>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">
+
+30 DAYS OF CLAW.PIZZA &#x1F389;
+
+Final launch code: MONTHLYGRAB = 1,000 bonus credits
+
+Thank you to every single player who made this first month incredible.
+
+Month 2 is going to be even BIGGER &#x1F680;
+
+#ClawPizza #WinPrizes</div>
+</div>
+
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: SVG SOCIAL CARDS -->
+<!-- ============================================ -->
+<div class="section-title" id="svgs"><span class="num">3</span> SVG Social Cards</div>
+<p style="color:var(--text-muted);margin-bottom:20px;">Right-click any card and "Save Image As" to download. Each is 1200x628px, optimized for X/Twitter and Facebook sharing.</p>
+
+<div class="svg-grid">
+
+<!-- SVG 1: Launch Card -->
+<div class="svg-card">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+    <defs>
+      <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#E63946"/>
+        <stop offset="100%" style="stop-color:#1a1a2e"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="628" fill="url(#bg1)" rx="0"/>
+    <!-- Pizza slice decorations -->
+    <circle cx="100" cy="100" r="60" fill="#FFD166" opacity="0.15"/>
+    <circle cx="1100" cy="528" r="80" fill="#FFD166" opacity="0.1"/>
+    <circle cx="900" cy="80" r="40" fill="#FFD166" opacity="0.12"/>
+    <circle cx="200" cy="500" r="50" fill="#FFF8F0" opacity="0.06"/>
+    <!-- Claw icon -->
+    <g transform="translate(600,120)">
+      <rect x="-4" y="-80" width="8" height="60" fill="#FFF8F0" rx="4"/>
+      <rect x="-40" y="-20" width="80" height="12" fill="#FFF8F0" rx="6"/>
+      <path d="M-35,-8 L-45,40 Q-46,50 -38,48 L-30,10 Z" fill="#FFD166"/>
+      <path d="M-10,-8 L-14,40 Q-15,50 -7,48 L-3,10 Z" fill="#FFD166"/>
+      <path d="M35,-8 L45,40 Q46,50 38,48 L30,10 Z" fill="#FFD166"/>
+      <path d="M10,-8 L14,40 Q15,50 7,48 L3,10 Z" fill="#FFD166"/>
+    </g>
+    <!-- Main text -->
+    <text x="600" y="280" font-family="Arial Black, Arial, sans-serif" font-size="90" font-weight="900" fill="#FFF8F0" text-anchor="middle" letter-spacing="-2">CLAW.PIZZA</text>
+    <text x="600" y="350" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="#FFD166" text-anchor="middle">Grab Your Slice</text>
+    <!-- Subtitle -->
+    <text x="600" y="420" font-family="Arial, sans-serif" font-size="26" fill="#FFF8F0" text-anchor="middle" opacity="0.9">Real Prizes. Free to Play. No Catch.</text>
+    <!-- Bottom bar -->
+    <rect x="0" y="560" width="1200" height="68" fill="rgba(0,0,0,0.4)"/>
+    <text x="40" y="602" font-family="Arial, sans-serif" font-size="24" fill="#FFD166" font-weight="700">claw.pizza</text>
+    <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
+  </svg>
+  <p>Launch Card - "Grab Your Slice" (1200x628)</p>
+</div>
+
+<!-- SVG 2: Free Credits Promo -->
+<div class="svg-card">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+    <defs>
+      <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1a1a2e"/>
+        <stop offset="50%" style="stop-color:#16213e"/>
+        <stop offset="100%" style="stop-color:#0f0f1e"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="628" fill="url(#bg2)"/>
+    <!-- Burst lines -->
+    <g opacity="0.15" stroke="#FFD166" stroke-width="2">
+      <line x1="600" y1="314" x2="0" y2="0"/>
+      <line x1="600" y1="314" x2="1200" y2="0"/>
+      <line x1="600" y1="314" x2="0" y2="628"/>
+      <line x1="600" y1="314" x2="1200" y2="628"/>
+      <line x1="600" y1="314" x2="600" y2="0"/>
+      <line x1="600" y1="314" x2="600" y2="628"/>
+      <line x1="600" y1="314" x2="0" y2="314"/>
+      <line x1="600" y1="314" x2="1200" y2="314"/>
+    </g>
+    <!-- Badge -->
+    <circle cx="600" cy="160" r="80" fill="#E63946"/>
+    <text x="600" y="150" font-family="Arial Black, Arial, sans-serif" font-size="30" fill="#FFF8F0" text-anchor="middle" font-weight="900">FREE</text>
+    <text x="600" y="185" font-family="Arial, sans-serif" font-size="22" fill="#FFD166" text-anchor="middle" font-weight="700">CREDITS</text>
+    <!-- Promo code box -->
+    <rect x="300" y="270" width="600" height="100" fill="rgba(230,57,70,0.2)" stroke="#E63946" stroke-width="3" rx="16"/>
+    <text x="600" y="310" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="middle" opacity="0.8">USE CODE</text>
+    <text x="600" y="355" font-family="'Courier New', monospace" font-size="52" fill="#FFD166" text-anchor="middle" font-weight="900" letter-spacing="8">FREEPIZZA</text>
+    <!-- Bottom text -->
+    <text x="600" y="440" font-family="Arial, sans-serif" font-size="28" fill="#FFF8F0" text-anchor="middle">Get bonus credits when you sign up!</text>
+    <text x="600" y="480" font-family="Arial, sans-serif" font-size="22" fill="#E63946" text-anchor="middle" font-weight="700">Limited to first 1,000 players</text>
+    <!-- Bottom bar -->
+    <rect x="0" y="560" width="1200" height="68" fill="rgba(0,0,0,0.4)"/>
+    <text x="40" y="602" font-family="Arial, sans-serif" font-size="24" fill="#FFD166" font-weight="700">claw.pizza</text>
+    <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
+  </svg>
+  <p>Free Credits Promo Card with code FREEPIZZA (1200x628)</p>
+</div>
+
+<!-- SVG 3: I Won! -->
+<div class="svg-card">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+    <defs>
+      <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FFD166"/>
+        <stop offset="100%" style="stop-color:#E63946"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="628" fill="url(#bg3)"/>
+    <!-- Confetti dots -->
+    <circle cx="120" cy="80" r="12" fill="#FFF8F0" opacity="0.6"/>
+    <circle cx="300" cy="150" r="8" fill="#1a1a2e" opacity="0.3"/>
+    <circle cx="900" cy="100" r="15" fill="#FFF8F0" opacity="0.5"/>
+    <circle cx="1050" cy="200" r="10" fill="#1a1a2e" opacity="0.3"/>
+    <circle cx="150" cy="400" r="10" fill="#FFF8F0" opacity="0.4"/>
+    <circle cx="1080" cy="450" r="14" fill="#1a1a2e" opacity="0.2"/>
+    <rect x="250" y="60" width="20" height="8" fill="#FFF8F0" opacity="0.5" transform="rotate(30 260 64)"/>
+    <rect x="800" y="120" width="24" height="8" fill="#1a1a2e" opacity="0.3" transform="rotate(-20 812 124)"/>
+    <rect x="400" y="500" width="18" height="8" fill="#FFF8F0" opacity="0.4" transform="rotate(45 409 504)"/>
+    <rect x="1000" cy="380" width="20" height="8" fill="#FFF8F0" opacity="0.4" transform="rotate(-35 1010 384)"/>
+    <!-- Trophy -->
+    <g transform="translate(600,140)">
+      <rect x="-25" y="30" width="50" height="12" fill="#1a1a2e" opacity="0.4" rx="3"/>
+      <rect x="-15" y="20" width="30" height="16" fill="#1a1a2e" opacity="0.3" rx="2"/>
+      <ellipse cx="0" cy="-10" rx="40" ry="35" fill="#FFF8F0"/>
+      <ellipse cx="0" cy="-10" rx="32" ry="28" fill="url(#bg3)"/>
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="28" fill="#FFF8F0" text-anchor="middle" font-weight="900">&#9733;</text>
+    </g>
+    <!-- Main text -->
+    <text x="600" y="290" font-family="Arial Black, Arial, sans-serif" font-size="110" fill="#FFF8F0" text-anchor="middle" font-weight="900" stroke="#1a1a2e" stroke-width="3">I WON!</text>
+    <!-- Prize placeholder -->
+    <rect x="350" y="330" width="500" height="80" fill="rgba(0,0,0,0.2)" rx="12"/>
+    <text x="600" y="382" font-family="Arial, sans-serif" font-size="32" fill="#FFF8F0" text-anchor="middle" font-weight="700">[YOUR PRIZE HERE]</text>
+    <!-- Subtitle -->
+    <text x="600" y="470" font-family="Arial, sans-serif" font-size="28" fill="#1a1a2e" text-anchor="middle" font-weight="700">on claw.pizza - the free online claw machine!</text>
+    <!-- Bottom bar -->
+    <rect x="0" y="560" width="1200" height="68" fill="rgba(0,0,0,0.35)"/>
+    <text x="40" y="602" font-family="Arial, sans-serif" font-size="24" fill="#FFD166" font-weight="700">claw.pizza</text>
+    <text x="600" y="602" font-family="Arial, sans-serif" font-size="20" fill="#FFF8F0" text-anchor="middle" opacity="0.8">Play free. Win real prizes.</text>
+    <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
+  </svg>
+  <p>"I WON!" Winner Celebration Template (1200x628)</p>
+</div>
+
+<!-- SVG 4: Challenge Card -->
+<div class="svg-card">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+    <defs>
+      <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#0f0f1e"/>
+        <stop offset="100%" style="stop-color:#E63946"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="628" fill="url(#bg4)"/>
+    <!-- Grid pattern -->
+    <g opacity="0.05" stroke="#FFD166" stroke-width="1">
+      <line x1="0" y1="100" x2="1200" y2="100"/><line x1="0" y1="200" x2="1200" y2="200"/>
+      <line x1="0" y1="300" x2="1200" y2="300"/><line x1="0" y1="400" x2="1200" y2="400"/>
+      <line x1="0" y1="500" x2="1200" y2="500"/>
+      <line x1="200" y1="0" x2="200" y2="628"/><line x1="400" y1="0" x2="400" y2="628"/>
+      <line x1="600" y1="0" x2="600" y2="628"/><line x1="800" y1="0" x2="800" y2="628"/>
+      <line x1="1000" y1="0" x2="1000" y2="628"/>
+    </g>
+    <!-- Fire emoji area -->
+    <text x="600" y="130" font-size="80" text-anchor="middle">&#x1F525;</text>
+    <!-- Challenge label -->
+    <rect x="420" y="155" width="360" height="50" fill="#E63946" rx="25"/>
+    <text x="600" y="188" font-family="Arial Black, Arial, sans-serif" font-size="26" fill="#FFF8F0" text-anchor="middle" font-weight="900" letter-spacing="4">CHALLENGE</text>
+    <!-- Main text -->
+    <text x="600" y="290" font-family="Arial Black, Arial, sans-serif" font-size="64" fill="#FFD166" text-anchor="middle" font-weight="900">3 WINS IN A ROW</text>
+    <!-- Description -->
+    <text x="600" y="360" font-family="Arial, sans-serif" font-size="28" fill="#FFF8F0" text-anchor="middle" opacity="0.9">Can you pull off the ultimate streak?</text>
+    <!-- Reward box -->
+    <rect x="350" y="400" width="500" height="70" fill="rgba(255,209,102,0.15)" stroke="#FFD166" stroke-width="2" rx="12"/>
+    <text x="600" y="446" font-family="Arial, sans-serif" font-size="30" fill="#FFD166" text-anchor="middle" font-weight="700">REWARD: 2,000 Bonus Credits</text>
+    <!-- Instructions -->
+    <text x="600" y="520" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="middle" opacity="0.7">Screenshot your streak &amp; tag @SpunkArt13</text>
+    <!-- Bottom bar -->
+    <rect x="0" y="560" width="1200" height="68" fill="rgba(0,0,0,0.5)"/>
+    <text x="40" y="602" font-family="Arial, sans-serif" font-size="24" fill="#FFD166" font-weight="700">claw.pizza</text>
+    <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
+  </svg>
+  <p>"3 Wins in a Row" Challenge Card (1200x628)</p>
+</div>
+
+<!-- SVG 5: Social Proof -->
+<div class="svg-card">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+    <defs>
+      <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#16213e"/>
+        <stop offset="100%" style="stop-color:#1a1a2e"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="628" fill="url(#bg5)"/>
+    <!-- Decorative circles representing users -->
+    <g opacity="0.15">
+      <circle cx="80" cy="314" r="200" fill="#E63946"/>
+      <circle cx="1120" cy="314" r="200" fill="#FFD166"/>
+    </g>
+    <!-- User icons row -->
+    <g transform="translate(250, 80)">
+      <circle cx="0" cy="30" r="28" fill="#E63946"/><text x="0" y="38" font-size="22" fill="#FFF8F0" text-anchor="middle">&#x1F464;</text>
+      <circle cx="80" cy="30" r="28" fill="#FFD166"/><text x="80" y="38" font-size="22" fill="#1a1a2e" text-anchor="middle">&#x1F464;</text>
+      <circle cx="160" cy="30" r="28" fill="#E63946"/><text x="160" y="38" font-size="22" fill="#FFF8F0" text-anchor="middle">&#x1F464;</text>
+      <circle cx="240" cy="30" r="28" fill="#FFD166"/><text x="240" y="38" font-size="22" fill="#1a1a2e" text-anchor="middle">&#x1F464;</text>
+      <circle cx="320" cy="30" r="28" fill="#E63946"/><text x="320" y="38" font-size="22" fill="#FFF8F0" text-anchor="middle">&#x1F464;</text>
+      <circle cx="400" cy="30" r="28" fill="#FFD166"/><text x="400" y="38" font-size="22" fill="#1a1a2e" text-anchor="middle">&#x1F464;</text>
+      <circle cx="480" cy="30" r="28" fill="#E63946"/><text x="480" y="38" font-size="22" fill="#FFF8F0" text-anchor="middle">&#x1F464;</text>
+      <circle cx="560" cy="30" r="28" fill="#FFD166"/><text x="560" y="38" font-size="22" fill="#1a1a2e" text-anchor="middle">&#x1F464;</text>
+      <circle cx="640" cy="30" r="28" fill="#E63946"/><text x="640" y="38" font-size="22" fill="#FFF8F0" text-anchor="middle">&#x1F464;</text>
+      <circle cx="700" cy="30" r="28" fill="rgba(255,255,255,0.2)"/><text x="700" y="40" font-size="16" fill="#FFF8F0" text-anchor="middle">+</text>
+    </g>
+    <!-- Main number -->
+    <text x="600" y="260" font-family="Arial Black, Arial, sans-serif" font-size="120" fill="#FFD166" text-anchor="middle" font-weight="900">1,000+</text>
+    <text x="600" y="320" font-family="Arial, sans-serif" font-size="42" fill="#FFF8F0" text-anchor="middle" font-weight="700">Players and Counting</text>
+    <!-- Stats row -->
+    <g transform="translate(0, 370)">
+      <rect x="100" y="0" width="280" height="90" fill="rgba(230,57,70,0.15)" stroke="#E63946" stroke-width="1" rx="12"/>
+      <text x="240" y="38" font-family="Arial Black, Arial, sans-serif" font-size="32" fill="#E63946" text-anchor="middle">5,000+</text>
+      <text x="240" y="68" font-family="Arial, sans-serif" font-size="18" fill="#FFF8F0" text-anchor="middle" opacity="0.7">Total Grabs</text>
+
+      <rect x="460" y="0" width="280" height="90" fill="rgba(255,209,102,0.1)" stroke="#FFD166" stroke-width="1" rx="12"/>
+      <text x="600" y="38" font-family="Arial Black, Arial, sans-serif" font-size="32" fill="#FFD166" text-anchor="middle">500+</text>
+      <text x="600" y="68" font-family="Arial, sans-serif" font-size="18" fill="#FFF8F0" text-anchor="middle" opacity="0.7">Prizes Won</text>
+
+      <rect x="820" y="0" width="280" height="90" fill="rgba(230,57,70,0.15)" stroke="#E63946" stroke-width="1" rx="12"/>
+      <text x="960" y="38" font-family="Arial Black, Arial, sans-serif" font-size="32" fill="#E63946" text-anchor="middle">100%</text>
+      <text x="960" y="68" font-family="Arial, sans-serif" font-size="18" fill="#FFF8F0" text-anchor="middle" opacity="0.7">Provably Fair</text>
+    </g>
+    <!-- Bottom -->
+    <text x="600" y="530" font-family="Arial, sans-serif" font-size="26" fill="#FFF8F0" text-anchor="middle" opacity="0.8">Join the grab. Play free today.</text>
+    <rect x="0" y="560" width="1200" height="68" fill="rgba(0,0,0,0.4)"/>
+    <text x="40" y="602" font-family="Arial, sans-serif" font-size="24" fill="#FFD166" font-weight="700">claw.pizza</text>
+    <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
+  </svg>
+  <p>"Join 1,000+ Players" Social Proof Card (1200x628)</p>
+</div>
+
+<!-- SVG 6: Referral Card -->
+<div class="svg-card">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+    <defs>
+      <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#E63946"/>
+        <stop offset="50%" style="stop-color:#c1303b"/>
+        <stop offset="100%" style="stop-color:#1a1a2e"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="628" fill="url(#bg6)"/>
+    <!-- Connection lines -->
+    <g stroke="#FFD166" stroke-width="2" opacity="0.2">
+      <line x1="300" y1="120" x2="600" y2="120"/>
+      <line x1="600" y1="120" x2="900" y2="120"/>
+      <line x1="600" y1="120" x2="450" y2="200"/>
+      <line x1="600" y1="120" x2="750" y2="200"/>
+      <circle cx="300" cy="120" r="25" fill="none" stroke-width="2"/>
+      <circle cx="600" cy="120" r="30" fill="none" stroke-width="3"/>
+      <circle cx="900" cy="120" r="25" fill="none" stroke-width="2"/>
+      <circle cx="450" cy="200" r="20" fill="none" stroke-width="2"/>
+      <circle cx="750" cy="200" r="20" fill="none" stroke-width="2"/>
+    </g>
+    <!-- Main text -->
+    <text x="600" y="310" font-family="Arial Black, Arial, sans-serif" font-size="72" fill="#FFF8F0" text-anchor="middle" font-weight="900">REFER FRIENDS</text>
+    <text x="600" y="380" font-family="Arial Black, Arial, sans-serif" font-size="56" fill="#FFD166" text-anchor="middle" font-weight="900">WIN MORE</text>
+    <!-- How it works -->
+    <g transform="translate(0, 410)">
+      <rect x="80" y="0" width="320" height="70" fill="rgba(0,0,0,0.25)" rx="10"/>
+      <text x="100" y="28" font-family="Arial, sans-serif" font-size="16" fill="#FFD166" font-weight="700">STEP 1</text>
+      <text x="100" y="52" font-family="Arial, sans-serif" font-size="20" fill="#FFF8F0">Share your referral link</text>
+
+      <rect x="440" y="0" width="320" height="70" fill="rgba(0,0,0,0.25)" rx="10"/>
+      <text x="460" y="28" font-family="Arial, sans-serif" font-size="16" fill="#FFD166" font-weight="700">STEP 2</text>
+      <text x="460" y="52" font-family="Arial, sans-serif" font-size="20" fill="#FFF8F0">Friend signs up &amp; plays</text>
+
+      <rect x="800" y="0" width="320" height="70" fill="rgba(0,0,0,0.25)" rx="10"/>
+      <text x="820" y="28" font-family="Arial, sans-serif" font-size="16" fill="#FFD166" font-weight="700">STEP 3</text>
+      <text x="820" y="52" font-family="Arial, sans-serif" font-size="20" fill="#FFF8F0">You BOTH get 500 credits</text>
+    </g>
+    <!-- Arrows -->
+    <text x="415" y="450" font-size="28" fill="#FFD166" text-anchor="middle" opacity="0.6">&#x27A1;&#xFE0F;</text>
+    <text x="775" y="450" font-size="28" fill="#FFD166" text-anchor="middle" opacity="0.6">&#x27A1;&#xFE0F;</text>
+    <!-- Bottom bar -->
+    <rect x="0" y="560" width="1200" height="68" fill="rgba(0,0,0,0.45)"/>
+    <text x="40" y="602" font-family="Arial, sans-serif" font-size="24" fill="#FFD166" font-weight="700">claw.pizza</text>
+    <text x="600" y="602" font-family="Arial, sans-serif" font-size="20" fill="#FFF8F0" text-anchor="middle" opacity="0.8">No limit on referrals. More friends = more credits.</text>
+    <text x="1160" y="602" font-family="Arial, sans-serif" font-size="22" fill="#FFF8F0" text-anchor="end" opacity="0.7">@SpunkArt13</text>
+  </svg>
+  <p>"Refer Friends, Win More" Referral Promo Card (1200x628)</p>
+</div>
+
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: BIO/LINK TEMPLATES -->
+<!-- ============================================ -->
+<div class="section-title" id="bios"><span class="num">4</span> Bio / Link Templates</div>
+
+<div class="card">
+  <div class="card-label">X / Twitter Bio</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F355;&#x1F3AE; claw.pizza - The free online claw machine with REAL prizes
+Grab. Win. Get it shipped. No catch.
+&#x1F381; Free daily credits | &#x2696;&#xFE0F; Provably fair | &#x1F30D; Ships worldwide
+&#x1F447; Play now</div>
+</div>
+
+<div class="card">
+  <div class="card-label">X / Twitter Bio (Shorter Alternative)</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F355; Free online claw machine. Real prizes. Shipped to you.
+No catch. No fees. Just grab.
+&#x1F3AE; claw.pizza</div>
+</div>
+
+<div class="card">
+  <div class="card-label">LinkTree-Style Link List</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">&#x1F355; CLAW.PIZZA LINKS
+
+&#x1F3AE; Play Now - claw.pizza
+&#x1F4B0; Free Credits (code: FREEPIZZA) - claw.pizza/promo
+&#x1F3C6; Leaderboard - claw.pizza/leaderboard
+&#x1F4F8; Winner Gallery - claw.pizza/winners
+&#x1F91D; Refer a Friend - claw.pizza/refer
+&#x1F4AC; Discord Community - discord.gg/clawpizza
+&#x1F426; Follow on X - x.com/SpunkArt13
+&#x2753; FAQ - claw.pizza/faq</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Discord Server Description</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">Welcome to the CLAW.PIZZA Community! &#x1F355;&#x1F3AE;
+
+The official Discord for claw.pizza - the free online claw machine where you win REAL prizes shipped to your door.
+
+What you'll find here:
+&#x1F3AF; Live win announcements
+&#x1F3C6; Tournament updates &amp; signups
+&#x1F4B0; Exclusive promo codes (Discord-only!)
+&#x1F4AC; Strategy talk &amp; claw tips
+&#x1F381; Giveaways &amp; bonus drops
+&#x1F91D; A community of grabbers just like you
+
+Rules:
+1. Be kind. We're all here to grab prizes and have fun.
+2. No spam or self-promotion.
+3. Share your wins! We love celebrating together.
+4. Report bugs in #bug-reports - we fix fast.
+
+Play free at claw.pizza | Follow @SpunkArt13 on X</div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: HASHTAG STRATEGY -->
+<!-- ============================================ -->
+<div class="section-title" id="hashtags"><span class="num">5</span> Hashtag Strategy</div>
+
+<div class="card">
+  <div class="card-label">Primary Hashtags (Use on Every Post)</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="hashtag-list">
+    <span class="hashtag primary">#ClawPizza</span>
+    <span class="hashtag primary">#GrabYourSlice</span>
+    <span class="hashtag primary">#WinPrizes</span>
+  </div>
+  <div class="card-text">#ClawPizza #GrabYourSlice #WinPrizes</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Secondary Hashtags (Rotate 2-3 Per Post)</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="hashtag-list">
+    <span class="hashtag secondary">#FreeGames</span>
+    <span class="hashtag secondary">#OnlineArcade</span>
+    <span class="hashtag secondary">#ClawMachine</span>
+    <span class="hashtag secondary">#FreePrizes</span>
+    <span class="hashtag secondary">#IndieGame</span>
+    <span class="hashtag secondary">#BuildInPublic</span>
+  </div>
+  <div class="card-text">#FreeGames #OnlineArcade #ClawMachine #FreePrizes #IndieGame #BuildInPublic</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Trending / Piggyback Hashtags (Use Strategically)</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="hashtag-list">
+    <span class="hashtag trending">#giveaway</span>
+    <span class="hashtag trending">#freestuff</span>
+    <span class="hashtag trending">#gaming</span>
+    <span class="hashtag trending">#win</span>
+    <span class="hashtag trending">#contest</span>
+    <span class="hashtag trending">#free</span>
+    <span class="hashtag trending">#prizes</span>
+  </div>
+  <div class="card-text">#giveaway #freestuff #gaming #win #contest #free #prizes</div>
+</div>
+
+<div class="card">
+  <div class="card-label">Full Copy-Paste Hashtag Block</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">#ClawPizza #GrabYourSlice #WinPrizes #FreeGames #OnlineArcade #ClawMachine #FreePrizes #giveaway #freestuff #gaming</div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: INFLUENCER DM TEMPLATES -->
+<!-- ============================================ -->
+<div class="section-title" id="dms"><span class="num">6</span> Influencer DM Templates</div>
+
+<div class="card">
+  <div class="card-label">DM 1 &mdash; Gaming Influencers</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">Hey [Name]! Big fan of your content.
+
+I built something I think your audience would genuinely love - claw.pizza. It's a free online claw machine where players win real physical prizes shipped to their door.
+
+No ads, no paywalls, completely free to play. The claw physics are real and every grab is provably fair.
+
+I'd love to set you up with a creator code that gives your viewers bonus credits + you earn credits for every referral. Zero cost to you or them.
+
+Want me to send details? Happy to give you a demo too.
+
+claw.pizza</div>
+</div>
+
+<div class="card">
+  <div class="card-label">DM 2 &mdash; Arcade / Claw Machine Content Creators</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">Hey [Name]! Love your claw machine content.
+
+Since you're already in the claw world, wanted to share something cool - I built claw.pizza, an online claw machine with real physics and real prizes.
+
+Think of it as the claw machine experience but from your browser, and completely free. Players grab real prizes that get shipped to them.
+
+Given your audience already loves claw machines, this could be a fun collab. I can set up a custom promo code for your followers with extra starting credits.
+
+Interested? Would love to chat more.
+
+claw.pizza</div>
+</div>
+
+<div class="card">
+  <div class="card-label">DM 3 &mdash; Prize / Giveaway Accounts</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">Hey [Name]! Your giveaways are always fire.
+
+Quick pitch: I run claw.pizza - a free online claw machine where people win real prizes. Think of it as a giveaway that runs 24/7 and people actually play for their prizes (way more engaging than RT-to-win).
+
+I'm looking for partners to help spread the word during our launch. I can offer:
+- Custom promo codes for your audience
+- Exclusive prizes only your followers can win
+- Credit rewards for every signup through you
+
+Would this be something you'd want to collab on?
+
+claw.pizza</div>
+</div>
+
+<div class="card">
+  <div class="card-label">DM 4 &mdash; Crypto / Web3 Accounts</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">Hey [Name]! Respect what you're building in the space.
+
+I launched claw.pizza - a free online claw machine with real prizes. What makes it different: every single grab is provably fair and verifiable. No hidden algorithms, no rigged odds.
+
+We're exploring adding crypto-native prizes (NFTs, token rewards) and I think the web3 community would appreciate the transparency angle.
+
+Would love to get your take on it and potentially collab. I can set up exclusive access or custom codes for your community.
+
+Check it out: claw.pizza</div>
+</div>
+
+<div class="card">
+  <div class="card-label">DM 5 &mdash; Food / Pizza Accounts</div>
+  <button class="copy-btn" onclick="copyCard(this)">Copy</button>
+  <div class="card-text">Hey [Name]! Your food content always makes me hungry.
+
+This might be the most random DM you get today but hear me out: I built claw.pizza - yes, a pizza-themed online claw machine where you win real prizes (including pizza gift cards!).
+
+It's completely free to play and we're launching now. I think your audience would get a kick out of it - who doesn't love free pizza?
+
+I'd love to set you up with a promo code to share. Your followers get bonus credits, and we can throw in some extra pizza gift cards as prizes when you post about it.
+
+Sound fun? claw.pizza</div>
+</div>
+
+</div>
+
+<div style="text-align:center; padding:60px 20px; color:var(--text-muted); border-top:1px solid var(--card-border); margin-top:40px;">
+  <p style="font-size:1.1em; color:var(--yellow); margin-bottom:8px;">CLAW.PIZZA Social Launch Kit</p>
+  <p>10 tweets + 30 daily posts + 6 SVG cards + bios + hashtags + 5 DM templates</p>
+  <p style="margin-top:12px;">Built for viral launch. Copy, paste, post, win.</p>
+</div>
+
+</div>
+
+<script>
+function copyCard(btn) {
+  const card = btn.closest('.card');
+  const textEl = card.querySelector('.card-text');
+  const text = textEl.innerText || textEl.textContent;
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // Fallback
+    const range = document.createRange();
+    range.selectNodeContents(textEl);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>

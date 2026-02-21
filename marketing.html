@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAW.PIZZA - Marketing Command Center</title>
+<style>
+/* ============ RESET & BASE ============ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0a0f;
+  color: #f0f0f0;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+::selection { background: #E63946; color: #fff; }
+
+/* ============ VARIABLES ============ */
+:root {
+  --red: #E63946;
+  --yellow: #FFD166;
+  --brown: #8B5E34;
+  --cream: #FFF8F0;
+  --bg: #0a0a0f;
+  --surface: #141420;
+  --surface2: #1c1c30;
+  --glass: rgba(20,20,32,0.85);
+  --glass-border: rgba(255,255,255,0.08);
+  --glow-red: 0 0 30px rgba(230,57,70,0.3);
+  --glow-yellow: 0 0 30px rgba(255,209,102,0.3);
+  --radius: 16px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 4px; }
+
+/* ============ LAYOUT ============ */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* ============ NAV ============ */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,15,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.75rem 0;
+}
+.topnav .container { display: flex; align-items: center; gap: 1rem; overflow-x: auto; }
+.topnav a {
+  color: #999; text-decoration: none; font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+  padding: 0.4rem 0.8rem; border-radius: 20px; transition: all 0.3s;
+}
+.topnav a:hover { color: var(--yellow); background: rgba(255,209,102,0.1); }
+.topnav .brand { color: var(--red); font-size: 0.9rem; margin-right: auto; }
+
+/* ============ HERO ============ */
+.hero {
+  padding: 5rem 0 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(230,57,70,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 30% 100%, rgba(255,209,102,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-logo {
+  font-size: 4.5rem; font-weight: 900; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--red), #FF6B35, var(--yellow));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  position: relative;
+  text-shadow: none;
+}
+.hero-tagline {
+  font-size: 1.5rem; color: var(--yellow); font-weight: 300;
+  margin-bottom: 1.5rem; opacity: 0.9;
+}
+.hero-subtitle {
+  font-size: 1rem; color: #888; max-width: 600px; margin: 0 auto 2rem;
+}
+.hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, var(--red), #FF6B35);
+  color: white; font-weight: 700; font-size: 0.85rem;
+  border-radius: 30px; text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: var(--glow-red);
+}
+.hero-url {
+  display: block; margin-top: 1.5rem;
+  color: var(--yellow); font-size: 1.1rem; text-decoration: none;
+  font-weight: 600;
+}
+.hero-url:hover { text-decoration: underline; }
+
+/* ============ SECTION ============ */
+.section { padding: 4rem 0 2rem; }
+.section-header {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 2rem; padding-bottom: 1rem;
+  border-bottom: 2px solid var(--glass-border);
+}
+.section-number {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), #FF6B35);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1.1rem; flex-shrink: 0;
+}
+.section-title { font-size: 1.8rem; font-weight: 800; }
+.section-title span { color: var(--yellow); }
+
+/* ============ CARDS ============ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.card-grid { display: grid; gap: 1.5rem; }
+.card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.card-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.card-title {
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.card-icon { font-size: 1.4rem; }
+
+/* ============ BRAND COLORS ============ */
+.color-swatches { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+.swatch {
+  width: 100px; height: 80px; border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.swatch:hover { transform: scale(1.1); }
+.swatch span { margin-top: 4px; opacity: 0.8; }
+
+/* ============ FLYWHEEL ============ */
+.flywheel-container {
+  display: flex; justify-content: center; align-items: center;
+  padding: 3rem 0;
+  position: relative;
+}
+.flywheel {
+  position: relative;
+  width: 420px; height: 420px;
+}
+.flywheel-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px; height: 120px;
+  background: linear-gradient(135deg, var(--red), var(--yellow));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; font-weight: 900;
+  box-shadow: 0 0 40px rgba(230,57,70,0.4);
+  animation: pulse 3s ease-in-out infinite;
+  z-index: 2;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 40px rgba(230,57,70,0.4); }
+  50% { box-shadow: 0 0 60px rgba(230,57,70,0.6), 0 0 80px rgba(255,209,102,0.3); }
+}
+.flywheel-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 380px; height: 380px;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(255,209,102,0.2);
+  border-radius: 50%;
+  animation: spin 60s linear infinite;
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.flywheel-step {
+  position: absolute;
+  width: 110px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: transform 0.3s;
+}
+.flywheel-step:hover { transform: scale(1.1); }
+.flywheel-step .step-icon {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin: 0 auto 0.4rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.flywheel-step .step-label { color: #ccc; line-height: 1.3; }
+.flywheel-step .step-metric { color: var(--yellow); font-size: 0.65rem; margin-top: 0.2rem; }
+
+/* positions around circle */
+.fw-1 { top: -10px; left: 50%; transform: translateX(-50%); }
+.fw-2 { top: 40px; right: -20px; }
+.fw-3 { top: 50%; right: -40px; transform: translateY(-50%); }
+.fw-4 { bottom: 40px; right: -20px; }
+.fw-5 { bottom: -10px; left: 50%; transform: translateX(-50%); }
+.fw-6 { bottom: 40px; left: -20px; }
+.fw-7 { top: 50%; left: -40px; transform: translateY(-50%); }
+.fw-8 { top: 40px; left: -20px; }
+
+.flywheel-arrows {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.flywheel-arrows svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 340px; height: 340px;
+  transform: translate(-50%, -50%);
+  animation: spin 60s linear infinite;
+}
+
+/* ============ TARGETS ============ */
+.targets-row { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+.target-card {
+  background: var(--surface2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  min-width: 160px;
+}
+.target-num {
+  font-size: 2.5rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--yellow), #FF6B35);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.target-label { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+.target-time { font-size: 0.7rem; color: var(--red); font-weight: 600; margin-top: 0.3rem; }
+
+/* ============ CALENDAR ============ */
+.calendar { margin-top: 1.5rem; }
+.cal-week {
+  margin-bottom: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.cal-week-header {
+  background: linear-gradient(90deg, rgba(230,57,70,0.2), rgba(255,209,102,0.1));
+  padding: 0.75rem 1.25rem;
+  font-weight: 700; font-size: 0.9rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+.cal-day {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.85rem;
+}
+.cal-day:last-child { border-bottom: none; }
+.cal-day-num {
+  flex-shrink: 0; width: 40px; height: 30px;
+  background: var(--surface2);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.75rem; color: var(--yellow);
+}
+.cal-day-content { flex: 1; }
+.cal-day-type {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  padding: 0.15rem 0.5rem; border-radius: 4px;
+  display: inline-block; margin-bottom: 0.3rem;
+}
+.type-winner { background: rgba(46,204,113,0.2); color: #2ecc71; }
+.type-challenge { background: rgba(230,57,70,0.2); color: var(--red); }
+.type-bts { background: rgba(155,89,182,0.2); color: #9b59b6; }
+.type-engage { background: rgba(255,209,102,0.2); color: var(--yellow); }
+.type-meme { background: rgba(52,152,219,0.2); color: #3498db; }
+.type-thread { background: rgba(255,107,53,0.2); color: #FF6B35; }
+
+/* ============ POST TEMPLATES ============ */
+.post-template {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+.post-template::before {
+  content: attr(data-type);
+  position: absolute; top: 0.75rem; right: 0.75rem;
+  font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+  padding: 0.2rem 0.5rem; border-radius: 4px;
+  background: rgba(230,57,70,0.2); color: var(--red);
+}
+.post-text {
+  font-size: 0.9rem; line-height: 1.6;
+  color: #ddd; user-select: all;
+  cursor: text;
+  padding: 0.75rem;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  border-left: 3px solid var(--red);
+}
+.copy-hint {
+  font-size: 0.65rem; color: #666; margin-top: 0.5rem;
+  text-align: right;
+}
+
+/* ============ TABLE ============ */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  font-size: 0.85rem;
+}
+.data-table thead th {
+  background: linear-gradient(90deg, rgba(230,57,70,0.2), rgba(255,209,102,0.1));
+  padding: 0.9rem 1rem;
+  text-align: left; font-weight: 700; font-size: 0.75rem;
+  text-transform: uppercase; letter-spacing: 0.05em; color: #ccc;
+}
+.data-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: top;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.code-badge {
+  font-family: 'SF Mono', Menlo, monospace;
+  background: rgba(230,57,70,0.15);
+  color: var(--red); padding: 0.2rem 0.6rem;
+  border-radius: 4px; font-weight: 700; font-size: 0.85rem;
+  user-select: all;
+}
+
+/* ============ DM TEMPLATE ============ */
+.dm-template {
+  background: var(--surface2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.dm-template h4 { color: var(--yellow); margin-bottom: 0.75rem; font-size: 0.9rem; }
+.dm-body {
+  font-size: 0.85rem; line-height: 1.7;
+  color: #ccc; user-select: all; cursor: text;
+  padding: 1rem;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+
+/* ============ EMAIL SEQUENCE ============ */
+.email-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.email-header {
+  background: linear-gradient(90deg, rgba(230,57,70,0.15), rgba(255,209,102,0.05));
+  padding: 1rem 1.25rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+}
+.email-day { font-weight: 700; color: var(--red); font-size: 0.85rem; }
+.email-subject { color: var(--yellow); font-weight: 600; font-size: 0.9rem; }
+.email-body { padding: 1.25rem; font-size: 0.85rem; color: #bbb; line-height: 1.6; }
+
+/* ============ TIMELINE ============ */
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--red), var(--yellow), var(--red));
+  border-radius: 2px;
+}
+.timeline-item { position: relative; margin-bottom: 2rem; }
+.timeline-item::before {
+  content: '';
+  position: absolute; left: -26px; top: 6px;
+  width: 14px; height: 14px;
+  background: var(--red);
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 10px rgba(230,57,70,0.5);
+}
+.timeline-days {
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--yellow); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 0.4rem;
+}
+.timeline-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.timeline-body { font-size: 0.85rem; color: #999; line-height: 1.6; }
+.timeline-tasks {
+  margin-top: 0.5rem; padding: 0; list-style: none;
+}
+.timeline-tasks li {
+  padding: 0.3rem 0;
+  font-size: 0.8rem; color: #aaa;
+  display: flex; align-items: flex-start; gap: 0.5rem;
+}
+.timeline-tasks li::before { content: '\25B8'; color: var(--red); flex-shrink: 0; }
+
+/* ============ BAR CHART ============ */
+.chart-container { margin-top: 1.5rem; }
+.bar-chart { display: flex; align-items: flex-end; gap: 1rem; height: 220px; padding: 0 1rem; }
+.bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; height: 100%; justify-content: flex-end; }
+.bar {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  transition: height 1s ease;
+  min-width: 40px;
+}
+.bar-affiliate { background: linear-gradient(to top, #E63946, #FF6B35); }
+.bar-tips { background: linear-gradient(to top, #FFD166, #FF9F1C); }
+.bar-credits { background: linear-gradient(to top, #2DC653, #06D6A0); }
+.bar-sponsor { background: linear-gradient(to top, #3498db, #6C63FF); }
+.bar-value {
+  position: absolute; top: -22px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem; font-weight: 700; color: #fff;
+  white-space: nowrap;
+}
+.bar-label {
+  font-size: 0.7rem; color: #888;
+  text-align: center; margin-top: 0.3rem;
+}
+.chart-legend {
+  display: flex; gap: 1.5rem; justify-content: center;
+  margin-top: 1rem; flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #aaa; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ============ KPI DASHBOARD ============ */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; }
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--yellow));
+}
+.kpi-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.kpi-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+.kpi-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.kpi-target { text-align: center; }
+.kpi-target-val {
+  font-size: 1.2rem; font-weight: 800;
+  color: var(--yellow);
+}
+.kpi-target-period { font-size: 0.6rem; color: #666; text-transform: uppercase; }
+
+/* ============ HASHTAGS ============ */
+.hashtag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.hashtag {
+  background: rgba(230,57,70,0.1);
+  border: 1px solid rgba(230,57,70,0.2);
+  color: var(--red);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem; font-weight: 600;
+  user-select: all; cursor: text;
+}
+
+/* ============ POSTING TIMES ============ */
+.times-grid { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.time-slot {
+  background: rgba(255,209,102,0.1);
+  border: 1px solid rgba(255,209,102,0.2);
+  color: var(--yellow);
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem; font-weight: 600;
+}
+
+/* ============ INFLUENCER LIST ============ */
+.inf-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+.inf-item {
+  background: var(--surface2);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.inf-icon { font-size: 1.2rem; }
+
+/* ============ SUBREDDIT TAGS ============ */
+.sub-tag {
+  display: inline-block;
+  background: rgba(255,107,53,0.1);
+  border: 1px solid rgba(255,107,53,0.2);
+  color: #FF6B35;
+  padding: 0.25rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem; font-weight: 600;
+  margin: 0.25rem;
+  user-select: all;
+}
+
+/* ============ FOOTER ============ */
+.page-footer {
+  border-top: 1px solid var(--glass-border);
+  padding: 3rem 0 2rem;
+  text-align: center;
+  color: #555; font-size: 0.8rem;
+}
+.page-footer a { color: var(--yellow); text-decoration: none; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .hero-logo { font-size: 2.5rem; }
+  .hero-tagline { font-size: 1.1rem; }
+  .flywheel { width: 320px; height: 320px; }
+  .flywheel-ring { width: 280px; height: 280px; }
+  .flywheel-step { width: 85px; font-size: 0.65rem; }
+  .flywheel-step .step-icon { width: 38px; height: 38px; font-size: 1rem; }
+  .flywheel-center { width: 90px; height: 90px; font-size: 1.8rem; }
+  .bar-chart { height: 160px; }
+  .section-title { font-size: 1.3rem; }
+}
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate { animation: fadeInUp 0.6s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ====== TOP NAV ====== -->
+<nav class="topnav">
+  <div class="container">
+    <a href="#" class="brand">CLAW.PIZZA</a>
+    <a href="#brand">Brand</a>
+    <a href="#flywheel">Flywheel</a>
+    <a href="#social">Social</a>
+    <a href="#promos">Promos</a>
+    <a href="#influencers">Influencers</a>
+    <a href="#email">Email</a>
+    <a href="#launch">Launch</a>
+    <a href="#revenue">Revenue</a>
+    <a href="#content">Content</a>
+    <a href="#kpis">KPIs</a>
+  </div>
+</nav>
+
+<!-- ====== HERO ====== -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-logo">CLAW.PIZZA</div>
+    <div class="hero-tagline">Grab Your Slice. Win Real Prizes.</div>
+    <div class="hero-subtitle">
+      Marketing Command Center &mdash; The complete viral growth playbook for the world's most addictive online claw machine game.
+    </div>
+    <span class="hero-badge">Marketing Command Center</span>
+    <a href="https://spunkeroo.github.io/claw-pizza/" target="_blank" class="hero-url">https://spunkeroo.github.io/claw-pizza/</a>
+  </div>
+</header>
+
+<!-- ====== 1. BRAND OVERVIEW ====== -->
+<section class="section" id="brand">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Brand <span>Overview</span></h2>
+    </div>
+
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#127928;</span> Brand Identity</div>
+        <p style="font-size:0.9rem;color:#bbb;margin-bottom:1rem;">
+          <strong style="color:var(--yellow)">CLAW.PIZZA</strong> is a free-to-play online 3D claw machine game where players grab real prizes. Provably fair, skill-based, instant play &mdash; no downloads, no signups required.
+        </p>
+        <div style="margin-top:1rem">
+          <div style="font-weight:700;font-size:0.8rem;color:#888;text-transform:uppercase;margin-bottom:0.5rem;">Tagline</div>
+          <div style="font-size:1.3rem;font-weight:700;color:var(--yellow);user-select:all">"Grab Your Slice. Win Real Prizes."</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#127912;</span> Brand Colors</div>
+        <div class="color-swatches">
+          <div class="swatch" style="background:#E63946;color:#fff;">Pizza Red<span>#E63946</span></div>
+          <div class="swatch" style="background:#FFD166;color:#333;">Cheese Yellow<span>#FFD166</span></div>
+          <div class="swatch" style="background:#8B5E34;color:#fff;">Crust Brown<span>#8B5E34</span></div>
+          <div class="swatch" style="background:#FFF8F0;color:#333;">Box White<span>#FFF8F0</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128483;</span> Brand Voice</div>
+        <ul style="font-size:0.85rem;color:#bbb;list-style:none;">
+          <li style="padding:0.3rem 0;"><span style="color:var(--red);margin-right:0.5rem;">&#9654;</span> <strong>Fun & exciting</strong> &mdash; every interaction feels like a mini-celebration</li>
+          <li style="padding:0.3rem 0;"><span style="color:var(--red);margin-right:0.5rem;">&#9654;</span> <strong>Accessible</strong> &mdash; anyone can play, no crypto knowledge needed</li>
+          <li style="padding:0.3rem 0;"><span style="color:var(--red);margin-right:0.5rem;">&#9654;</span> <strong>Free-to-play</strong> &mdash; always free credits, never a paywall</li>
+          <li style="padding:0.3rem 0;"><span style="color:var(--red);margin-right:0.5rem;">&#9654;</span> <strong>Skill-based</strong> &mdash; not a slot machine, it's a claw machine</li>
+          <li style="padding:0.3rem 0;"><span style="color:var(--red);margin-right:0.5rem;">&#9654;</span> <strong>Trustworthy</strong> &mdash; provably fair, transparent, no hidden catches</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128279;</span> Key Links</div>
+        <ul style="font-size:0.85rem;color:#bbb;list-style:none;">
+          <li style="padding:0.4rem 0;"><strong style="color:var(--yellow)">Live Site:</strong> <a href="https://spunkeroo.github.io/claw-pizza/" target="_blank" style="color:var(--red);text-decoration:none;">spunkeroo.github.io/claw-pizza/</a></li>
+          <li style="padding:0.4rem 0;"><strong style="color:var(--yellow)">Domain:</strong> claw.pizza</li>
+          <li style="padding:0.4rem 0;"><strong style="color:var(--yellow)">X/Twitter:</strong> <a href="https://x.com/SpunkArt13" target="_blank" style="color:var(--red);text-decoration:none;">@SpunkArt13</a></li>
+          <li style="padding:0.4rem 0;"><strong style="color:var(--yellow)">GitHub:</strong> github.com/Spunkeroo/claw-pizza</li>
+          <li style="padding:0.4rem 0;"><strong style="color:var(--yellow)">Referral Links:</strong> <span style="user-select:all;color:#bbb">claw.pizza/?ref=spunk</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 2. VIRAL FLYWHEEL ====== -->
+<section class="section" id="flywheel">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Viral Growth <span>Flywheel</span></h2>
+    </div>
+
+    <div class="flywheel-container">
+      <div class="flywheel">
+        <div class="flywheel-ring"></div>
+        <div class="flywheel-center">&#127829;</div>
+
+        <div class="flywheel-step fw-1">
+          <div class="step-icon">&#127381;</div>
+          <div class="step-label">Free Credits</div>
+          <div class="step-metric">Promos + Daily</div>
+        </div>
+        <div class="flywheel-step fw-2">
+          <div class="step-icon">&#127918;</div>
+          <div class="step-label">Play Games</div>
+          <div class="step-metric">5+ plays/session</div>
+        </div>
+        <div class="flywheel-step fw-3">
+          <div class="step-icon">&#127942;</div>
+          <div class="step-label">Win Prizes</div>
+          <div class="step-metric">15% win rate</div>
+        </div>
+        <div class="flywheel-step fw-4">
+          <div class="step-icon">&#128227;</div>
+          <div class="step-label">Share on X</div>
+          <div class="step-metric">Bonus credits</div>
+        </div>
+        <div class="flywheel-step fw-5">
+          <div class="step-icon">&#128101;</div>
+          <div class="step-label">Friends Join</div>
+          <div class="step-metric">2.5x viral coeff</div>
+        </div>
+        <div class="flywheel-step fw-6">
+          <div class="step-icon">&#128200;</div>
+          <div class="step-label">More Players</div>
+          <div class="step-metric">Organic growth</div>
+        </div>
+        <div class="flywheel-step fw-7">
+          <div class="step-icon">&#127873;</div>
+          <div class="step-label">Bigger Prizes</div>
+          <div class="step-metric">Affiliate revenue</div>
+        </div>
+        <div class="flywheel-step fw-8">
+          <div class="step-icon">&#128640;</div>
+          <div class="step-label">More Sharing</div>
+          <div class="step-metric">Viral loops</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="targets-row">
+      <div class="target-card">
+        <div class="target-num">1,000</div>
+        <div class="target-label">Users</div>
+        <div class="target-time">30 Days</div>
+      </div>
+      <div class="target-card">
+        <div class="target-num">10,000</div>
+        <div class="target-label">Users</div>
+        <div class="target-time">90 Days</div>
+      </div>
+      <div class="target-card">
+        <div class="target-num">50K+</div>
+        <div class="target-label">Monthly Plays</div>
+        <div class="target-time">90 Days</div>
+      </div>
+      <div class="target-card">
+        <div class="target-num">$5K</div>
+        <div class="target-label">Monthly Revenue</div>
+        <div class="target-time">6 Months</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 3. SOCIAL MEDIA ====== -->
+<section class="section" id="social">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Social Media <span>Campaign Plan</span></h2>
+    </div>
+
+    <!-- X/Twitter Strategy -->
+    <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:1rem;">&#9783; X / Twitter Strategy</h3>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="card-icon">&#128172;</span> Post Templates</div>
+
+      <div class="post-template" data-type="Winner">
+        <div class="post-text">&#127942; [Player] just grabbed a [Prize] on claw.pizza! Think you can do better? Play FREE now &#128073; claw.pizza @SpunkArt13 #ClawPizza #WinPrizes</div>
+        <div class="copy-hint">&#9998; Click text to select &amp; copy</div>
+      </div>
+
+      <div class="post-template" data-type="Challenge">
+        <div class="post-text">&#127829; PIZZA CLAW CHALLENGE: Can you grab 3 prizes in a row? First to do it wins 1000 bonus credits! Reply with your screenshot &#127918; claw.pizza @SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click text to select &amp; copy</div>
+      </div>
+
+      <div class="post-template" data-type="Behind-the-scenes">
+        <div class="post-text">Building the world's most addictive online claw machine &#127918; What prizes should we add next? Drop your suggestions below! &#128071; claw.pizza @SpunkArt13 #ClawPizza #GameDev</div>
+        <div class="copy-hint">&#9998; Click text to select &amp; copy</div>
+      </div>
+
+      <div class="post-template" data-type="Engagement">
+        <div class="post-text">What's your claw machine strategy? &#129300;
+
+A) Slow and steady position
+B) Quick drop and pray
+C) The shake technique
+D) I have a secret method &#128064;
+
+Try them all FREE at claw.pizza @SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click text to select &amp; copy</div>
+      </div>
+
+      <div class="post-template" data-type="Meme">
+        <div class="post-text">POV: You finally grab the prize in the claw machine but it drops at the last second &#128557;
+
+Now try it online where the claw actually works &#128514; claw.pizza @SpunkArt13 #ClawPizza #ClawMachine</div>
+        <div class="copy-hint">&#9998; Click text to select &amp; copy</div>
+      </div>
+    </div>
+
+    <!-- Hashtags -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="card-icon">#</span> Hashtag Strategy</div>
+      <div class="hashtag-cloud">
+        <span class="hashtag">#ClawPizza</span>
+        <span class="hashtag">#WinPrizes</span>
+        <span class="hashtag">#FreePrizes</span>
+        <span class="hashtag">#ClawMachine</span>
+        <span class="hashtag">#OnlineArcade</span>
+        <span class="hashtag">#GrabYourSlice</span>
+        <span class="hashtag">#FreeToPlay</span>
+        <span class="hashtag">#PizzaClaw</span>
+        <span class="hashtag">#ArcadeGames</span>
+        <span class="hashtag">#WinStuff</span>
+      </div>
+    </div>
+
+    <!-- Posting Times -->
+    <div class="card" style="margin-bottom:2rem;">
+      <div class="card-title"><span class="card-icon">&#128339;</span> Best Posting Times (EST)</div>
+      <p style="font-size:0.8rem;color:#888;margin-bottom:0.5rem;">Peak engagement windows for gaming/arcade audiences:</p>
+      <div class="times-grid">
+        <span class="time-slot">Mon-Fri 12-1pm</span>
+        <span class="time-slot">Mon-Fri 5-7pm</span>
+        <span class="time-slot">Sat-Sun 10am-12pm</span>
+        <span class="time-slot">Sat-Sun 7-10pm</span>
+        <span class="time-slot">Wed 3pm (mid-week boost)</span>
+      </div>
+      <p style="font-size:0.75rem;color:#666;margin-top:0.75rem;">Always tag <strong style="color:var(--yellow)">@SpunkArt13</strong> in every post.</p>
+    </div>
+
+    <!-- 30-Day Content Calendar -->
+    <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:1rem;">&#128197; 30-Day Content Calendar</h3>
+
+    <div class="calendar">
+      <!-- Week 1 -->
+      <div class="cal-week">
+        <div class="cal-week-header">Week 1 &mdash; Launch &amp; Seed</div>
+        <div class="cal-day"><div class="cal-day-num">D1</div><div class="cal-day-content"><span class="cal-day-type type-thread">Thread</span><br>Launch thread: "We built an online claw machine where you win REAL prizes. Here's how it works..." (5 tweets)</div></div>
+        <div class="cal-day"><div class="cal-day-num">D2</div><div class="cal-day-content"><span class="cal-day-type type-engage">Engage</span><br>"What prize would make you play a claw machine online?" Poll post</div></div>
+        <div class="cal-day"><div class="cal-day-num">D3</div><div class="cal-day-content"><span class="cal-day-type type-winner">Winner</span><br>First winner announcement (seed with friend/beta tester win)</div></div>
+        <div class="cal-day"><div class="cal-day-num">D4</div><div class="cal-day-content"><span class="cal-day-type type-bts">BTS</span><br>"Satisfying claw grabs compilation" - screen recordings of successful grabs</div></div>
+        <div class="cal-day"><div class="cal-day-num">D5</div><div class="cal-day-content"><span class="cal-day-type type-meme">Meme</span><br>"IRL claw machine vs claw.pizza" comparison meme</div></div>
+        <div class="cal-day"><div class="cal-day-num">D6</div><div class="cal-day-content"><span class="cal-day-type type-challenge">Challenge</span><br>"FREE CREDIT DROP: Use code FREEPIZZA at claw.pizza for 25 free credits! RT to spread the word"</div></div>
+        <div class="cal-day"><div class="cal-day-num">D7</div><div class="cal-day-content"><span class="cal-day-type type-engage">Engage</span><br>Week 1 stats recap: "X prizes grabbed, X games played. Are you playing yet?"</div></div>
+      </div>
+
+      <!-- Week 2 -->
+      <div class="cal-week">
+        <div class="cal-week-header">Week 2 &mdash; Amplify</div>
+        <div class="cal-day"><div class="cal-day-num">D8</div><div class="cal-day-content"><span class="cal-day-type type-winner">Winner</span><br>Winner showcase with screenshot/photo of prize</div></div>
+        <div class="cal-day"><div class="cal-day-num">D9</div><div class="cal-day-content"><span class="cal-day-type type-challenge">Challenge</span><br>"First person to reply with a claw.pizza win screenshot gets 200 bonus credits!"</div></div>
+        <div class="cal-day"><div class="cal-day-num">D10</div><div class="cal-day-content"><span class="cal-day-type type-bts">BTS</span><br>"How we made an online claw machine feel REAL" - dev insights</div></div>
+        <div class="cal-day"><div class="cal-day-num">D11</div><div class="cal-day-content"><span class="cal-day-type type-meme">Meme</span><br>"Me telling my friends I won a real prize playing a claw machine on the internet" (meme format)</div></div>
+        <div class="cal-day"><div class="cal-day-num">D12</div><div class="cal-day-content"><span class="cal-day-type type-engage">Engage</span><br>"Rate your claw skills 1-10. Be honest." Quick engagement post</div></div>
+        <div class="cal-day"><div class="cal-day-num">D13</div><div class="cal-day-content"><span class="cal-day-type type-thread">Thread</span><br>"5 tips to win more at claw.pizza" - educational thread</div></div>
+        <div class="cal-day"><div class="cal-day-num">D14</div><div class="cal-day-content"><span class="cal-day-type type-winner">Winner</span><br>Weekend winner roundup + "Use code PIZZA100 for 100 free credits!"</div></div>
+      </div>
+
+      <!-- Week 3 -->
+      <div class="cal-week">
+        <div class="cal-week-header">Week 3 &mdash; Community Building</div>
+        <div class="cal-day"><div class="cal-day-num">D15</div><div class="cal-day-content"><span class="cal-day-type type-challenge">Challenge</span><br>"MEGA CLAW CHALLENGE: Most prizes grabbed this week wins a mystery box! Track at claw.pizza"</div></div>
+        <div class="cal-day"><div class="cal-day-num">D16</div><div class="cal-day-content"><span class="cal-day-type type-engage">Engage</span><br>"What should our next claw machine theme be? Vote below!" with options</div></div>
+        <div class="cal-day"><div class="cal-day-num">D17</div><div class="cal-day-content"><span class="cal-day-type type-bts">BTS</span><br>"New prizes just loaded into the machine!" - prize reveal post</div></div>
+        <div class="cal-day"><div class="cal-day-num">D18</div><div class="cal-day-content"><span class="cal-day-type type-meme">Meme</span><br>"The evolution of claw machine players" - starter, intermediate, pro meme</div></div>
+        <div class="cal-day"><div class="cal-day-num">D19</div><div class="cal-day-content"><span class="cal-day-type type-winner">Winner</span><br>Mid-week challenge leaderboard update + winner highlight</div></div>
+        <div class="cal-day"><div class="cal-day-num">D20</div><div class="cal-day-content"><span class="cal-day-type type-thread">Thread</span><br>"How claw.pizza is different from every other online game" - value prop thread</div></div>
+        <div class="cal-day"><div class="cal-day-num">D21</div><div class="cal-day-content"><span class="cal-day-type type-challenge">Challenge</span><br>"Refer 3 friends to claw.pizza, DM us proof, get CLAWKING code (200 credits)!"</div></div>
+      </div>
+
+      <!-- Week 4 -->
+      <div class="cal-week">
+        <div class="cal-week-header">Week 4 &mdash; Scale &amp; Iterate</div>
+        <div class="cal-day"><div class="cal-day-num">D22</div><div class="cal-day-content"><span class="cal-day-type type-winner">Winner</span><br>Challenge winner announcement with prize photo + testimonial</div></div>
+        <div class="cal-day"><div class="cal-day-num">D23</div><div class="cal-day-content"><span class="cal-day-type type-engage">Engage</span><br>"Our first month stats: X players, X prizes won, X countries. You next?"</div></div>
+        <div class="cal-day"><div class="cal-day-num">D24</div><div class="cal-day-content"><span class="cal-day-type type-bts">BTS</span><br>"What we learned in month 1 of building claw.pizza" - honest reflection</div></div>
+        <div class="cal-day"><div class="cal-day-num">D25</div><div class="cal-day-content"><span class="cal-day-type type-meme">Meme</span><br>"Nobody: ... Me at 3am:" + claw.pizza screenshot meme</div></div>
+        <div class="cal-day"><div class="cal-day-num">D26</div><div class="cal-day-content"><span class="cal-day-type type-challenge">Challenge</span><br>"FLASH DROP: Next 50 people to play get double credits. GO! claw.pizza"</div></div>
+        <div class="cal-day"><div class="cal-day-num">D27</div><div class="cal-day-content"><span class="cal-day-type type-thread">Thread</span><br>"Month 2 preview: new machines, new prizes, bigger wins" - hype thread</div></div>
+        <div class="cal-day"><div class="cal-day-num">D28</div><div class="cal-day-content"><span class="cal-day-type type-engage">Engage</span><br>"Best claw.pizza moment this month? Reply with yours!" UGC collection</div></div>
+        <div class="cal-day"><div class="cal-day-num">D29</div><div class="cal-day-content"><span class="cal-day-type type-winner">Winner</span><br>Month-end winners supercut - all the best grabs of the month</div></div>
+        <div class="cal-day"><div class="cal-day-num">D30</div><div class="cal-day-content"><span class="cal-day-type type-challenge">Challenge</span><br>"Month 2 starts NOW. Use code LAUNCH2026 for 150 free credits. Let's go! claw.pizza"</div></div>
+      </div>
+    </div>
+
+    <!-- TikTok / YouTube Shorts -->
+    <h3 style="font-size:1.3rem;font-weight:700;margin:2rem 0 1rem;">&#127909; TikTok / YouTube Shorts Strategy</h3>
+    <div class="card-grid card-grid-3" style="margin-bottom:2rem;">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#127916;</span> Watch Me Win</div>
+        <p style="font-size:0.8rem;color:#999;">Screen-record gameplay. Show the tension of positioning the claw, the drop, the grab. Cut to reaction when prize is won. 15-30 seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128176;</span> How I Won $X</div>
+        <p style="font-size:0.8rem;color:#999;">"I played a free online claw machine and won [Prize]. Here's exactly how." Format: hook, gameplay, reveal, CTA. 30-60 seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128142;</span> Satisfying Grabs</div>
+        <p style="font-size:0.8rem;color:#999;">Compilation of the most satisfying claw grabs. Set to trending audio. No talking needed. Pure visual ASMR satisfaction. 15-30 seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128163;</span> Fail Compilations</div>
+        <p style="font-size:0.8rem;color:#999;">"Claw machine fails that hurt my soul" - relatable near-miss content. Drives engagement through shared frustration. 15-30 seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#127891;</span> Tips &amp; Tricks</div>
+        <p style="font-size:0.8rem;color:#999;">"3 secrets to winning every time at claw.pizza" - educational content positions us as the skill-based alternative. 30-60 seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128230;</span> Unboxing Prizes</div>
+        <p style="font-size:0.8rem;color:#999;">Winners unbox prizes they won from claw.pizza. UGC content that proves prizes are real. Encourage winners to film with branded hashtag.</p>
+      </div>
+    </div>
+
+    <!-- Reddit Strategy -->
+    <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:1rem;">&#128481; Reddit Strategy</h3>
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="card-icon">&#127760;</span> Target Subreddits &amp; Formats</div>
+      <div style="margin-bottom:1rem;">
+        <span class="sub-tag">r/clawmachine</span>
+        <span class="sub-tag">r/arcade</span>
+        <span class="sub-tag">r/freebies</span>
+        <span class="sub-tag">r/prizes</span>
+        <span class="sub-tag">r/webgames</span>
+        <span class="sub-tag">r/IndieGaming</span>
+        <span class="sub-tag">r/gaming</span>
+        <span class="sub-tag">r/InternetIsBeautiful</span>
+      </div>
+      <div style="font-size:0.85rem;color:#bbb;line-height:1.8;">
+        <strong style="color:var(--yellow)">r/clawmachine &amp; r/arcade:</strong> "Built an online claw machine - plays like the real thing" (show gameplay GIF)<br>
+        <strong style="color:var(--yellow)">r/freebies:</strong> "Free online claw machine game with real prizes - no purchase necessary" (value-first)<br>
+        <strong style="color:var(--yellow)">r/webgames:</strong> "I made a 3D claw machine game you can play in your browser" (dev angle)<br>
+        <strong style="color:var(--yellow)">r/IndieGaming:</strong> "Solo dev - built a browser-based 3D claw machine. Feedback welcome!" (dev story)<br>
+        <strong style="color:var(--yellow)">r/InternetIsBeautiful:</strong> "A free online claw machine that actually gives real prizes" (discovery)<br>
+        <p style="margin-top:0.5rem;color:#888;font-size:0.75rem;">Rules: Never spam. Add genuine value. Engage in comments. Be transparent about being the creator. Post at peak hours (Tue-Thu mornings EST).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 4. PROMO CODES ====== -->
+<section class="section" id="promos">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Promo Code <span>Distribution Plan</span></h2>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Credits</th>
+            <th>Max Uses</th>
+            <th>Best Use Case</th>
+            <th>Distribution Strategy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-badge">FREEPIZZA</span></td>
+            <td style="color:var(--yellow);font-weight:700;">25</td>
+            <td>1,000</td>
+            <td>Mass acquisition - low barrier entry</td>
+            <td>Public X posts, Reddit, bio links, mass giveaways. Cast the widest net.</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">GRABSLICE</span></td>
+            <td style="color:var(--yellow);font-weight:700;">50</td>
+            <td>500</td>
+            <td>Engagement reward - reply incentive</td>
+            <td>DM to people who engage with posts. Reward for RTs, comments, and shares.</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">BETAPLAY</span></td>
+            <td style="color:var(--yellow);font-weight:700;">75</td>
+            <td>200</td>
+            <td>Early testers &amp; feedback providers</td>
+            <td>Give to people who provide feedback or bug reports. Community builders.</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">PIZZA100</span></td>
+            <td style="color:var(--yellow);font-weight:700;">100</td>
+            <td>500</td>
+            <td>Launch day buzz - mid-tier hook</td>
+            <td>Weekend drops, special events, newsletter signups. Creates urgency.</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">LAUNCH2026</span></td>
+            <td style="color:var(--yellow);font-weight:700;">150</td>
+            <td>100</td>
+            <td>Launch event exclusive</td>
+            <td>Time-limited launch events, milestone celebrations. "First 100 only!"</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">CLAWKING</span></td>
+            <td style="color:var(--yellow);font-weight:700;">200</td>
+            <td>100</td>
+            <td>VIP players &amp; top referrers</td>
+            <td>Reward top players, referral contest winners, loyal community members.</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">SUPREME</span></td>
+            <td style="color:var(--yellow);font-weight:700;">500</td>
+            <td>50</td>
+            <td>Influencer partnerships</td>
+            <td>Give to influencers for their audience. Each influencer gets unique tracking link + this code.</td>
+          </tr>
+          <tr>
+            <td><span class="code-badge">SPUNKART</span></td>
+            <td style="color:var(--yellow);font-weight:700;">1,000</td>
+            <td>10</td>
+            <td>Admin / VIP testing</td>
+            <td>Internal use only. Admin testing, demo showcases, very special guests.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-grid card-grid-3" style="margin-top:1.5rem;">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128279;</span> Vanity Referral Links</div>
+        <div style="font-size:0.85rem;color:#bbb;">
+          <div style="padding:0.4rem 0;"><span style="user-select:all;color:var(--yellow);font-family:monospace;">claw.pizza/?ref=spunk</span></div>
+          <div style="padding:0.4rem 0;"><span style="user-select:all;color:var(--yellow);font-family:monospace;">claw.pizza/?ref=pizza</span></div>
+          <div style="padding:0.4rem 0;"><span style="user-select:all;color:var(--yellow);font-family:monospace;">claw.pizza/?ref=claw</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128241;</span> QR Code Uses</div>
+        <p style="font-size:0.8rem;color:#999;">Generate QR codes linking to <span style="color:var(--yellow)">claw.pizza/?promo=FREEPIZZA</span> for: stickers, flyers, business cards, event handouts, packaging inserts, social media stories.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128176;</span> Promo URL Format</div>
+        <p style="font-size:0.8rem;color:#999;">Direct promo link format:<br><span style="user-select:all;color:var(--yellow);font-family:monospace;font-size:0.8rem;">claw.pizza/?promo=CODE</span><br><br>Example: <span style="user-select:all;color:#bbb;font-family:monospace;font-size:0.8rem;">claw.pizza/?promo=FREEPIZZA</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 5. INFLUENCER OUTREACH ====== -->
+<section class="section" id="influencers">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Influencer <span>Outreach</span></h2>
+    </div>
+
+    <div class="card-grid card-grid-2">
+      <div>
+        <div class="dm-template">
+          <h4>&#128172; Cold DM Template &mdash; Gaming Creator</h4>
+          <div class="dm-body">Hey [Name]! Huge fan of your [specific content type] content.
+
+I built something I think your audience would love - claw.pizza is a free online 3D claw machine where players win real prizes. No catch, no signups, just play.
+
+I'd love to give you an exclusive code (SUPREME - 500 free credits) to share with your audience + a custom referral link so you can track engagement.
+
+Would you be down to try it and maybe feature it? Takes 30 seconds to play.
+
+Cheers,
+SpunkArt (@SpunkArt13)</div>
+        </div>
+
+        <div class="dm-template">
+          <h4>&#128172; Warm DM Template &mdash; After Engagement</h4>
+          <div class="dm-body">Hey [Name]! Thanks for [liking/retweeting/commenting on] our post!
+
+Since you seem interested in claw machines / gaming, I wanted to offer you early VIP access to claw.pizza with 500 free credits (code: SUPREME).
+
+We're looking for a few creators to partner with on launch. You'd get:
+- Exclusive promo code for your audience
+- Custom referral link with tracking
+- Priority access to new features + prizes
+
+Interested? Happy to chat more!
+
+- SpunkArt</div>
+        </div>
+
+        <div class="dm-template">
+          <h4>&#128172; Follow-Up Template (3 days later)</h4>
+          <div class="dm-body">Hey [Name] - just bumping this! No pressure at all.
+
+If you get a chance to try claw.pizza, I'd genuinely love your feedback even if a collab isn't the right fit. The code SUPREME (500 credits) is yours either way.
+
+Have a great week!</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:1rem;">
+          <div class="card-title"><span class="card-icon">&#127873;</span> What to Offer Influencers</div>
+          <ul style="font-size:0.85rem;color:#bbb;list-style:none;">
+            <li style="padding:0.4rem 0;"><span style="color:var(--red);">&#10004;</span> SUPREME code (500 credits) for their audience</li>
+            <li style="padding:0.4rem 0;"><span style="color:var(--red);">&#10004;</span> Custom referral link with tracking</li>
+            <li style="padding:0.4rem 0;"><span style="color:var(--red);">&#10004;</span> Priority access to new machines &amp; prizes</li>
+            <li style="padding:0.4rem 0;"><span style="color:var(--red);">&#10004;</span> Feature on our social channels</li>
+            <li style="padding:0.4rem 0;"><span style="color:var(--red);">&#10004;</span> Revenue share on affiliate conversions (future)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="card-icon">&#127919;</span> Target Influencer Types</div>
+          <div class="inf-list">
+            <div class="inf-item"><span class="inf-icon">&#127918;</span> Gaming YouTubers</div>
+            <div class="inf-item"><span class="inf-icon">&#127922;</span> TikTok Arcade Content</div>
+            <div class="inf-item"><span class="inf-icon">&#128241;</span> Mobile Gaming Reviewers</div>
+            <div class="inf-item"><span class="inf-icon">&#127829;</span> Pizza / Food Accounts</div>
+            <div class="inf-item"><span class="inf-icon">&#127381;</span> Freebie / Deal Hunters</div>
+            <div class="inf-item"><span class="inf-icon">&#128176;</span> Crypto / Web3 Gaming</div>
+            <div class="inf-item"><span class="inf-icon">&#127912;</span> Digital Art / NFT Creators</div>
+            <div class="inf-item"><span class="inf-icon">&#127911;</span> Twitch Streamers (casual)</div>
+            <div class="inf-item"><span class="inf-icon">&#128640;</span> Indie Game Spotlight</div>
+            <div class="inf-item"><span class="inf-icon">&#128230;</span> Toy / Collectible Unboxers</div>
+            <div class="inf-item"><span class="inf-icon">&#127915;</span> Reaction Content Creators</div>
+            <div class="inf-item"><span class="inf-icon">&#128187;</span> Tech / Gadget Reviewers</div>
+            <div class="inf-item"><span class="inf-icon">&#128161;</span> Startup / Indie Hackers</div>
+            <div class="inf-item"><span class="inf-icon">&#127775;</span> Micro-influencers (1K-10K)</div>
+            <div class="inf-item"><span class="inf-icon">&#128293;</span> Viral Content Aggregators</div>
+            <div class="inf-item"><span class="inf-icon">&#127863;</span> Lifestyle Bloggers</div>
+            <div class="inf-item"><span class="inf-icon">&#128302;</span> ASMR / Satisfying Content</div>
+            <div class="inf-item"><span class="inf-icon">&#129351;</span> Contest / Sweepstakes Pages</div>
+            <div class="inf-item"><span class="inf-icon">&#127752;</span> Student / Gen-Z Accounts</div>
+            <div class="inf-item"><span class="inf-icon">&#128640;</span> Product Hunt Community</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 6. EMAIL MARKETING ====== -->
+<section class="section" id="email">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Email <span>Marketing Plan</span></h2>
+    </div>
+
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;color:var(--yellow);">Welcome Sequence (5 Emails / 14 Days)</h3>
+
+    <div class="email-card">
+      <div class="email-header">
+        <span class="email-day">Day 0 (Immediate)</span>
+        <span class="email-subject">Subject: "Your claw is warmed up. Let's grab some prizes."</span>
+      </div>
+      <div class="email-body">
+        Welcome to claw.pizza! You've got <strong>25 free credits</strong> waiting. Here's what you need to know:<br><br>
+        &#127829; <strong>It's free to play.</strong> No credit card, no signups, just grab and win.<br>
+        &#127942; <strong>Real prizes.</strong> Win actual products shipped to your door.<br>
+        &#127918; <strong>Skill-based.</strong> Position the claw, time your drop, grab your prize.<br><br>
+        <strong>Start playing now:</strong> claw.pizza<br>
+        <strong>Bonus:</strong> Use code FREEPIZZA for 25 extra credits!
+      </div>
+    </div>
+
+    <div class="email-card">
+      <div class="email-header">
+        <span class="email-day">Day 2</span>
+        <span class="email-subject">Subject: "Your first win is closer than you think (tips inside)"</span>
+      </div>
+      <div class="email-body">
+        Still figuring out the claw? Here are 3 pro tips:<br><br>
+        1. <strong>Don't rush the position.</strong> Take time to align perfectly over the prize.<br>
+        2. <strong>Go for prizes near the drop chute.</strong> Less distance = better grip.<br>
+        3. <strong>Play during off-peak.</strong> Less competition for the best prizes.<br><br>
+        Your credits are still waiting. <strong>Play now at claw.pizza</strong>
+      </div>
+    </div>
+
+    <div class="email-card">
+      <div class="email-header">
+        <span class="email-day">Day 5</span>
+        <span class="email-subject">Subject: "Someone just won a [Prize]. Could be you next."</span>
+      </div>
+      <div class="email-body">
+        This week's winners grabbed some incredible prizes from claw.pizza. Here's the highlight reel:<br><br>
+        &#127942; [Winner Name] grabbed a [Prize]<br>
+        &#127942; [Winner Name] grabbed a [Prize]<br><br>
+        <strong>New prizes loaded!</strong> Check out what's in the machine right now.<br>
+        <strong>Bonus code:</strong> Use GRABSLICE for 50 free credits this week only!
+      </div>
+    </div>
+
+    <div class="email-card">
+      <div class="email-header">
+        <span class="email-day">Day 9</span>
+        <span class="email-subject">Subject: "We added new prizes (and they won't last long)"</span>
+      </div>
+      <div class="email-body">
+        Fresh prizes just dropped in the claw machine! We restocked with:<br><br>
+        &#127873; [New Prize 1]<br>
+        &#127873; [New Prize 2]<br>
+        &#127873; [New Prize 3]<br><br>
+        These are first-come, first-grab. Don't wait!<br><br>
+        <strong>Share the love:</strong> Send claw.pizza to a friend and you both get bonus credits when they play!
+      </div>
+    </div>
+
+    <div class="email-card">
+      <div class="email-header">
+        <span class="email-day">Day 14</span>
+        <span class="email-subject">Subject: "You've been here 2 weeks. Here's a VIP upgrade."</span>
+      </div>
+      <div class="email-body">
+        You've been with us for 2 weeks and we appreciate you! As a thank you:<br><br>
+        &#127775; <strong>VIP Code: PIZZA100</strong> - 100 free credits, just for you<br>
+        &#127775; <strong>Refer 3 friends</strong> and unlock the CLAWKING code (200 credits)<br>
+        &#127775; <strong>Share your best moment</strong> on X and tag @SpunkArt13 for a bonus surprise<br><br>
+        We're building something special at claw.pizza. Thanks for being part of it from the start.
+      </div>
+    </div>
+
+    <h3 style="font-size:1.1rem;font-weight:700;margin:2rem 0 1rem;color:var(--yellow);">High-Performing Subject Lines</h3>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0.5rem;font-size:0.85rem;">
+        <div style="padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:8px;color:#ccc;">&#128140; "Your claw credits are expiring..."</div>
+        <div style="padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:8px;color:#ccc;">&#127829; "New prizes + 100 free credits inside"</div>
+        <div style="padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:8px;color:#ccc;">&#128293; "3 people just won big on claw.pizza"</div>
+        <div style="padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:8px;color:#ccc;">&#127873; "We saved you a spot at the claw machine"</div>
+        <div style="padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:8px;color:#ccc;">&#127919; "Can you beat today's high score?"</div>
+        <div style="padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:8px;color:#ccc;">&#128176; "Free credits + new prizes = your move"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 7. LAUNCH SEQUENCE ====== -->
+<section class="section" id="launch">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Launch <span>Sequence (Day 1-30)</span></h2>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-days">Days 1-3 &mdash; Soft Launch</div>
+        <div class="timeline-title">Seed the Ground</div>
+        <div class="timeline-body">Invite close network. Get first 50 plays. Collect early feedback. Fix bugs.</div>
+        <ul class="timeline-tasks">
+          <li>Invite 20 friends/contacts to play and give honest feedback</li>
+          <li>Post launch thread on personal X account, tag @SpunkArt13</li>
+          <li>Share FREEPIZZA code in 3 Discord/Telegram groups</li>
+          <li>Record 5 gameplay clips for social content library</li>
+          <li>Set up analytics tracking (plays, wins, shares, referrals)</li>
+          <li>Fix any Day-1 bugs immediately</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-days">Days 4-7 &mdash; Influencer Outreach</div>
+        <div class="timeline-title">Start Building Bridges</div>
+        <div class="timeline-body">Begin DM outreach to 20+ micro-influencers. Launch first X campaign.</div>
+        <ul class="timeline-tasks">
+          <li>Send cold DMs to 10 gaming/arcade creators per day</li>
+          <li>Post daily X content (use calendar above)</li>
+          <li>Share SUPREME code with first 5 interested influencers</li>
+          <li>Submit to r/webgames and r/IndieGaming</li>
+          <li>Create first winner announcement post (even if seeded)</li>
+          <li>Set up email capture form on site</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-days">Days 8-14 &mdash; Ramp Up</div>
+        <div class="timeline-title">Build Momentum</div>
+        <div class="timeline-body">Increase posting cadence. Launch referral contest. First email sends.</div>
+        <ul class="timeline-tasks">
+          <li>Post 2-3x per day on X (mix winner posts, challenges, engagement)</li>
+          <li>Launch "Refer 3 friends, get CLAWKING code" campaign</li>
+          <li>Create first TikTok/Shorts video from gameplay footage</li>
+          <li>Send welcome email sequence to all signups</li>
+          <li>Engage in 10+ relevant X threads daily (add value, not spam)</li>
+          <li>Post on r/freebies and r/InternetIsBeautiful</li>
+          <li>Target: 200 total players by end of Day 14</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-days">Days 15-21 &mdash; Prize Event</div>
+        <div class="timeline-title">First Big Push</div>
+        <div class="timeline-body">Run first prize giveaway event. Maximize X engagement with event content.</div>
+        <ul class="timeline-tasks">
+          <li>Launch "MEGA CLAW WEEK" event - special prizes loaded</li>
+          <li>Daily leaderboard updates on X</li>
+          <li>Run X Spaces or live gameplay session</li>
+          <li>Release compilation video of best grabs</li>
+          <li>Email blast about the event to full list</li>
+          <li>Follow up with all influencer leads</li>
+          <li>Submit to Product Hunt (if ready)</li>
+          <li>Target: 500 total players by end of Day 21</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-days">Days 22-30 &mdash; Analyze &amp; Scale</div>
+        <div class="timeline-title">Double Down on Winners</div>
+        <div class="timeline-body">Review all data. Identify what drove the most players. Double down on top channels.</div>
+        <ul class="timeline-tasks">
+          <li>Full analytics review: which posts drove the most traffic?</li>
+          <li>Which promo codes got the most redemptions?</li>
+          <li>Which influencers drove actual players?</li>
+          <li>What time/day got the most engagement?</li>
+          <li>Create Month 2 plan based on data</li>
+          <li>Announce Month 2 with fresh codes + prizes</li>
+          <li>Celebrate milestones publicly on X</li>
+          <li>Target: 1,000 total players by Day 30</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 8. REVENUE PROJECTIONS ====== -->
+<section class="section" id="revenue">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Revenue <span>Projections</span></h2>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="card-icon">&#128200;</span> Monthly Revenue Forecast (Month 1-6)</div>
+
+      <div class="chart-container">
+        <div class="bar-chart">
+          <div class="bar-group">
+            <div class="bar bar-sponsor" style="height:5%;"><div class="bar-value">$0</div></div>
+            <div class="bar bar-credits" style="height:5%;"><div class="bar-value">$0</div></div>
+            <div class="bar bar-tips" style="height:10%;"><div class="bar-value">$25</div></div>
+            <div class="bar bar-affiliate" style="height:15%;"><div class="bar-value">$50</div></div>
+            <div class="bar-label">Month 1<br><strong style="color:var(--yellow)">$75</strong></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar bar-sponsor" style="height:5%;"><div class="bar-value">$0</div></div>
+            <div class="bar bar-credits" style="height:10%;"><div class="bar-value">$50</div></div>
+            <div class="bar bar-tips" style="height:15%;"><div class="bar-value">$75</div></div>
+            <div class="bar bar-affiliate" style="height:25%;"><div class="bar-value">$200</div></div>
+            <div class="bar-label">Month 2<br><strong style="color:var(--yellow)">$325</strong></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar bar-sponsor" style="height:10%;"><div class="bar-value">$100</div></div>
+            <div class="bar bar-credits" style="height:15%;"><div class="bar-value">$150</div></div>
+            <div class="bar bar-tips" style="height:20%;"><div class="bar-value">$150</div></div>
+            <div class="bar bar-affiliate" style="height:40%;"><div class="bar-value">$500</div></div>
+            <div class="bar-label">Month 3<br><strong style="color:var(--yellow)">$900</strong></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar bar-sponsor" style="height:20%;"><div class="bar-value">$300</div></div>
+            <div class="bar bar-credits" style="height:20%;"><div class="bar-value">$300</div></div>
+            <div class="bar bar-tips" style="height:20%;"><div class="bar-value">$200</div></div>
+            <div class="bar bar-affiliate" style="height:50%;"><div class="bar-value">$800</div></div>
+            <div class="bar-label">Month 4<br><strong style="color:var(--yellow)">$1,600</strong></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar bar-sponsor" style="height:30%;"><div class="bar-value">$500</div></div>
+            <div class="bar bar-credits" style="height:30%;"><div class="bar-value">$500</div></div>
+            <div class="bar bar-tips" style="height:25%;"><div class="bar-value">$300</div></div>
+            <div class="bar bar-affiliate" style="height:60%;"><div class="bar-value">$1,200</div></div>
+            <div class="bar-label">Month 5<br><strong style="color:var(--yellow)">$2,500</strong></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar bar-sponsor" style="height:45%;"><div class="bar-value">$1,000</div></div>
+            <div class="bar bar-credits" style="height:40%;"><div class="bar-value">$800</div></div>
+            <div class="bar bar-tips" style="height:25%;"><div class="bar-value">$400</div></div>
+            <div class="bar bar-affiliate" style="height:75%;"><div class="bar-value">$2,000</div></div>
+            <div class="bar-label">Month 6<br><strong style="color:var(--yellow)">$4,200</strong></div>
+          </div>
+        </div>
+
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,#E63946,#FF6B35);"></div> Amazon Affiliates</div>
+          <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,#FFD166,#FF9F1C);"></div> Tips / Donations</div>
+          <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,#2DC653,#06D6A0);"></div> Credit Sales (future)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,#3498db,#6C63FF);"></div> Sponsorships</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128722;</span> Amazon Affiliate Model</div>
+        <div style="font-size:0.85rem;color:#bbb;line-height:1.8;">
+          <strong style="color:var(--yellow)">How it works:</strong> Prizes link to Amazon via affiliate tags. Players click to see prizes, some buy related products.<br><br>
+          <strong>Month 3 Estimate:</strong><br>
+          10,000 players &times; 15% click-through = 1,500 clicks<br>
+          1,500 clicks &times; 5% conversion = 75 purchases<br>
+          75 &times; $25 avg order &times; 4% commission = <strong style="color:var(--yellow)">~$75/mo base</strong><br>
+          + Cookie revenue from 24hr window = <strong style="color:var(--yellow)">~$425 bonus</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="card-icon">&#128161;</span> Future Revenue Streams</div>
+        <ul style="font-size:0.85rem;color:#bbb;list-style:none;line-height:2;">
+          <li><span style="color:var(--red);">&#9654;</span> <strong>Premium credit packs</strong> - buy credits for more plays</li>
+          <li><span style="color:var(--red);">&#9654;</span> <strong>Sponsored machines</strong> - brands sponsor a claw machine</li>
+          <li><span style="color:var(--red);">&#9654;</span> <strong>Tournament entry fees</strong> - competitive claw events</li>
+          <li><span style="color:var(--red);">&#9654;</span> <strong>Merchandise</strong> - claw.pizza branded gear</li>
+          <li><span style="color:var(--red);">&#9654;</span> <strong>White-label licensing</strong> - sell claw game tech to other sites</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 9. READY-TO-POST CONTENT ====== -->
+<section class="section" id="content">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Ready-to-Post <span>Content</span></h2>
+    </div>
+    <p style="font-size:0.85rem;color:#888;margin-bottom:1.5rem;">20 ready-to-copy X/Twitter posts. Click any post text to select it for copying.</p>
+
+    <div class="card-grid card-grid-2">
+      <!-- 1 -->
+      <div class="post-template" data-type="Winner">
+        <div class="post-text">Just watched someone grab a real prize from an online claw machine. This is the future of gaming.
+
+Play free at claw.pizza &#127829;
+
+@SpunkArt13 #ClawPizza #WinPrizes</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 2 -->
+      <div class="post-template" data-type="Challenge">
+        <div class="post-text">CLAW MACHINE CHALLENGE &#127829;
+
+Rules:
+1. Go to claw.pizza
+2. Use code FREEPIZZA for free credits
+3. Try to grab a prize
+4. Screenshot your best attempt
+
+Best grab wins 200 bonus credits! GO &#128071;
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 3 -->
+      <div class="post-template" data-type="Engagement">
+        <div class="post-text">Honest question: have you EVER won anything from a real claw machine?
+
+Now try one that's actually fair: claw.pizza &#127829;
+
+Free to play. Real prizes. No coins needed.
+
+@SpunkArt13 #ClawPizza #ClawMachine</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 4 -->
+      <div class="post-template" data-type="Meme">
+        <div class="post-text">Real claw machines: eat your quarters, never win
+Online claw machines: free credits, actually winnable
+
+The math is mathing &#128200;
+
+claw.pizza @SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 5 -->
+      <div class="post-template" data-type="Winner">
+        <div class="post-text">WINNER ALERT &#127942;&#127942;&#127942;
+
+Another player just grabbed a prize on claw.pizza!
+
+You could be next. It's literally free to play.
+
+&#128073; claw.pizza
+Code: FREEPIZZA (25 free credits)
+
+@SpunkArt13 #ClawPizza #FreePrizes</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 6 -->
+      <div class="post-template" data-type="Thread">
+        <div class="post-text">I'm obsessed with this new online claw machine game.
+
+Here's why claw.pizza is different from everything else out there &#129525;
+
+1/ It's completely free to play - no credit card, no signup
+2/ The prizes are REAL and shipped to you
+3/ It's skill-based, not random
+4/ You get free credits daily
+5/ It works on any device, no download
+
+Try it: claw.pizza @SpunkArt13</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 7 -->
+      <div class="post-template" data-type="Engagement">
+        <div class="post-text">Drop a &#127829; if you've ever rage-quit a claw machine
+
+Now try one that doesn't hate you: claw.pizza
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 8 -->
+      <div class="post-template" data-type="Challenge">
+        <div class="post-text">Weekend challenge &#127918;
+
+Can anyone grab 5 prizes in a row on claw.pizza?
+
+First person to screenshot it gets the CLAWKING code (200 free credits!)
+
+@SpunkArt13 #ClawPizza #GrabYourSlice</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 9 -->
+      <div class="post-template" data-type="Quote RT">
+        <div class="post-text">This is what winning feels like &#127942;
+
+If you haven't tried claw.pizza yet, you're missing out. Free credits, real prizes, zero catch.
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 10 -->
+      <div class="post-template" data-type="Meme">
+        <div class="post-text">Things that are rigged:
+- Real claw machines &#10060;
+- Carnival games &#10060;
+- That one basketball hoop &#10060;
+
+Things that are actually fair:
+- claw.pizza &#9989;
+
+Provably fair. Free to play. Real prizes.
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 11 -->
+      <div class="post-template" data-type="Winner">
+        <div class="post-text">New day, new winners on claw.pizza &#127829;
+
+We've given away [X] prizes this week alone. All free.
+
+Get your free credits: claw.pizza/?promo=FREEPIZZA
+
+@SpunkArt13 #ClawPizza #WinPrizes</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 12 -->
+      <div class="post-template" data-type="Engagement">
+        <div class="post-text">What would you want to win from a claw machine?
+
+A) Tech gadgets
+B) Gift cards
+C) Collectibles
+D) Something else (reply!)
+
+Whatever you pick, you can try to grab it at claw.pizza &#127829;
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 13 -->
+      <div class="post-template" data-type="Meme">
+        <div class="post-text">Me: I'm going to be productive today
+
+Also me 3 hours later: *still playing claw.pizza*
+
+It's free and I regret nothing &#128514;
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 14 -->
+      <div class="post-template" data-type="Challenge">
+        <div class="post-text">PROMO CODE DROP &#128163;
+
+Use code PIZZA100 at claw.pizza for 100 FREE credits
+
+Only 500 uses available. Don't sleep on this &#128164;
+
+@SpunkArt13 #ClawPizza #FreePrizes</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 15 -->
+      <div class="post-template" data-type="Thread">
+        <div class="post-text">Why online claw machines are about to blow up &#129525;
+
+- No quarters needed (it's free)
+- Play from anywhere (your phone)
+- Real prizes (shipped to you)
+- Actually skill-based (provably fair)
+- Social sharing built in
+
+Early? claw.pizza
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 16 -->
+      <div class="post-template" data-type="Engagement">
+        <div class="post-text">If online claw machines existed 10 years ago, we'd all be broke from playing them &#128514;
+
+Good thing claw.pizza is free &#127829;
+
+@SpunkArt13 #ClawPizza #OnlineArcade</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 17 -->
+      <div class="post-template" data-type="Winner">
+        <div class="post-text">This player just grabbed their THIRD prize this week from claw.pizza &#127942;&#127942;&#127942;
+
+Some people just have the touch.
+
+Think you can beat their streak? Play free &#128073; claw.pizza
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 18 -->
+      <div class="post-template" data-type="Meme">
+        <div class="post-text">Stages of playing claw.pizza:
+
+1. "This looks fun"
+2. "One more try"
+3. "I'm getting good at this"
+4. "I JUST WON A REAL PRIZE"
+5. "Everyone needs to try this"
+
+Currently at stage 5 &#127829;
+
+@SpunkArt13 #ClawPizza</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 19 -->
+      <div class="post-template" data-type="Quote RT">
+        <div class="post-text">Forget everything you know about claw machines.
+
+This one is:
+&#9989; Free
+&#9989; Online
+&#9989; Fair
+&#9989; Has real prizes
+
+claw.pizza - Grab Your Slice &#127829;
+
+@SpunkArt13 #ClawPizza #GrabYourSlice</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+      <!-- 20 -->
+      <div class="post-template" data-type="Challenge">
+        <div class="post-text">MIDNIGHT CLAW DROP &#127769;
+
+For the next 24 hours, use code LAUNCH2026 at claw.pizza for 150 FREE credits
+
+Only 100 codes available. Set your alarm &#9200;
+
+@SpunkArt13 #ClawPizza #FreePrizes</div>
+        <div class="copy-hint">&#9998; Click to select</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 10. KPI DASHBOARD ====== -->
+<section class="section" id="kpis">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">KPIs &amp; Metrics <span>Dashboard</span></h2>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">&#127918;</div>
+        <div class="kpi-label">Daily Active Players</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">25</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">100</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">500</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">2K</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#128231;</div>
+        <div class="kpi-label">Email Signups</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">15</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">200</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">1.5K</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">5K</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#128227;</div>
+        <div class="kpi-label">X/Twitter Shares</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">10</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">100</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">500</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">3K</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#128101;</div>
+        <div class="kpi-label">Referral Conversions</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">5</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">50</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">400</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">2K</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#128176;</div>
+        <div class="kpi-label">Monthly Revenue</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">$0</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">$75</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">$900</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">$4.2K</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#127942;</div>
+        <div class="kpi-label">Prizes Claimed</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">3</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">25</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">150</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">500</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#128200;</div>
+        <div class="kpi-label">Total Users</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">50</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">1K</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">10K</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">50K</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">&#128338;</div>
+        <div class="kpi-label">Avg. Session Length</div>
+        <div class="kpi-targets">
+          <div class="kpi-target"><div class="kpi-target-val">3m</div><div class="kpi-target-period">Week 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">5m</div><div class="kpi-target-period">Month 1</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">8m</div><div class="kpi-target-period">Month 3</div></div>
+          <div class="kpi-target"><div class="kpi-target-val">12m</div><div class="kpi-target-period">Month 6</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion funnel -->
+    <h3 style="font-size:1.1rem;font-weight:700;margin:2.5rem 0 1rem;color:var(--yellow);">Conversion Funnel Targets</h3>
+    <div class="card">
+      <div style="max-width:500px;margin:0 auto;">
+        <div style="background:linear-gradient(90deg,var(--red),#FF6B35);padding:1rem 1.5rem;border-radius:12px 12px 0 0;text-align:center;font-weight:700;">
+          Site Visitors &mdash; 100%
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(255,107,53,0.7),rgba(255,157,70,0.7));padding:0.9rem 1.5rem;margin:0 1.5rem;text-align:center;font-weight:700;">
+          Play First Game &mdash; 60%
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(255,209,102,0.6),rgba(255,183,3,0.6));padding:0.8rem 1.5rem;margin:0 3rem;text-align:center;font-weight:700;color:#333;">
+          Play 3+ Games &mdash; 35%
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(45,198,83,0.5),rgba(6,214,160,0.5));padding:0.7rem 1.5rem;margin:0 4.5rem;text-align:center;font-weight:700;">
+          Share on X &mdash; 15%
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(52,152,219,0.5),rgba(108,99,255,0.5));padding:0.6rem 1.5rem;margin:0 6rem;border-radius:0 0 12px 12px;text-align:center;font-weight:700;">
+          Refer Friend &mdash; 8%
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== FOOTER ====== -->
+<footer class="page-footer">
+  <div class="container">
+    <p style="font-size:1.5rem;margin-bottom:0.5rem;">&#127829;</p>
+    <p><strong style="color:var(--red);">CLAW.PIZZA</strong> Marketing Command Center</p>
+    <p style="margin-top:0.5rem;">
+      <a href="https://spunkeroo.github.io/claw-pizza/" target="_blank">Play Now</a> &middot;
+      <a href="https://x.com/SpunkArt13" target="_blank">@SpunkArt13</a> &middot;
+      <a href="https://github.com/Spunkeroo/claw-pizza" target="_blank">GitHub</a>
+    </p>
+    <p style="margin-top:1rem;font-size:0.7rem;color:#444;">
+      Generated February 2026 &middot; Grab Your Slice. Win Real Prizes.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
