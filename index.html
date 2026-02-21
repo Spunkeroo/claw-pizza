@@ -318,8 +318,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 
 /* ---- Play Page ---- */
 #page-play { position: relative; }
-.play-canvas-container { width: 100%; height: calc(100vh - 64px); background: #000; position: relative; }
-.play-hud { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 1rem; }
+.play-canvas-container { width: 100%; height: calc(100vh - 64px); background: #000; position: relative; overflow: hidden; }
+.play-canvas-container canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; }
+.play-hud { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 1rem; z-index: 10; }
 .hud-top { display: flex; justify-content: space-between; align-items: flex-start; pointer-events: auto; }
 .hud-credits { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; border: 1px solid var(--glass-border); }
 .hud-machine-name { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--glass-border); }
@@ -777,7 +778,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
           <div class="machine-card-body">
             <div class="machine-card-name">Pizza Paradise</div>
             <div class="machine-card-cost">5 credits per play</div>
-            <button class="machine-card-btn">Play Now</button>
+            <button class="machine-card-btn" onclick="ClawApp.selectMachine('claw-5')">Play Now</button>
           </div>
         </div>
         <div class="machine-card-carousel">
@@ -788,7 +789,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
           <div class="machine-card-body">
             <div class="machine-card-name">Cheesy Grabber</div>
             <div class="machine-card-cost">3 credits per play</div>
-            <button class="machine-card-btn">Play Now</button>
+            <button class="machine-card-btn" onclick="ClawApp.selectMachine('claw-4')">Play Now</button>
           </div>
         </div>
         <div class="machine-card-carousel">
@@ -799,7 +800,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
           <div class="machine-card-body">
             <div class="machine-card-name">Pepperoni Picker</div>
             <div class="machine-card-cost">2 credits per play</div>
-            <button class="machine-card-btn">Play Now</button>
+            <button class="machine-card-btn" onclick="ClawApp.selectMachine('claw-3')">Play Now</button>
           </div>
         </div>
         <div class="machine-card-carousel">
@@ -810,7 +811,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
           <div class="machine-card-body">
             <div class="machine-card-name">Margherita Mix</div>
             <div class="machine-card-cost">1 credit per play</div>
-            <button class="machine-card-btn">Play Now</button>
+            <button class="machine-card-btn" onclick="ClawApp.selectMachine('claw-2')">Play Now</button>
           </div>
         </div>
         <div class="machine-card-carousel">
@@ -821,7 +822,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
           <div class="machine-card-body">
             <div class="machine-card-name">Starter Oven</div>
             <div class="machine-card-cost">Free</div>
-            <button class="machine-card-btn">Play Now</button>
+            <button class="machine-card-btn" onclick="ClawApp.selectMachine('claw-1')">Play Now</button>
           </div>
         </div>
       </div>
@@ -2122,10 +2123,10 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
 <script>
 // Claw Pizza - 3D Claw Machine Engine
-// Uses THREE (Three.js) and CANNON (cannon-es) as globals from CDN
+// Uses THREE (Three.js) and CANNON (cannon.js) as globals from CDN
 (function () {
   'use strict';
 
@@ -2290,51 +2291,34 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 
   // ─── CREDIT SYSTEM ─────────────────────────────────────────────────
 
-  const STORAGE_KEY = 'clawpizza_credits';
-  const FAUCET_KEY = 'clawpizza_faucet_ts';
-  const FIRST_VISIT_KEY = 'clawpizza_first';
-
-  function initCredits() {
-    const first = localStorage.getItem(FIRST_VISIT_KEY);
-    if (!first) {
-      localStorage.setItem(FIRST_VISIT_KEY, 'true');
-      localStorage.setItem(STORAGE_KEY, '3');
-    }
-  }
-
+  // Credit system delegates to ClawApp when available, falls back to localStorage
   function getCredits() {
-    initCredits();
-    return parseFloat(localStorage.getItem(STORAGE_KEY) || '0');
-  }
-
-  function setCreditsRaw(val) {
-    localStorage.setItem(STORAGE_KEY, String(Math.round(val * 100) / 100));
-    updateCreditDisplay();
+    if (window.ClawApp && window.ClawApp.getCredits) return window.ClawApp.getCredits();
+    try {
+      const v = localStorage.getItem('claw_credits');
+      if (v !== null) return JSON.parse(v);
+      localStorage.setItem('claw_credits', JSON.stringify(3));
+      return 3;
+    } catch { return 0; }
   }
 
   function spendCredits(amount) {
+    if (window.ClawApp && window.ClawApp.spendCredits) return window.ClawApp.spendCredits(amount);
     const cur = getCredits();
     if (cur < amount) return false;
-    setCreditsRaw(cur - amount);
+    try { localStorage.setItem('claw_credits', JSON.stringify(cur - amount)); } catch {}
     return true;
   }
 
   function addCredits(amount) {
-    setCreditsRaw(getCredits() + amount);
-  }
-
-  function claimFaucet() {
-    const last = parseInt(localStorage.getItem(FAUCET_KEY) || '0', 10);
-    const now = Date.now();
-    if (now - last < 86400000) return false;
-    localStorage.setItem(FAUCET_KEY, String(now));
-    addCredits(5);
-    return true;
+    if (window.ClawApp && window.ClawApp.addCredits) return window.ClawApp.addCredits(amount);
+    try { localStorage.setItem('claw_credits', JSON.stringify(getCredits() + amount)); } catch {}
   }
 
   function updateCreditDisplay() {
-    const el = document.getElementById('claw-credits');
-    if (el) el.textContent = getCredits().toFixed(2);
+    if (window.ClawApp && window.ClawApp.updateCreditDisplays) {
+      window.ClawApp.updateCreditDisplays();
+    }
   }
 
   // ─── THREE.JS SCENE SETUP ─────────────────────────────────────────
@@ -3199,91 +3183,70 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   // ─── VIRTUAL JOYSTICK (Mobile) ─────────────────────────────────────
 
   function createVirtualControls() {
-    // Joystick
-    const joyContainer = document.createElement('div');
-    joyContainer.id = 'claw-joystick';
-    joyContainer.style.cssText = `
-      position: fixed; bottom: 30px; left: 30px; width: 120px; height: 120px;
-      border-radius: 50%; background: rgba(255,255,255,0.1);
-      border: 2px solid rgba(255,255,255,0.3); touch-action: none;
-      display: none; z-index: 1000;
-    `;
+    // Use existing HTML joystick area if available
+    const existingJoy = document.querySelector('.joystick-area');
+    const existingKnob = document.querySelector('.joystick-knob');
 
-    const knob = document.createElement('div');
-    knob.style.cssText = `
-      position: absolute; width: 50px; height: 50px; border-radius: 50%;
-      background: rgba(255,255,255,0.5); top: 50%; left: 50%;
-      transform: translate(-50%, -50%); pointer-events: none;
-    `;
-    joyContainer.appendChild(knob);
-    document.body.appendChild(joyContainer);
+    if (existingJoy && existingKnob) {
+      existingJoy.style.touchAction = 'none';
+      joystick.el = existingJoy;
+      joystick.knob = existingKnob;
 
-    joystick.el = joyContainer;
-    joystick.knob = knob;
+      existingJoy.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const rect = existingJoy.getBoundingClientRect();
+        joystick.active = true;
+        joystick.startX = rect.left + rect.width / 2;
+        joystick.startY = rect.top + rect.height / 2;
+      }, { passive: false });
 
-    joyContainer.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const rect = joyContainer.getBoundingClientRect();
-      joystick.active = true;
-      joystick.startX = rect.left + rect.width / 2;
-      joystick.startY = rect.top + rect.height / 2;
-    }, { passive: false });
+      existingJoy.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!joystick.active) return;
+        const touch = e.touches[0];
+        const maxDist = 40;
+        let dx = touch.clientX - joystick.startX;
+        let dy = touch.clientY - joystick.startY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > maxDist) {
+          dx = (dx / dist) * maxDist;
+          dy = (dy / dist) * maxDist;
+        }
+        joystick.dx = dx / maxDist;
+        joystick.dy = dy / maxDist;
+        existingKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+      }, { passive: false });
 
-    joyContainer.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      if (!joystick.active) return;
-      const touch = e.touches[0];
-      const maxDist = 40;
-      let dx = touch.clientX - joystick.startX;
-      let dy = touch.clientY - joystick.startY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > maxDist) {
-        dx = (dx / dist) * maxDist;
-        dy = (dy / dist) * maxDist;
-      }
-      joystick.dx = dx / maxDist;
-      joystick.dy = dy / maxDist;
-      knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-    }, { passive: false });
+      const endJoy = () => {
+        joystick.active = false;
+        joystick.dx = 0;
+        joystick.dy = 0;
+        existingKnob.style.transform = 'translate(-50%, -50%)';
+      };
+      existingJoy.addEventListener('touchend', endJoy);
+      existingJoy.addEventListener('touchcancel', endJoy);
+    }
 
-    const endJoy = () => {
-      joystick.active = false;
-      joystick.dx = 0;
-      joystick.dy = 0;
-      knob.style.transform = 'translate(-50%, -50%)';
-    };
-    joyContainer.addEventListener('touchend', endJoy);
-    joyContainer.addEventListener('touchcancel', endJoy);
-
-    // Grab button
-    const btn = document.createElement('button');
-    btn.id = 'claw-grab-btn';
-    btn.textContent = 'GRAB!';
-    btn.style.cssText = `
-      position: fixed; bottom: 50px; right: 30px; width: 90px; height: 90px;
-      border-radius: 50%; background: rgba(255, 60, 60, 0.8);
-      color: white; font-size: 18px; font-weight: bold; border: 3px solid rgba(255,255,255,0.5);
-      touch-action: none; display: none; z-index: 1000; cursor: pointer;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    `;
-    btn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (state === STATES.MOVING) dropClaw();
-    }, { passive: false });
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (state === STATES.MOVING) dropClaw();
-    });
-    document.body.appendChild(btn);
-    grabButton = btn;
+    // Use existing grab button
+    const existingGrab = document.getElementById('btn-grab');
+    if (existingGrab) {
+      existingGrab.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (state === STATES.MOVING) dropClaw();
+      }, { passive: false });
+      existingGrab.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state === STATES.MOVING) dropClaw();
+      });
+      grabButton = existingGrab;
+    }
   }
 
   function showMobileControls(show) {
     const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (!isMobile) return;
     if (joystick.el) joystick.el.style.display = show ? 'block' : 'none';
-    if (grabButton) grabButton.style.display = show ? 'block' : 'none';
+    // Don't hide the HTML grab button, it's always visible in the HUD
   }
 
   function processJoystickInput() {
@@ -3295,34 +3258,27 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   // ─── TIMER ─────────────────────────────────────────────────────────
 
   function showTimer() {
-    if (!timerEl) {
-      timerEl = document.createElement('div');
-      timerEl.id = 'claw-timer';
-      timerEl.style.cssText = `
-        position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-        background: rgba(0,0,0,0.7); color: white; padding: 8px 20px;
-        border-radius: 20px; font-family: monospace; font-size: 20px;
-        z-index: 1000; border: 2px solid rgba(255,255,255,0.3);
-      `;
-      document.body.appendChild(timerEl);
-    }
-    timerEl.style.display = 'block';
+    // Use existing HUD timer element
+    timerEl = document.getElementById('hud-timer');
+    if (timerEl) timerEl.style.display = 'block';
   }
 
   function hideTimer() {
-    if (timerEl) timerEl.style.display = 'none';
+    if (timerEl) timerEl.style.opacity = '0.3';
   }
 
   function updateTimerDisplay() {
+    if (!timerEl) timerEl = document.getElementById('hud-timer');
     if (timerEl) {
       const secs = Math.ceil(moveTimer);
-      timerEl.textContent = 'TIME: ' + secs + 's';
+      const mins = Math.floor(secs / 60);
+      const s = secs % 60;
+      timerEl.textContent = mins + ':' + String(s).padStart(2, '0');
+      timerEl.style.opacity = '1';
       if (secs <= 5) {
         timerEl.style.color = '#ff4444';
-        timerEl.style.borderColor = '#ff4444';
       } else {
-        timerEl.style.color = 'white';
-        timerEl.style.borderColor = 'rgba(255,255,255,0.3)';
+        timerEl.style.color = 'var(--text)';
       }
     }
   }
@@ -3337,8 +3293,8 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     if (state !== STATES.IDLE) return false;
     if (!currentTier) return false;
 
-    const cost = TIERS[currentTier].cost;
-    if (!spendCredits(cost)) return false;
+    // Use 1 credit per play (consistent with ClawApp)
+    if (!spendCredits(1)) return false;
 
     // Prepare provably fair
     if (!serverSeed) {
@@ -3685,8 +3641,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     clientSeed = generateClientSeed();
     generateServerSeedInternal();
 
-    // Init credits
-    initCredits();
+    // Update credit display
     updateCreditDisplay();
 
     // Start render loop
@@ -3705,10 +3660,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     window.removeEventListener('keyup', onKeyUp);
     window.removeEventListener('resize', onResize);
 
-    // Remove DOM elements
-    if (timerEl && timerEl.parentNode) timerEl.parentNode.removeChild(timerEl);
-    if (joystick.el && joystick.el.parentNode) joystick.el.parentNode.removeChild(joystick.el);
-    if (grabButton && grabButton.parentNode) grabButton.parentNode.removeChild(grabButton);
+    // Reset HUD state (don't remove HTML elements, they're part of the page)
 
     // Dispose Three.js
     if (renderer) {
@@ -3765,6 +3717,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   window.ClawEngine = {
     init: init,
     startGame: startGame,
+    play: startGame,
     moveClawX: function (delta) {
       if (state === STATES.MOVING) {
         clawX += delta;
@@ -4338,6 +4291,12 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     SoundFX.buttonClick();
 
     if (page === 'machines') renderMachines();
+    if (page === 'play') {
+      const machineId = selectedMachineId || ls('claw_selected_machine') || 'claw-1';
+      selectedMachineId = machineId;
+      renderPlayPage();
+      if (!engineInitialized) initClawEngine(machineId);
+    }
     if (page === 'leaderboard') renderLeaderboard();
     if (page === 'profile') renderProfile();
     if (page === 'prizes') renderPrizesPage();
@@ -5190,40 +5149,111 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     SoundFX.buttonClick();
     navigate('play');
     renderPlayPage();
+    initClawEngine(id);
+  }
+
+  function initClawEngine(machineId) {
+    const machine = MACHINES.find(m => m.id === machineId) || MACHINES[0];
+
+    // Destroy previous engine instance if any
+    if (engineInitialized && window.ClawEngine) {
+      window.ClawEngine.destroy();
+      engineInitialized = false;
+    }
+
+    // Wait for play page to be visible, then init 3D
+    setTimeout(() => {
+      try {
+        if (!window.ClawEngine) {
+          console.warn('[claw.pizza] ClawEngine not available');
+          return;
+        }
+
+        window.ClawEngine.init('play-canvas', machine.tier);
+
+        // Set up result callback
+        window.ClawEngine.setOnResult((result) => {
+          if (result.won && result.prize) {
+            SoundFX.win();
+            const prize = machine.prizes[Math.floor(Math.random() * machine.prizes.length)];
+            recordWin(prize.name, prize.value, machine.tier);
+            showWinModal(prize, machine);
+          } else {
+            SoundFX.lose();
+            showToast('So close! The claw slipped! Try again!', 'info');
+          }
+          updateCreditDisplays();
+        });
+
+        engineInitialized = true;
+        updateCreditDisplays();
+        console.log('[claw.pizza] 3D engine initialized for', machine.name, '(', machine.tier, ')');
+      } catch (e) {
+        console.error('[claw.pizza] Failed to init 3D engine:', e);
+        engineInitialized = false;
+      }
+    }, 100);
   }
 
   function renderPlayPage() {
-    const container = $('#play-machine-info');
-    if (!container) return;
+    // Update HUD elements on the play page
+    const hudName = $('#hud-machine-name');
+    const hudCredits = $('#hud-credit-count');
 
     const id = selectedMachineId || ls('claw_selected_machine') || 'claw-1';
     const machine = MACHINES.find(m => m.id === id) || MACHINES[0];
     selectedMachineId = machine.id;
 
-    container.innerHTML = `
-      <div class="play-machine-header">
-        <h2 style="color:#FFD700">${machine.name}</h2>
-        <span class="machine-tier-badge" style="background:${machine.tierColor}">${machine.tierLabel}</span>
-      </div>
-      <div class="play-prizes-list">
-        <h4>Prizes in this machine:</h4>
-        ${machine.prizes.map(p => `
-          <div class="play-prize-item">
-            <span class="prize-name">${p.name}</span>
-            <span class="prize-value">$${p.value}</span>
-          </div>
-        `).join('')}
-      </div>
-      <div class="play-controls" style="margin-top:16px;text-align:center">
-        <div style="margin-bottom:8px;color:rgba(255,255,255,0.7)">Credits: <span data-credits>${getCredits()}</span></div>
-        <button class="btn btn-glow btn-lg" onclick="ClawApp.playMachine('${machine.id}')">Insert Credit & Play</button>
-        <button class="btn btn-sm" style="margin-top:8px" onclick="ClawApp.showRewardedAd()">Watch Ad for 1 Free Credit</button>
-      </div>
-    `;
+    if (hudName) hudName.textContent = machine.name;
+    if (hudCredits) hudCredits.textContent = getCredits();
+
+    // Update the grab button to also start the game if in IDLE state
+    const grabBtn = $('#btn-grab');
+    if (grabBtn) {
+      grabBtn.onclick = function() {
+        if (window.ClawEngine && engineInitialized) {
+          const state = window.ClawEngine.getCurrentState();
+          if (state === 'IDLE') {
+            playMachine(machine.id);
+          } else if (state === 'MOVING') {
+            window.ClawEngine.dropClaw();
+          }
+        } else {
+          playMachine(machine.id);
+        }
+      };
+    }
   }
+
+  let engineInitialized = false;
 
   function playMachine(id) {
     const machine = MACHINES.find(m => m.id === id) || MACHINES[0];
+
+    // Check if 3D engine is initialized and ready
+    if (window.ClawEngine && engineInitialized) {
+      // Use the 3D engine's startGame which handles credits via its own spendCredits
+      const started = window.ClawEngine.startGame();
+      if (!started) {
+        const state = window.ClawEngine.getCurrentState();
+        if (state !== 'IDLE') {
+          showToast('Game already in progress!', 'info');
+          return;
+        }
+        showToast('Not enough credits!', 'error');
+        SoundFX.lose();
+        openBuyCreditsModal();
+        return;
+      }
+      SoundFX.coinInsert();
+      updateStreak();
+      recordPlay(machine.tier);
+      updateCreditDisplays();
+      showToast('Move the claw with WASD/arrows, then press Space or GRAB!', 'info');
+      return;
+    }
+
+    // Fallback: no 3D engine, use instant play
     if (!spendCredits(1)) {
       showToast('Not enough credits!', 'error');
       SoundFX.lose();
@@ -5234,11 +5264,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     SoundFX.coinInsert();
     updateStreak();
 
-    // Determine win (30% base chance, adjusted by tier)
     const tierChances = { breadstick: 0.40, slice: 0.30, halfpie: 0.22, fullpie: 0.15, supreme: 0.08 };
     const winChance = tierChances[machine.tier] || 0.25;
 
-    // Check referral bonus
     const refCount = ls('claw_ref_count_cache', 0);
     const refTier = getReferralTier(refCount);
     const bonusMult = 1 + refTier.bonus;
@@ -5261,12 +5289,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       }, 500);
     }
 
-    // If 3D engine exists, trigger it
-    if (window.ClawEngine?.play) {
-      window.ClawEngine.play(isWin);
-    }
-
-    renderPlayPage();
+    updateCreditDisplays();
   }
 
   function showWinModal(prize, machine) {
@@ -5887,6 +5910,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     getCredits,
     addCredits,
     spendCredits,
+    updateCreditDisplays,
     recordWin,
     recordPlay,
     showToast,
@@ -5894,6 +5918,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     MACHINES,
     getUserId,
     getPlayerName,
+    initClawEngine,
 
     // Expose constants
     REF_TIERS,
@@ -5913,11 +5938,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.ClawApp && window.ClawApp.init) {
-    window.ClawApp.init();
-  }
-});
+// Service worker registration (ClawApp.init() is auto-called in its IIFE)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js').catch(function(){});
 }
