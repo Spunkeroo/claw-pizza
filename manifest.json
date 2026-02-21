@@ -1,0 +1,38 @@
+{
+  "name": "claw.pizza - Grab Your Slice",
+  "short_name": "claw.pizza",
+  "description": "Play the ultimate online claw machine! Grab real pizza prizes, ordinals, and more. Provably fair, free to play, real rewards.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#E63946",
+  "background_color": "#0a0a0f",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='24' fill='%230a0a0f'/%3E%3Cpath d='M96 30 L40 140 L152 140 Z' fill='%23FFB703' stroke='%23E63946' stroke-width='4'/%3E%3Ccircle cx='80' cy='110' r='6' fill='%23E63946'/%3E%3Ccircle cx='105' cy='100' r='5' fill='%23E63946'/%3E%3Ccircle cx='90' cy='125' r='4' fill='%23E63946'/%3E%3Crect x='88' y='10' width='16' height='30' rx='3' fill='%23888'/%3E%3Cpath d='M72 40 L88 40 L88 55 L80 65 L72 55 Z' fill='%23aaa' stroke='%23888' stroke-width='2'/%3E%3Cpath d='M104 40 L120 40 L120 55 L112 65 L104 55 Z' fill='%23aaa' stroke='%23888' stroke-width='2'/%3E%3Cpath d='M80 65 L96 80 L112 65' fill='none' stroke='%23888' stroke-width='3'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='64' fill='%230a0a0f'/%3E%3Cpath d='M256 70 L100 380 L412 380 Z' fill='%23FFB703' stroke='%23E63946' stroke-width='8'/%3E%3Ccircle cx='210' cy='300' r='16' fill='%23E63946'/%3E%3Ccircle cx='280' cy='270' r='13' fill='%23E63946'/%3E%3Ccircle cx='240' cy='340' r='11' fill='%23E63946'/%3E%3Ccircle cx='310' cy='330' r='10' fill='%23E63946'/%3E%3Crect x='240' y='20' width='32' height='70' rx='6' fill='%23888'/%3E%3Cpath d='M190 90 L240 90 L240 140 L215 175 L190 140 Z' fill='%23aaa' stroke='%23888' stroke-width='4'/%3E%3Cpath d='M272 90 L322 90 L322 140 L297 175 L272 140 Z' fill='%23aaa' stroke='%23888' stroke-width='4'/%3E%3Cpath d='M215 175 L256 210 L297 175' fill='none' stroke='%23888' stroke-width='6'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "orientation": "any",
+  "screenshots": [
+    {
+      "src": "og-image.svg",
+      "sizes": "1200x630",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "claw.pizza - Grab Your Slice"
+    }
+  ],
+  "id": "claw-pizza",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr"
+}

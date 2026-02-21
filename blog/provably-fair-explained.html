@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is Provably Fair? How claw.pizza Guarantees Fair Play | claw.pizza</title>
+    <meta name="description" content="Learn how provably fair systems work using HMAC-SHA256 cryptography. Understand how claw.pizza guarantees every play is fair and verifiable. Step-by-step explanation with code examples.">
+    <meta name="keywords" content="provably fair, fair claw machine, how provably fair works, HMAC-SHA256, cryptographic fairness, verifiable gaming">
+    <meta name="author" content="claw.pizza Team">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://claw.pizza/blog/provably-fair-explained.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="What is Provably Fair? How claw.pizza Guarantees Fair Play">
+    <meta property="og:description" content="Understand how cryptographic verification guarantees every claw machine play is fair. Step-by-step guide with code examples.">
+    <meta property="og:url" content="https://claw.pizza/blog/provably-fair-explained.html">
+    <meta property="og:site_name" content="claw.pizza">
+    <meta property="og:image" content="https://claw.pizza/og-image.svg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="What is Provably Fair? How claw.pizza Guarantees Fair Play">
+    <meta name="twitter:description" content="Understand how cryptographic verification guarantees fair play on claw.pizza.">
+    <meta name="twitter:image" content="https://claw.pizza/og-image.svg">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "What is Provably Fair? How claw.pizza Guarantees Fair Play",
+        "description": "Learn how provably fair systems use HMAC-SHA256 cryptography to guarantee every play is fair and verifiable.",
+        "author": {
+            "@type": "Organization",
+            "name": "claw.pizza Team",
+            "url": "https://claw.pizza"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "claw.pizza",
+            "url": "https://claw.pizza"
+        },
+        "datePublished": "2026-02-21",
+        "dateModified": "2026-02-21",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://claw.pizza/blog/provably-fair-explained.html"
+        },
+        "keywords": ["provably fair", "fair claw machine", "how provably fair works", "HMAC-SHA256"]
+    }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0f;
+            color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.8;
+            font-size: 17px;
+        }
+        a { color: #FFB703; text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #E63946; }
+
+        .site-header {
+            background: linear-gradient(180deg, #111118 0%, #0a0a0f 100%);
+            border-bottom: 2px solid #E63946;
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo { font-size: 24px; font-weight: 800; }
+        .logo span.claw { color: #E63946; }
+        .logo span.pizza { color: #FFB703; }
+        .header-nav a { margin-left: 20px; font-size: 14px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .header-nav a:hover { color: #FFB703; }
+
+        .article-container { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+        .article-meta { display: flex; gap: 20px; font-size: 14px; color: #888; margin-bottom: 24px; flex-wrap: wrap; }
+        h1 {
+            font-size: 2.4em;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #FFB703, #E63946);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        h2 { font-size: 1.5em; color: #FFB703; margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #1a1a2e; }
+        h3 { font-size: 1.2em; color: #E63946; margin-top: 32px; margin-bottom: 12px; }
+        p { margin-bottom: 16px; color: #d0d0d0; }
+        ul, ol { margin: 16px 0; padding-left: 28px; color: #d0d0d0; }
+        li { margin-bottom: 8px; }
+        strong { color: #f0f0f0; }
+
+        .toc {
+            background: #111118;
+            border: 1px solid #1a1a2e;
+            border-left: 4px solid #E63946;
+            border-radius: 8px;
+            padding: 24px 28px;
+            margin: 32px 0;
+        }
+        .toc h3 { color: #f0f0f0; margin-top: 0; margin-bottom: 12px; font-size: 1em; text-transform: uppercase; letter-spacing: 1px; }
+        .toc ol { margin: 0; padding-left: 20px; }
+        .toc li { margin-bottom: 6px; font-size: 15px; }
+        .toc a { color: #FFB703; }
+
+        /* Code blocks */
+        pre {
+            background: #111118;
+            border: 1px solid #1a1a2e;
+            border-radius: 8px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+            color: #e0e0e0;
+        }
+        .code-comment { color: #666; }
+        .code-keyword { color: #E63946; }
+        .code-string { color: #2DC653; }
+        .code-function { color: #FFB703; }
+
+        /* Step indicators */
+        .step {
+            background: #111118;
+            border: 1px solid #1a1a2e;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 24px 0;
+            position: relative;
+            padding-left: 80px;
+        }
+        .step-number {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            width: 44px;
+            height: 44px;
+            background: #E63946;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+        }
+        .step h3 { margin-top: 0; }
+
+        .info-box {
+            background: #111118;
+            border: 1px solid #FFB703;
+            border-left: 4px solid #FFB703;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .info-box strong { color: #FFB703; }
+
+        .cta-box {
+            background: linear-gradient(135deg, #1a1a2e, #111118);
+            border: 2px solid #E63946;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin: 48px 0;
+        }
+        .cta-box h3 { color: #FFB703; font-size: 1.4em; margin-top: 0; }
+        .cta-box p { color: #ccc; }
+        .cta-button {
+            display: inline-block;
+            background: #E63946;
+            color: #fff;
+            padding: 14px 36px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 12px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .cta-button:hover { background: #c62833; color: #fff; transform: translateY(-2px); }
+
+        .related-posts { margin-top: 64px; padding-top: 32px; border-top: 1px solid #1a1a2e; }
+        .related-posts h2 { margin-top: 0; }
+        .related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .related-card {
+            background: #111118;
+            border: 1px solid #1a1a2e;
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+        .related-card:hover { border-color: #E63946; }
+        .related-card h4 { color: #FFB703; font-size: 1em; margin-bottom: 8px; }
+        .related-card p { font-size: 14px; color: #888; margin-bottom: 0; }
+
+        .site-footer {
+            background: #060609;
+            border-top: 1px solid #1a1a2e;
+            padding: 32px 24px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .footer-links { margin-bottom: 12px; }
+        .footer-links a { margin: 0 12px; color: #888; }
+        .footer-links a:hover { color: #FFB703; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            .related-grid { grid-template-columns: 1fr; }
+            .header-nav a { margin-left: 12px; font-size: 12px; }
+            .step { padding-left: 24px; padding-top: 60px; }
+            .step-number { top: 12px; left: 20px; }
+            pre { font-size: 12px; padding: 14px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="https://claw.pizza" class="logo"><span class="claw">claw</span>.<span class="pizza">pizza</span></a>
+        <nav class="header-nav">
+            <a href="https://claw.pizza">Play Now</a>
+            <a href="https://claw.pizza/blog/best-online-claw-machines.html">Blog</a>
+        </nav>
+    </div>
+</header>
+
+<main class="article-container">
+    <article>
+        <div class="article-meta">
+            <span>By claw.pizza Team</span>
+            <span>Published Feb 21, 2026</span>
+            <span>10 min read</span>
+        </div>
+
+        <h1>What is Provably Fair? How claw.pizza Guarantees Fair Play</h1>
+
+        <p>When you drop a coin into a physical claw machine, you have no way of knowing whether that particular play was set to win or lose. The machine's grip strength, payout cycle, and internal settings are completely hidden from you. You are trusting the operator to be fair, and as decades of industry documentation show, that trust is rarely warranted. Provably fair technology changes everything. It uses cryptography to create a system where fairness is not a promise but a mathematical certainty.</p>
+
+        <nav class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+                <li><a href="#problem">The Problem with Traditional Claw Machines</a></li>
+                <li><a href="#what-is">What Does Provably Fair Mean?</a></li>
+                <li><a href="#hmac">How HMAC-SHA256 Works</a></li>
+                <li><a href="#step-by-step">How claw.pizza's System Works</a></li>
+                <li><a href="#code">Verification Code Example</a></li>
+                <li><a href="#why-matters">Why This Matters for Players</a></li>
+                <li><a href="#verify">Verify Your Plays</a></li>
+            </ol>
+        </nav>
+
+        <h2 id="problem">The Problem with Traditional Claw Machines</h2>
+
+        <p>Physical claw machines have been a staple of arcades, malls, and restaurants since the early 1900s. The modern electronic versions, which became widespread in the 1980s, include a feature that most players do not know about: programmable payout rates. Operator manuals for popular machines explicitly describe how to set the "profit mode" or "strong claw" cycle.</p>
+
+        <p>For example, many machines allow operators to set a value like "1 in 18," meaning the claw will operate at full grip strength once every 18 plays. During the other 17 plays, the claw applies reduced voltage to its grip motor, causing it to drop prizes regardless of how perfectly the player positions it. Some machines even feature settings for how long after grabbing the prize the claw should weaken, creating the agonizing experience of watching your prize slip away during the return journey.</p>
+
+        <p>This system means that most claw machine plays are predetermined to lose before the player even inserts their money. The skill element, positioning the claw accurately, only matters during the rare payout cycles. Players have no way to know which cycle they are on, and operators have every financial incentive to set unfavorable ratios.</p>
+
+        <p>Online claw machines that use physical remote-controlled machines inherit this exact same problem. Platforms like Toreba and Clawee operate real crane machines, which means they can and do adjust grip strength to control payout rates. Players watching a live stream have even less ability to assess machine settings than someone standing in front of a physical machine.</p>
+
+        <h2 id="what-is">What Does Provably Fair Mean?</h2>
+
+        <p>Provably fair is a concept from cryptographic gaming where the outcome of every game can be independently verified by the player after it concludes. The system uses well-established cryptographic functions to ensure three critical properties:</p>
+
+        <ol>
+            <li><strong>Pre-commitment:</strong> The platform commits to the game outcome before the player makes any decisions, preventing the platform from changing the result based on the player's actions.</li>
+            <li><strong>Player influence:</strong> The player contributes randomness to the outcome, preventing the platform from predetermining a specific result.</li>
+            <li><strong>Verifiability:</strong> After the game, all inputs are revealed so the player can independently recalculate the outcome and confirm it matches what the platform reported.</li>
+        </ol>
+
+        <p>The key insight is that the platform cannot cheat because it commits to its secret before the player acts, and the player cannot cheat because they do not know the platform's secret. The combination of both secrets produces the outcome, and neither party can manipulate the result unilaterally.</p>
+
+        <h2 id="hmac">How HMAC-SHA256 Works in Simple Terms</h2>
+
+        <p>HMAC-SHA256 is the cryptographic function at the heart of provably fair systems. Let us break it down in plain language.</p>
+
+        <p><strong>SHA-256</strong> is a hash function. A hash function takes any input (a word, a sentence, an entire book) and produces a fixed-length output called a hash. SHA-256 always produces a 256-bit (64-character hexadecimal) output. The critical properties of SHA-256 are:</p>
+
+        <ul>
+            <li>The same input always produces the same hash.</li>
+            <li>Even a tiny change in the input (one letter, one space) produces a completely different hash.</li>
+            <li>It is computationally infeasible to reverse-engineer the input from the hash. You cannot figure out what went in by looking at what came out.</li>
+        </ul>
+
+        <p><strong>HMAC</strong> stands for Hash-based Message Authentication Code. It is a way to combine a secret key with a message using SHA-256. Think of it as a lock that requires two keys to open. The server's secret seed is one key, the player's client seed is the other. Only when both are combined does the HMAC-SHA256 function produce the output that determines the game result.</p>
+
+        <div class="info-box">
+            <strong>Key concept:</strong> SHA-256 is an industry standard used worldwide for secure communications, digital signatures, and blockchain technology. It was designed by the National Security Agency (NSA) and published by the National Institute of Standards and Technology (NIST) in 2001. It has never been broken or reversed in over two decades of use.
+        </div>
+
+        <h2 id="step-by-step">How claw.pizza's Provably Fair System Works</h2>
+
+        <p>Here is exactly what happens during every play on <a href="https://claw.pizza">claw.pizza</a>, step by step.</p>
+
+        <div class="step">
+            <div class="step-number">1</div>
+            <h3>Server Generates a Secret Seed</h3>
+            <p>Before the game begins, the claw.pizza server generates a random secret seed, a long string of random characters. This seed will be used to determine the game outcome. The server then creates a SHA-256 hash of this seed and shows it to the player. The player can see the hash but cannot determine the underlying seed from it (because SHA-256 is a one-way function). This is the commitment. The server has locked in its part of the outcome and cannot change it.</p>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <h3>Player Provides a Client Seed</h3>
+            <p>The player provides their own random seed, called the client seed. This can be auto-generated by the browser or manually entered by the player. The important thing is that the server does not know this seed when it creates its commitment. This means the server cannot have tailored its seed to produce a losing outcome for the player's specific seed.</p>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <h3>Combined Hash Determines the Outcome</h3>
+            <p>The server combines the server seed and the client seed using HMAC-SHA256. The resulting hash is a deterministic output that neither party could have predicted or manipulated independently. A portion of this hash is converted to a number that maps to the game outcome (win, lose, prize tier, and so on).</p>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <h3>Server Seed is Revealed for Verification</h3>
+            <p>After the play concludes, the server reveals its original secret seed. The player can now take this seed, hash it with SHA-256, and confirm it matches the hash they were shown before the game. This proves the server did not change its seed after seeing the player's input. The player can then compute the HMAC-SHA256 of the server seed and their client seed to independently verify the game result.</p>
+        </div>
+
+        <h2 id="code">Verification Code Example</h2>
+
+        <p>Here is a simplified JavaScript example showing how a player can verify a claw.pizza play. This code can be run in any browser console or Node.js environment.</p>
+
+        <pre><code><span class="code-comment">// Verification inputs (provided after each play)</span>
+<span class="code-keyword">const</span> serverSeed = <span class="code-string">"a1b2c3d4e5f6..."</span>;   <span class="code-comment">// Revealed after play</span>
+<span class="code-keyword">const</span> clientSeed = <span class="code-string">"your-seed-here"</span>;    <span class="code-comment">// Your seed</span>
+<span class="code-keyword">const</span> seedHash   = <span class="code-string">"7f3a9b..."</span>;          <span class="code-comment">// Shown before play</span>
+
+<span class="code-comment">// Step 1: Verify the server seed matches the pre-game hash</span>
+<span class="code-keyword">async function</span> <span class="code-function">sha256</span>(message) {
+  <span class="code-keyword">const</span> data = <span class="code-keyword">new</span> TextEncoder().<span class="code-function">encode</span>(message);
+  <span class="code-keyword">const</span> hashBuffer = <span class="code-keyword">await</span> crypto.subtle.<span class="code-function">digest</span>(<span class="code-string">"SHA-256"</span>, data);
+  <span class="code-keyword">return</span> Array.<span class="code-function">from</span>(<span class="code-keyword">new</span> Uint8Array(hashBuffer))
+    .<span class="code-function">map</span>(b =&gt; b.<span class="code-function">toString</span>(16).<span class="code-function">padStart</span>(2, <span class="code-string">"0"</span>)).<span class="code-function">join</span>(<span class="code-string">""</span>);
+}
+
+<span class="code-keyword">const</span> computedHash = <span class="code-keyword">await</span> <span class="code-function">sha256</span>(serverSeed);
+console.<span class="code-function">log</span>(<span class="code-string">"Hash matches:"</span>, computedHash === seedHash);
+<span class="code-comment">// If true, server did not change its seed</span>
+
+<span class="code-comment">// Step 2: Compute HMAC-SHA256 to verify the outcome</span>
+<span class="code-keyword">async function</span> <span class="code-function">hmacSHA256</span>(key, message) {
+  <span class="code-keyword">const</span> encoder = <span class="code-keyword">new</span> TextEncoder();
+  <span class="code-keyword">const</span> cryptoKey = <span class="code-keyword">await</span> crypto.subtle.<span class="code-function">importKey</span>(
+    <span class="code-string">"raw"</span>, encoder.<span class="code-function">encode</span>(key),
+    { name: <span class="code-string">"HMAC"</span>, hash: <span class="code-string">"SHA-256"</span> },
+    <span class="code-keyword">false</span>, [<span class="code-string">"sign"</span>]
+  );
+  <span class="code-keyword">const</span> sig = <span class="code-keyword">await</span> crypto.subtle.<span class="code-function">sign</span>(
+    <span class="code-string">"HMAC"</span>, cryptoKey, encoder.<span class="code-function">encode</span>(message)
+  );
+  <span class="code-keyword">return</span> Array.<span class="code-function">from</span>(<span class="code-keyword">new</span> Uint8Array(sig))
+    .<span class="code-function">map</span>(b =&gt; b.<span class="code-function">toString</span>(16).<span class="code-function">padStart</span>(2, <span class="code-string">"0"</span>)).<span class="code-function">join</span>(<span class="code-string">""</span>);
+}
+
+<span class="code-keyword">const</span> result = <span class="code-keyword">await</span> <span class="code-function">hmacSHA256</span>(serverSeed, clientSeed);
+console.<span class="code-function">log</span>(<span class="code-string">"Result hash:"</span>, result);
+<span class="code-comment">// Convert first 8 hex chars to a number</span>
+<span class="code-keyword">const</span> roll = parseInt(result.<span class="code-function">substring</span>(0, 8), 16) % 10000;
+console.<span class="code-function">log</span>(<span class="code-string">"Roll value:"</span>, roll);
+<span class="code-comment">// This number determines win/loss based on the prize tier odds</span></code></pre>
+
+        <p>This verification process is completely independent of the claw.pizza platform. You can run this code on your own computer, on a different website, or even write your own verification tool in Python, Go, or any programming language that supports SHA-256. The math is the same everywhere, and the result will always match.</p>
+
+        <h2 id="why-matters">Why This Matters for Players</h2>
+
+        <p>Provably fair technology fundamentally changes the relationship between the player and the platform. Here is why it matters.</p>
+
+        <h3>Trust is Replaced by Verification</h3>
+        <p>With traditional claw machines, you trust the operator. With provably fair systems, you verify the math. This is the same principle behind Bitcoin's famous mantra: "Don't trust, verify." You do not need to believe that claw.pizza is honest. You can prove it with every single play.</p>
+
+        <h3>Manipulation is Mathematically Impossible</h3>
+        <p>Because the server commits to its seed before the player acts, and the player's seed is unknown to the server at commitment time, neither party can manipulate the outcome. The server cannot adjust results based on how much a player has spent, how long they have been playing, or any other factor. Every play is determined purely by the cryptographic combination of two independent seeds.</p>
+
+        <h3>Win Rates are Auditable</h3>
+        <p>Because every play is verifiable, the actual win rate can be independently calculated by anyone. If claw.pizza claims a 1-in-10 win rate on a particular tier, players can collectively verify thousands of plays and confirm the actual rate matches. On traditional platforms, you only have the operator's word, which is worth precisely nothing when millions of dollars are at stake.</p>
+
+        <h3>No Hidden Payout Cycles</h3>
+        <p>Unlike physical claw machines with their <a href="https://claw.pizza/blog/how-to-win-claw-machines.html">grip strength cycling</a>, provably fair systems have no payout cycles. Every play has exactly the same probability of winning, regardless of when you play, how many people played before you, or how much money the platform has paid out recently. The randomness is genuine and uniform.</p>
+
+        <h3>Player Agency is Real</h3>
+        <p>By contributing your own client seed, you are actively participating in the outcome generation. This is not a gimmick. If you change your client seed, the outcome changes. You have genuine influence over the randomness, which is something no physical claw machine has ever offered.</p>
+
+        <h2 id="verify">Verify Your Plays on claw.pizza</h2>
+
+        <p>Every play you make on <a href="https://claw.pizza">claw.pizza</a> comes with complete verification data. After each game, you can view the server seed, client seed, seed hash, and result. Use the code example above or claw.pizza's built-in verification tool to confirm your results. We encourage every player to verify, not because we ask you to trust us, but because the entire point is that you do not have to.</p>
+
+        <p>Provably fair gaming is not just a feature. It is a fundamental shift in how online games should work. Every platform that asks for your money or your time should be willing to prove that the games are fair. If they cannot, ask yourself why.</p>
+
+        <div class="cta-box">
+            <h3>Experience Provably Fair Gaming</h3>
+            <p>Every play on claw.pizza is cryptographically verified. Claim your free daily plays and see for yourself.</p>
+            <a href="https://claw.pizza" class="cta-button">Play & Verify on claw.pizza</a>
+        </div>
+
+        <div class="related-posts">
+            <h2>Related Posts</h2>
+            <div class="related-grid">
+                <a href="https://claw.pizza/blog/best-online-claw-machines.html" class="related-card">
+                    <h4>Best Online Claw Machines 2026</h4>
+                    <p>Compare the top platforms and find the best place to play online claw machines.</p>
+                </a>
+                <a href="https://claw.pizza/blog/how-to-win-claw-machines.html" class="related-card">
+                    <h4>How to Win at Claw Machines</h4>
+                    <p>Expert tips and strategies for physical and online claw machines.</p>
+                </a>
+                <a href="https://claw.pizza/blog/claw-pizza-vs-toreba.html" class="related-card">
+                    <h4>Claw.Pizza vs Toreba vs Clawee</h4>
+                    <p>See how provably fair claw.pizza compares to traditional platforms.</p>
+                </a>
+            </div>
+        </div>
+    </article>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-links">
+        <a href="https://claw.pizza">Home</a>
+        <a href="https://claw.pizza/blog/best-online-claw-machines.html">Blog</a>
+        <a href="https://claw.pizza/blog/provably-fair-explained.html">Provably Fair</a>
+    </div>
+    <p>&copy; 2026 claw.pizza - Grab Your Slice. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

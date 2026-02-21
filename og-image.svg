@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+
+  <!-- Subtle grid pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1a2e" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Glow behind claw machine -->
+  <ellipse cx="600" cy="350" rx="250" ry="200" fill="#E63946" opacity="0.06"/>
+
+  <!-- Claw Machine Body -->
+  <!-- Cabinet -->
+  <rect x="430" y="120" width="340" height="380" rx="12" fill="none" stroke="#333" stroke-width="3"/>
+  <!-- Glass area -->
+  <rect x="445" y="160" width="310" height="300" rx="6" fill="#0d0d18" stroke="#444" stroke-width="2"/>
+  <!-- Top bar -->
+  <rect x="430" y="120" width="340" height="45" rx="12" fill="#1a1a2e"/>
+  <!-- Rail -->
+  <rect x="460" y="135" width="280" height="6" rx="3" fill="#555"/>
+
+  <!-- Claw Assembly -->
+  <!-- Trolley -->
+  <rect x="575" y="130" width="50" height="20" rx="4" fill="#888"/>
+  <!-- Cable -->
+  <line x1="600" y1="150" x2="600" y2="220" stroke="#aaa" stroke-width="2"/>
+  <!-- Claw hub -->
+  <circle cx="600" cy="225" r="10" fill="#aaa" stroke="#888" stroke-width="2"/>
+  <!-- Left arm -->
+  <path d="M590 225 Q575 250 565 270" fill="none" stroke="#ccc" stroke-width="4" stroke-linecap="round"/>
+  <path d="M565 270 Q560 278 558 282" fill="none" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+  <!-- Right arm -->
+  <path d="M610 225 Q625 250 635 270" fill="none" stroke="#ccc" stroke-width="4" stroke-linecap="round"/>
+  <path d="M635 270 Q640 278 642 282" fill="none" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Pizza slice being grabbed -->
+  <path d="M600 285 L560 400 L640 400 Z" fill="#FFB703" stroke="#E8A800" stroke-width="2"/>
+  <!-- Crust -->
+  <path d="M555 400 Q600 415 645 400" fill="#D4960A" stroke="#C48A00" stroke-width="2"/>
+  <!-- Pepperoni -->
+  <circle cx="585" cy="360" r="10" fill="#E63946"/>
+  <circle cx="615" cy="345" r="8" fill="#E63946"/>
+  <circle cx="598" cy="385" r="7" fill="#E63946"/>
+  <circle cx="575" cy="380" r="6" fill="#E63946"/>
+
+  <!-- Other prizes in machine -->
+  <!-- Small pizza 1 -->
+  <path d="M480 420 L465 450 L495 450 Z" fill="#FFB703" opacity="0.5"/>
+  <!-- Small pizza 2 -->
+  <path d="M720 430 L705 455 L735 455 Z" fill="#FFB703" opacity="0.4"/>
+  <!-- Token/coin -->
+  <circle cx="500" cy="440" r="12" fill="#FFB703" opacity="0.3" stroke="#E8A800" stroke-width="1"/>
+  <circle cx="700" cy="445" r="10" fill="#FFB703" opacity="0.25" stroke="#E8A800" stroke-width="1"/>
+
+  <!-- Machine lights -->
+  <circle cx="460" cy="140" r="5" fill="#E63946" opacity="0.9"/>
+  <circle cx="480" cy="140" r="5" fill="#FFB703" opacity="0.9"/>
+  <circle cx="720" cy="140" r="5" fill="#E63946" opacity="0.9"/>
+  <circle cx="740" cy="140" r="5" fill="#FFB703" opacity="0.9"/>
+
+  <!-- Main title -->
+  <text x="600" y="80" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="bold" fill="white" letter-spacing="2">claw.pizza</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="540" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="bold" fill="#FFB703">Grab Your Slice</text>
+
+  <!-- Bottom tagline -->
+  <text x="600" y="590" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#888">Real Prizes  &#x2022;  Provably Fair  &#x2022;  Play Free</text>
+</svg>
