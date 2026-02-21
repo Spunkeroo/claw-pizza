@@ -4273,7 +4273,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 
     const target = $(`#page-${page}`) || $(`.page[data-page="${page}"]`);
     if (target) {
-      target.style.display = '';
+      target.style.display = 'block';
       target.classList.add('active');
     }
 
@@ -4347,6 +4347,119 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     if (count >= 15) return { ...REF_TIERS.platinum, tierKey: 'platinum' };
     if (count >= 5) return { ...REF_TIERS.gold, tierKey: 'gold' };
     return { ...REF_TIERS.silver, tierKey: 'silver' };
+  }
+
+  // ── Promo Code System ───────────────────────────────────────
+  const PROMO_CODES = {
+    'FREEPIZZA': { credits: 25, maxUses: 1000, label: 'Free Pizza Promo' },
+    'PIZZA100': { credits: 100, maxUses: 500, label: 'Pizza 100 Launch' },
+    'GRABSLICE': { credits: 50, maxUses: 500, label: 'Grab a Slice' },
+    'CLAWKING': { credits: 200, maxUses: 100, label: 'Claw King VIP' },
+    'SUPREME': { credits: 500, maxUses: 50, label: 'Supreme Tester' },
+    'SPUNKART': { credits: 1000, maxUses: 10, label: 'SpunkArt Admin' },
+    'BETAPLAY': { credits: 75, maxUses: 200, label: 'Beta Tester' },
+    'LAUNCH2026': { credits: 150, maxUses: 100, label: 'Launch Day 2026' },
+  };
+
+  const VANITY_REFS = {
+    'spunk': 'owner',
+    'pizza': 'owner',
+    'claw': 'owner',
+  };
+
+  async function checkPromoCode() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('promo');
+    if (!code) return;
+
+    const upperCode = code.toUpperCase();
+    const promo = PROMO_CODES[upperCode];
+    if (!promo) {
+      showToast('Invalid promo code', 'error');
+      return;
+    }
+
+    // Check if already redeemed
+    const redeemed = ls('claw_promos_used', []);
+    if (redeemed.includes(upperCode)) {
+      showToast('Promo code already used!', 'warning');
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+      return;
+    }
+
+    // Check Firebase for global usage count
+    const usageData = await fbGet('promos/' + upperCode);
+    const useCount = usageData?.count || 0;
+    if (useCount >= promo.maxUses) {
+      showToast('Promo code expired - all claimed!', 'error');
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+      return;
+    }
+
+    // Redeem
+    addCredits(promo.credits);
+    redeemed.push(upperCode);
+    lsSet('claw_promos_used', redeemed);
+    await fbPatch('promos/' + upperCode, { count: useCount + 1 });
+
+    SoundFX.win();
+    showToast('\u{1F389} ' + promo.label + '! +' + promo.credits + ' credits!', 'success');
+    window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+  }
+
+  // Handle vanity referral codes
+  async function checkVanityRef() {
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (!refCode) return;
+
+    // Check if it's a vanity code
+    const vanity = VANITY_REFS[refCode.toLowerCase()];
+    if (vanity === 'owner') {
+      const alreadyReferred = ls('claw_referred_by');
+      if (alreadyReferred) return;
+
+      lsSet('claw_referred_by', 'spunk-owner');
+      addCredits(5); // Bonus for coming from owner's link
+      SoundFX.win();
+      showToast('Welcome from SpunkArt! +5 bonus credits!', 'success');
+
+      // Track in Firebase
+      const userId = getUserId();
+      await fbSet('referrals/spunk-owner/' + userId, { joined: Date.now(), userId, source: refCode });
+
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+    }
+  }
+
+  function redeemPromo(code) {
+    if (!code) return;
+    const upperCode = code.toUpperCase().trim();
+    const promo = PROMO_CODES[upperCode];
+    if (!promo) {
+      showToast('Invalid promo code!', 'error');
+      return;
+    }
+
+    const redeemed = ls('claw_promos_used', []);
+    if (redeemed.includes(upperCode)) {
+      showToast('Already redeemed!', 'warning');
+      return;
+    }
+
+    addCredits(promo.credits);
+    redeemed.push(upperCode);
+    lsSet('claw_promos_used', redeemed);
+    fbPatch('promos/' + upperCode, { count: (ls('promo_' + upperCode + '_count', 0)) + 1 });
+
+    SoundFX.win();
+    showToast(promo.label + '! +' + promo.credits + ' credits!', 'success');
+    updateCreditDisplays();
+  }
+
+  function promptPromoCode() {
+    const code = prompt('Enter promo code:');
+    if (code) redeemPromo(code);
   }
 
   async function checkReferralParam() {
@@ -5155,14 +5268,19 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   function initClawEngine(machineId) {
     const machine = MACHINES.find(m => m.id === machineId) || MACHINES[0];
 
-    // Destroy previous engine instance if any
     if (engineInitialized && window.ClawEngine) {
       window.ClawEngine.destroy();
       engineInitialized = false;
     }
 
-    // Wait for play page to be visible, then init 3D
-    setTimeout(() => {
+    // Wait for container to have actual dimensions before initializing
+    function tryInit() {
+      const container = document.getElementById('play-canvas');
+      if (!container || container.clientWidth === 0 || container.clientHeight === 0) {
+        requestAnimationFrame(tryInit);
+        return;
+      }
+
       try {
         if (!window.ClawEngine) {
           console.warn('[claw.pizza] ClawEngine not available');
@@ -5171,7 +5289,6 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 
         window.ClawEngine.init('play-canvas', machine.tier);
 
-        // Set up result callback
         window.ClawEngine.setOnResult((result) => {
           if (result.won && result.prize) {
             SoundFX.win();
@@ -5192,7 +5309,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         console.error('[claw.pizza] Failed to init 3D engine:', e);
         engineInitialized = false;
       }
-    }, 100);
+    }
+
+    requestAnimationFrame(tryInit);
   }
 
   function renderPlayPage() {
@@ -5500,6 +5619,11 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       </div>
 
       <div id="profile-referral-stats" style="margin:20px 0"></div>
+
+      <div style="margin:20px 0;padding:16px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;text-align:center">
+        <p style="color:#FFD700;margin:0 0 10px;font-weight:600">Have a promo code?</p>
+        <button class="btn btn-glow" onclick="ClawApp.promptPromoCode()" style="width:100%;max-width:260px">\u{1F3AB} Redeem Promo Code</button>
+      </div>
 
       <div class="profile-settings" style="margin:20px 0">
         <h3 style="color:#FFD700;margin-bottom:12px">Settings</h3>
@@ -5817,6 +5941,8 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 
     // Check referral param
     await checkReferralParam();
+    await checkPromoCode();
+    await checkVanityRef();
 
     // Update credit displays
     updateCreditDisplays();
@@ -5886,6 +6012,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     claimChallenge,
     shareWin,
     copyReferralLink,
+    redeemPromo,
+    checkPromoCode,
+    promptPromoCode,
     showRewardedAd,
     submitWaitlist,
     renderLeaderboard,
@@ -5924,7 +6053,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     REF_TIERS,
     CREDIT_PACKS,
     AMAZON_TAG,
-    BTC_ADDRESS
+    BTC_ADDRESS,
+    PROMO_CODES,
+    VANITY_REFS
   };
 
   // Auto-init on DOM ready
