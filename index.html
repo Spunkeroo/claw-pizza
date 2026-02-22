@@ -2064,7 +2064,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
               <div class="my-win-name">$25 Amazon Gift Card</div>
               <div class="my-win-date">Won Feb 19, 2026</div>
             </div>
-            <span class="claim-status shipped">Shipped</span>
+            <span class="claim-status shipped">Claimed</span>
           </div>
           <div class="my-win-item">
             <div class="my-win-img"></div>
@@ -2104,30 +2104,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
       <div class="form-group">
         <label for="claim-email">Email</label>
         <input type="email" id="claim-email" placeholder="john@example.com" required>
-      </div>
-      <div class="form-group">
-        <label for="claim-address">Street Address</label>
-        <input type="text" id="claim-address" placeholder="123 Pizza St" required>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="claim-city">City</label>
-          <input type="text" id="claim-city" placeholder="New York" required>
-        </div>
-        <div class="form-group">
-          <label for="claim-state">State</label>
-          <input type="text" id="claim-state" placeholder="NY" required>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="claim-zip">ZIP Code</label>
-          <input type="text" id="claim-zip" placeholder="10001" required>
-        </div>
-        <div class="form-group">
-          <label for="claim-country">Country</label>
-          <select id="claim-country"><option>United States</option><option>Canada</option><option>United Kingdom</option><option>Australia</option><option>Other</option></select>
-        </div>
       </div>
       <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Submit Claim</button>
     </form>
@@ -2506,11 +2482,11 @@ function getOutcome(serverSeed, clientSeed, nonce) {
           </div>
           <div class="faq-item">
             <button class="faq-question">
-              How are prizes shipped?
+              What happens when I win?
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8 L10 13 L15 8"/></svg>
             </button>
             <div class="faq-answer">
-              <p>Physical prizes are shipped via tracked mail within 3-5 business days to US addresses, and 7-14 days internationally. Digital prizes like gift cards are delivered instantly to your email. All shipping is free. You will receive a tracking number once your prize ships.</p>
+              <p>Virtual prizes are added to your collection in the Prize Gallery. You can view all your wins in the 'My Wins' tab anytime.</p>
             </div>
           </div>
           <div class="faq-item">
@@ -2519,7 +2495,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8 L10 13 L15 8"/></svg>
             </button>
             <div class="faq-answer">
-              <p>We accept all major credit and debit cards through Stripe, as well as Bitcoin (BTC) and Ethereum (ETH) for purchasing credits. You never need to pay to play, as free credits are available daily through the faucet and referral program.</p>
+              <p>You can play for free every day with credits from the daily faucet and referral program. Optional credit packs are also available if you want more plays.</p>
             </div>
           </div>
         </div>
@@ -2537,7 +2513,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         </div>
         <div class="trust-badge">
           <svg viewBox="0 0 40 40" fill="none" stroke="var(--basil)" stroke-width="2"><rect x="6" y="8" width="28" height="24" rx="3"/><path d="M6 16 H34"/><path d="M12 24 H22"/></svg>
-          <span>Real Prizes</span>
+          <span>Free to Play</span>
         </div>
       </div>
     </div>
@@ -2854,7 +2830,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         <input type="text" placeholder="Anonymous" value="Player42" aria-label="Display name">
       </div>
       <div class="form-group">
-        <label>Email (for prize delivery)</label>
+        <label>Email (for notifications)</label>
         <input type="email" placeholder="your@email.com" aria-label="Email">
       </div>
       <div class="setting-row">
