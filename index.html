@@ -104,7 +104,28 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 }
 @keyframes crosshair-pulse {
   0%,100% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
-  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+}
+@keyframes target-pulse {
+  0%,100% { box-shadow: 0 0 20px rgba(230,57,70,0.4), inset 0 0 10px rgba(230,57,70,0.2); transform: translate(-50%,-50%) scale(1); }
+  50% { box-shadow: 0 0 40px rgba(230,57,70,0.7), inset 0 0 20px rgba(230,57,70,0.3); transform: translate(-50%,-50%) scale(1.08); }
+}
+@keyframes countdown-pop {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+  40% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+  100% { opacity: 0.9; transform: translate(-50%,-50%) scale(1); }
+}
+@keyframes countdown-fade {
+  0% { opacity: 0.9; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+}
+@keyframes tap-instruction-float {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+@keyframes tutorial-hand-bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 @keyframes tutorial-fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes card-lift { from { transform: translateY(0) scale(1); } to { transform: translateY(-4px) scale(1.02); } }
@@ -414,39 +435,162 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 .machine-card-actions { display: flex; gap: 0.5rem; align-items: center; }
 .machine-card-actions .btn { flex: 1; }
 
-/* ---- Play Page ---- */
+/* ---- Play Page (Toreba-style 2-button) ---- */
 #page-play { position: relative; }
-.play-canvas-container { width: 100%; height: calc(100vh - 64px); background: #000; position: relative; overflow: hidden; }
-.play-canvas-container canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; }
-.play-hud { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 1rem; z-index: 10; }
-.hud-top { display: flex; justify-content: space-between; align-items: flex-start; pointer-events: auto; }
-.hud-credits { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; border: 1px solid var(--glass-border); }
-.hud-machine-name { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--glass-border); }
-.hud-timer { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0.5rem 1rem; border-radius: 20px; font-variant-numeric: tabular-nums; font-weight: 600; border: 1px solid var(--glass-border); }
-.hud-bottom { display: flex; justify-content: center; align-items: flex-end; gap: 2rem; pointer-events: auto; }
-.grab-button {
-  width: 88px; height: 88px; border-radius: 50%; background: var(--pepperoni);
-  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px;
-  font-weight: 900; font-size: 0.75rem; color: #fff; letter-spacing: 1px; text-transform: uppercase;
-  animation: glow-pulse 2s ease infinite;
-  transition: transform var(--transition);
-  box-shadow: 0 0 30px rgba(230,57,70,0.4);
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  min-width: 88px; min-height: 88px;
+.play-canvas-container {
+  width: 100%; height: calc(100vh - 64px); background: #000;
+  position: relative; overflow: hidden;
 }
-.grab-button.ready { animation: grab-ready-pulse 1.2s ease infinite; }
-.grab-button:hover { transform: scale(1.1); }
-.grab-button:active { transform: scale(0.95); }
-.grab-button svg { width: 32px; height: 32px; }
-.grab-button .grab-label { font-size: 0.65rem; letter-spacing: 2px; margin-top: 2px; }
-.joystick-area { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); position: absolute; bottom: 2rem; left: 2rem; display: none; }
-.joystick-knob { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.15); position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-.provably-fair-toggle { position: absolute; bottom: 1rem; right: 1rem; pointer-events: auto; }
+.play-canvas-container canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; }
+.play-canvas-container.crosshair-cursor canvas { cursor: crosshair; }
 
-/* ---- Claw Crosshair / Target Indicator ---- */
+/* HUD overlay */
+.play-hud {
+  position: absolute; inset: 0; pointer-events: none;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 0.75rem; z-index: 10;
+}
+.hud-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  pointer-events: auto; gap: 0.5rem;
+}
+.hud-top-left { display: flex; gap: 0.5rem; align-items: center; }
+.hud-credits {
+  background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;
+  border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 0.3rem;
+}
+.hud-machine-name {
+  background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem;
+  border: 1px solid var(--glass-border);
+}
+.hud-top-right { display: flex; gap: 0.5rem; align-items: center; }
+.hud-win-rate {
+  background: rgba(45,198,83,0.15); border: 1px solid rgba(45,198,83,0.3);
+  padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+  color: var(--basil); pointer-events: auto;
+}
+.hud-sound-btn {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--glass);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border); display: flex; align-items: center;
+  justify-content: center; pointer-events: auto; color: var(--text); font-size: 1.1rem;
+  transition: background var(--transition);
+}
+.hud-sound-btn:hover { background: rgba(255,255,255,0.1); }
+.hud-sound-btn.muted { color: var(--text-dim); }
+
+/* Center status area */
+.hud-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none; z-index: 15; text-align: center;
+}
+.hud-countdown {
+  font-size: 4rem; font-weight: 900; color: var(--mozzarella);
+  text-shadow: 0 0 30px rgba(255,183,3,0.6), 0 4px 8px rgba(0,0,0,0.8);
+  opacity: 0; transition: opacity 0.2s ease; pointer-events: none;
+}
+.hud-countdown.visible { opacity: 1; animation: pulse 0.4s ease; }
+.hud-phase-label {
+  font-size: 1rem; font-weight: 700; color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  margin-top: 0.5rem; opacity: 0; transition: opacity 0.3s ease;
+}
+.hud-phase-label.visible { opacity: 1; }
+
+/* Bottom controls area */
+.hud-bottom {
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+  pointer-events: auto; padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Toreba-style directional buttons */
+.toreba-controls { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 400px; }
+
+.toreba-btn {
+  width: 100%; height: 80px; border-radius: 16px; font-weight: 800; font-size: 1.1rem;
+  color: #fff; letter-spacing: 1px; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  user-select: none; -webkit-user-select: none;
+  position: relative; overflow: hidden;
+}
+.toreba-btn:active { transform: scale(0.97); }
+
+.toreba-btn-lr {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+}
+.toreba-btn-lr:active, .toreba-btn-lr.active {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  box-shadow: 0 2px 30px rgba(37,99,235,0.7);
+}
+
+.toreba-btn-fb {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+}
+.toreba-btn-fb:active, .toreba-btn-fb.active {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  box-shadow: 0 2px 30px rgba(124,58,237,0.7);
+}
+
+.toreba-btn-drop {
+  background: linear-gradient(135deg, var(--pepperoni), #ff4444);
+  box-shadow: 0 4px 20px rgba(230,57,70,0.5);
+  animation: glow-pulse 1.5s ease infinite;
+  height: 70px; font-size: 1.3rem;
+}
+.toreba-btn-drop:active {
+  animation: none;
+  box-shadow: 0 2px 30px rgba(230,57,70,0.8);
+}
+
+.toreba-btn-play {
+  background: linear-gradient(135deg, var(--basil), #34d058);
+  box-shadow: 0 4px 20px rgba(45,198,83,0.4);
+  animation: glow-pulse 2s ease infinite;
+  height: 80px; font-size: 1.4rem;
+}
+.toreba-btn-play:active {
+  animation: none;
+  transform: scale(0.97);
+}
+
+.toreba-btn .btn-arrows { font-size: 1.4rem; opacity: 0.9; }
+.toreba-btn .btn-key-hint {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 0.65rem; opacity: 0.5; font-weight: 500; letter-spacing: 0;
+}
+
+/* Timer bar under controls */
+.toreba-timer-bar {
+  width: 100%; max-width: 400px; height: 6px; background: rgba(255,255,255,0.1);
+  border-radius: 3px; overflow: hidden;
+}
+.toreba-timer-fill {
+  height: 100%; background: linear-gradient(90deg, var(--basil), var(--mozzarella));
+  border-radius: 3px; transition: width 0.3s linear;
+}
+.toreba-timer-fill.low { background: linear-gradient(90deg, var(--pepperoni), #ff4444); }
+
+/* Drop zone shadow */
+.claw-drop-shadow {
+  position: absolute; pointer-events: none; z-index: 4;
+  width: 50px; height: 20px;
+  background: radial-gradient(ellipse, rgba(230,57,70,0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+.claw-drop-shadow.visible { display: block; }
+
+/* Crosshair */
 .claw-crosshair {
   position: absolute; pointer-events: none; z-index: 5;
-  width: 48px; height: 48px;
+  width: 64px; height: 64px;
   transform: translate(-50%, -50%);
   animation: crosshair-pulse 1.5s ease infinite;
   display: none;
@@ -454,43 +598,119 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 .claw-crosshair svg { width: 100%; height: 100%; }
 .claw-crosshair.visible { display: block; }
 
-/* ---- Drop Zone Shadow ---- */
-.claw-drop-shadow {
+/* Tap-to-drop target indicator */
+.tap-target-indicator {
+  position: absolute; pointer-events: none; z-index: 6;
+  width: 64px; height: 64px;
+  border: 3px solid #E63946;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: target-pulse 1.5s ease infinite;
+  display: none;
+}
+.tap-target-indicator::before {
+  content: ''; position: absolute; inset: 6px;
+  border: 2px dashed rgba(230,57,70,0.5);
+  border-radius: 50%;
+}
+.tap-target-indicator::after {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; width: 8px; height: 8px;
+  background: #E63946; border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.tap-target-indicator.visible { display: block; }
+
+/* Drop countdown overlay */
+.drop-countdown {
+  position: absolute; pointer-events: none; z-index: 30;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 72px; font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(230,57,70,0.8), 0 4px 12px rgba(0,0,0,0.9);
+  opacity: 0;
+  display: none;
+  font-family: var(--font);
+  letter-spacing: -2px;
+}
+.drop-countdown.visible {
+  display: block;
+  animation: countdown-pop 0.35s ease forwards;
+}
+.drop-countdown.fade-out {
+  animation: countdown-fade 0.15s ease forwards;
+}
+
+/* Hide joystick - tap-to-drop only */
+.joystick-area { display: none !important; }
+
+/* Tap instruction overlay */
+.tap-instruction {
+  position: absolute; pointer-events: none; z-index: 10;
+  bottom: 15%; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(230,57,70,0.4);
+  border-radius: 24px;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem; font-weight: 700;
+  color: #fff; white-space: nowrap;
+  animation: tap-instruction-float 2.5s ease infinite;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.tap-instruction .accent { color: #E63946; }
+
+/* Glide trail line from claw to target */
+.claw-glide-trail {
+  position: absolute; pointer-events: none; z-index: 3;
+  border: none; height: 2px;
+  background: linear-gradient(90deg, rgba(230,57,70,0.6), rgba(255,183,3,0.3));
+  transform-origin: left center;
+  display: none;
+  opacity: 0.7;
+}
+.claw-glide-trail.visible { display: block; }
+
+/* Dotted drop line */
+.claw-drop-line {
+  position: absolute; pointer-events: none; z-index: 3;
+  width: 0; border-left: 2px dashed rgba(255,183,3,0.5);
+  transform: translateX(-50%);
+  display: none;
+}
+.claw-drop-line.visible { display: block; }
+
+/* Mouse hover preview */
+.claw-hover-preview {
   position: absolute; pointer-events: none; z-index: 4;
-  width: 40px; height: 16px;
-  background: radial-gradient(ellipse, rgba(230,57,70,0.5) 0%, transparent 70%);
+  width: 40px; height: 40px;
+  border: 2px dashed rgba(255,255,255,0.3);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   display: none;
 }
-.claw-drop-shadow.visible { display: block; }
+.claw-hover-preview.visible { display: block; }
 
-/* ---- Tap Hint ---- */
-.tap-hint {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  pointer-events: none; z-index: 6;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  padding: 0.75rem 1.5rem; border-radius: 24px;
-  font-size: 0.9rem; font-weight: 600; color: #fff;
-  border: 1px solid rgba(255,183,3,0.3);
-  opacity: 0; transition: opacity 0.4s ease;
-  white-space: nowrap;
+/* Provably fair button */
+.provably-fair-toggle {
+  position: absolute; bottom: 1rem; right: 1rem; pointer-events: auto; z-index: 11;
 }
-.tap-hint.visible { opacity: 1; }
 
-/* ---- Tutorial Overlay ---- */
+/* Tutorial overlay (Toreba-style) */
 .claw-tutorial-overlay {
   position: absolute; inset: 0; z-index: 50;
-  background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
   animation: fade-in 0.3s ease; pointer-events: auto;
 }
 .claw-tutorial-content {
-  text-align: center; max-width: 320px; padding: 2rem 1.5rem;
+  text-align: center; max-width: 340px; padding: 2rem 1.5rem;
   animation: tutorial-fade-in 0.5s ease;
 }
 .claw-tutorial-content h3 {
-  font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--mozzarella);
+  font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--mozzarella);
 }
 .claw-tutorial-steps {
   display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem;
@@ -499,8 +719,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
   display: flex; align-items: center; gap: 1rem; text-align: left;
 }
 .claw-tutorial-step .step-num {
-  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
-  background: var(--pepperoni); color: #fff; font-weight: 900; font-size: 1rem;
+  flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+  background: var(--pepperoni); color: #fff; font-weight: 900; font-size: 1.1rem;
   display: flex; align-items: center; justify-content: center;
 }
 .claw-tutorial-step .step-text {
@@ -516,14 +736,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 }
 .claw-tutorial-dismiss:hover { transform: scale(1.05); background: #ffc933; }
 
-/* ---- Position Indicator Line ---- */
-.claw-position-line {
-  position: absolute; top: 0; width: 2px; height: 100%;
-  background: linear-gradient(to bottom, rgba(255,183,3,0.6), transparent 80%);
-  pointer-events: none; z-index: 3; display: none;
-  transform: translateX(-50%);
+/* Desktop: hide mobile controls */
+@media (min-width: 769px) {
+  .toreba-controls { max-width: 320px; }
+  .toreba-btn { height: 64px; font-size: 1rem; }
+  .toreba-btn-play { height: 64px; font-size: 1.2rem; }
+  .toreba-btn-drop { height: 56px; font-size: 1.1rem; }
 }
-.claw-position-line.visible { display: block; }
 
 /* ---- Result Modal ---- */
 .result-modal {
@@ -857,7 +1076,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
   .hero { padding: 2.5rem 1rem 2rem; }
   .stats-row { gap: 1rem; }
   .stat-value { font-size: 1.25rem; }
-  .joystick-area { display: block; }
+  /* joystick removed — tap-to-drop system */
   #toast-container { top: auto; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); right: 0.5rem; left: 0.5rem; }
   .toast { min-width: auto; }
 }
@@ -1654,13 +1873,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
   <div class="play-canvas-container" id="play-canvas">
     <!-- Crosshair target indicator -->
     <div class="claw-crosshair" id="claw-crosshair">
-      <svg viewBox="0 0 48 48" fill="none" stroke="#FFB703" stroke-width="2">
-        <circle cx="24" cy="24" r="14" stroke-dasharray="4 3" opacity="0.8"/>
-        <line x1="24" y1="4" x2="24" y2="16" opacity="0.6"/>
-        <line x1="24" y1="32" x2="24" y2="44" opacity="0.6"/>
-        <line x1="4" y1="24" x2="16" y2="24" opacity="0.6"/>
-        <line x1="32" y1="24" x2="44" y2="24" opacity="0.6"/>
-        <circle cx="24" cy="24" r="3" fill="#FFB703" opacity="0.8"/>
+      <svg viewBox="0 0 64 64" fill="none" stroke="#E63946" stroke-width="2.5">
+        <circle cx="32" cy="32" r="20" stroke-dasharray="5 3" opacity="0.8"/>
+        <line x1="32" y1="4" x2="32" y2="20" opacity="0.6"/>
+        <line x1="32" y1="44" x2="32" y2="60" opacity="0.6"/>
+        <line x1="4" y1="32" x2="20" y2="32" opacity="0.6"/>
+        <line x1="44" y1="32" x2="60" y2="32" opacity="0.6"/>
+        <circle cx="32" cy="32" r="4" fill="#E63946" opacity="0.9"/>
       </svg>
     </div>
     <!-- Drop zone shadow -->
@@ -1668,7 +1887,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
     <!-- Position line -->
     <div class="claw-position-line" id="claw-position-line"></div>
     <!-- Tap hint -->
-    <div class="tap-hint" id="claw-tap-hint">Tap to position the claw, then press GRAB</div>
+    <div class="tap-hint" id="claw-tap-hint">TAP WHERE YOU WANT THE CLAW TO DROP</div>
     <div class="play-hud">
       <div class="hud-top">
         <div class="hud-credits">
@@ -1678,35 +1897,33 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
         <div class="hud-machine-name" id="hud-machine-name">Pizza Paradise</div>
         <div class="hud-timer" id="hud-timer">0:30</div>
       </div>
-      <div class="hud-bottom">
-        <button class="grab-button" id="btn-grab" aria-label="Grab">
-          <svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.5"><path d="M16 4 V12"/><path d="M10 8 L16 14 L22 8"/><path d="M8 14 Q8 22 16 24 Q24 22 24 14"/></svg>
-          <span class="grab-label">GRAB</span>
-        </button>
+      <div class="hud-bottom" id="hud-bottom">
+        <div class="tap-instruction" id="tap-instruction">TAP WHERE YOU WANT THE CLAW TO <span class="accent">DROP</span></div>
       </div>
     </div>
-    <div class="joystick-area">
-      <div class="joystick-knob"></div>
-    </div>
+    <!-- Joystick removed — tap-to-drop system -->
+    <div class="drop-countdown" id="drop-countdown"></div>
     <button class="btn btn-sm btn-secondary provably-fair-toggle" id="btn-pf-toggle">Provably Fair</button>
     <!-- Tutorial overlay (first time) -->
     <div class="claw-tutorial-overlay" id="claw-tutorial" style="display:none;">
       <div class="claw-tutorial-content">
-        <h3>How to Play</h3>
+        <h3>TAP TO PLAY</h3>
         <div class="claw-tutorial-steps">
           <div class="claw-tutorial-step">
-            <div class="step-num">1</div>
-            <div class="step-text"><strong>Tap</strong> anywhere to position the claw over a prize</div>
-          </div>
-          <div class="claw-tutorial-step">
-            <div class="step-num">2</div>
-            <div class="step-text">Press the <strong>GRAB</strong> button to drop the claw</div>
+            <div class="step-num" style="font-size:1.5rem;">&#9759;</div>
+            <div class="step-text"><strong>Tap</strong> where you want the claw to go</div>
           </div>
           <div class="claw-tutorial-step">
             <div class="step-num">3</div>
-            <div class="step-text"><strong>Win prizes!</strong> The claw grabs and you win</div>
+            <div class="step-text">Watch the <strong>3-2-1 countdown</strong></div>
+          </div>
+          <div class="claw-tutorial-step">
+            <div class="step-num" style="font-size:1.3rem;">&#127942;</div>
+            <div class="step-text">The claw <strong>auto-drops &amp; grabs!</strong></div>
           </div>
         </div>
+        <div style="margin-top:1rem;animation:tutorial-hand-bounce 1.5s ease infinite;font-size:2.5rem;">&#9759;</div>
+        <p style="color:var(--text-dim);font-size:0.85rem;margin:0.5rem 0 1.5rem;">Tap anywhere on the machine</p>
         <button class="claw-tutorial-dismiss" id="claw-tutorial-dismiss">Got it!</button>
       </div>
     </div>
@@ -2879,6 +3096,22 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   let cameraShake = { active: false, intensity: 0, decay: 0.92 };
   let cameraBasePos = new THREE.Vector3();
 
+  // Desktop improvements state
+  let quickPlayEnabled = false;
+  let quickPlayTimer = null;
+  let mouseHoverPreviewEl = null;
+  let keyboardOverlayEl = null;
+  let gridLinesGroup = null;
+  let cameraZoom = 1.0;
+  const CAMERA_ZOOM_MIN = 0.7;
+  const CAMERA_ZOOM_MAX = 1.4;
+  const CAMERA_ZOOM_STEP = 0.05;
+  // Smooth WASD acceleration
+  let keyAccel = { x: 0, z: 0 };
+  const KEY_ACCEL_RATE = 4.0;   // how fast speed ramps up (units/s^2)
+  const KEY_ACCEL_MAX = 1.0;    // max multiplier
+  const KEY_DECEL_RATE = 8.0;   // how fast it decelerates when released
+
   // ─── PROVABLY FAIR ─────────────────────────────────────────────────
 
   async function hmacSha256(key, message) {
@@ -3788,6 +4021,19 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         dropClaw();
       }
     }
+
+    // R key: reset claw to center position
+    if (e.key.toLowerCase() === 'r' && state === STATES.MOVING) {
+      e.preventDefault();
+      targetClawX = MACHINE.homeX;
+      targetClawZ = MACHINE.homeZ;
+    }
+
+    // Q key: toggle Quick Play mode
+    if (e.key.toLowerCase() === 'q') {
+      e.preventDefault();
+      toggleQuickPlay();
+    }
   }
 
   function onKeyUp(e) {
@@ -3795,10 +4041,12 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     keysDown[e.code] = false;
   }
 
-  function processKeyboardInput() {
+  function processKeyboardInput(dt) {
     if (state !== STATES.MOVING) {
       moveInput.x = 0;
       moveInput.z = 0;
+      keyAccel.x = 0;
+      keyAccel.z = 0;
       return;
     }
 
@@ -3807,8 +4055,25 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     if (keysDown['d'] || keysDown['arrowright']) mx += 1;
     if (keysDown['w'] || keysDown['arrowup']) mz -= 1;
     if (keysDown['s'] || keysDown['arrowdown']) mz += 1;
-    moveInput.x = mx;
-    moveInput.z = mz;
+
+    // Smooth acceleration: ramp up while key held, decelerate when released
+    if (mx !== 0) {
+      keyAccel.x = Math.min(KEY_ACCEL_MAX, Math.abs(keyAccel.x) + KEY_ACCEL_RATE * (dt || 0.016));
+      moveInput.x = mx * keyAccel.x;
+    } else {
+      keyAccel.x = Math.max(0, keyAccel.x - KEY_DECEL_RATE * (dt || 0.016));
+      moveInput.x = moveInput.x > 0 ? keyAccel.x : -keyAccel.x;
+      if (keyAccel.x < 0.01) moveInput.x = 0;
+    }
+
+    if (mz !== 0) {
+      keyAccel.z = Math.min(KEY_ACCEL_MAX, Math.abs(keyAccel.z) + KEY_ACCEL_RATE * (dt || 0.016));
+      moveInput.z = mz * keyAccel.z;
+    } else {
+      keyAccel.z = Math.max(0, keyAccel.z - KEY_DECEL_RATE * (dt || 0.016));
+      moveInput.z = moveInput.z > 0 ? keyAccel.z : -keyAccel.z;
+      if (keyAccel.z < 0.01) moveInput.z = 0;
+    }
 
     // Cancel click-to-position if keyboard is being used
     if (mx !== 0 || mz !== 0) {
@@ -3947,15 +4212,193 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     }
   }
 
+  // ─── QUICK PLAY TOGGLE ─────────────────────────────────────────
+  function toggleQuickPlay() {
+    quickPlayEnabled = !quickPlayEnabled;
+    const btn = document.getElementById('quick-play-toggle');
+    if (btn) {
+      btn.classList.toggle('active', quickPlayEnabled);
+      btn.textContent = quickPlayEnabled ? 'Quick Play: ON' : 'Quick Play: OFF';
+    }
+    // Update keyboard overlay
+    updateKeyboardOverlay();
+  }
+
+  // ─── MOUSE HOVER PREVIEW ─────────────────────────────────────────
+  function handleMouseMove(e) {
+    if (state !== STATES.MOVING) {
+      if (mouseHoverPreviewEl) mouseHoverPreviewEl.classList.remove('visible');
+      return;
+    }
+    const coords = screenToMachineCoords(e.clientX, e.clientY);
+    if (!coords || !mouseHoverPreviewEl) return;
+
+    // Show a preview marker at the mouse hover position on the pit floor
+    const shadowPos = dropShadowScreenPos(coords.x, coords.z);
+    if (shadowPos) {
+      mouseHoverPreviewEl.style.left = shadowPos.x + 'px';
+      mouseHoverPreviewEl.style.top = shadowPos.y + 'px';
+      mouseHoverPreviewEl.classList.add('visible');
+    }
+  }
+
+  function handleMouseLeave() {
+    if (mouseHoverPreviewEl) mouseHoverPreviewEl.classList.remove('visible');
+  }
+
+  // ─── MOUSE WHEEL ZOOM ────────────────────────────────────────────
+  function handleMouseWheel(e) {
+    e.preventDefault();
+    if (!camera) return;
+    const delta = e.deltaY > 0 ? CAMERA_ZOOM_STEP : -CAMERA_ZOOM_STEP;
+    cameraZoom = Math.max(CAMERA_ZOOM_MIN, Math.min(CAMERA_ZOOM_MAX, cameraZoom + delta));
+    // Adjust camera FOV for zoom effect
+    camera.fov = 50 * cameraZoom;
+    camera.updateProjectionMatrix();
+  }
+
+  // ─── CURSOR MANAGEMENT ────────────────────────────────────────────
+  function updateCursorStyle() {
+    if (!renderer || !renderer.domElement) return;
+    if (state === STATES.DROPPING || state === STATES.GRABBING) {
+      renderer.domElement.style.cursor = 'grabbing';
+    } else if (state === STATES.MOVING) {
+      renderer.domElement.style.cursor = 'crosshair';
+    } else {
+      renderer.domElement.style.cursor = 'default';
+    }
+  }
+
+  // ─── KEYBOARD SHORTCUTS OVERLAY ───────────────────────────────────
+  function createKeyboardOverlay() {
+    if (keyboardOverlayEl) return;
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobile) return; // Don't show on mobile
+
+    keyboardOverlayEl = document.createElement('div');
+    keyboardOverlayEl.id = 'keyboard-shortcuts-overlay';
+    keyboardOverlayEl.innerHTML = `
+      <div class="kb-shortcut"><kbd>WASD</kbd> / <kbd>Arrows</kbd> Move claw</div>
+      <div class="kb-shortcut"><kbd>Space</kbd> Drop claw</div>
+      <div class="kb-shortcut"><kbd>Q</kbd> Quick play toggle</div>
+      <div class="kb-shortcut"><kbd>R</kbd> Reset position</div>
+      <div class="kb-shortcut"><kbd>Scroll</kbd> Zoom in/out</div>
+      <button class="kb-dismiss" onclick="this.parentElement.style.display='none'">&times;</button>
+    `;
+    if (container) container.appendChild(keyboardOverlayEl);
+  }
+
+  function showKeyboardOverlay(show) {
+    if (!keyboardOverlayEl) return;
+    keyboardOverlayEl.style.display = show ? 'block' : 'none';
+  }
+
+  function updateKeyboardOverlay() {
+    if (!keyboardOverlayEl) return;
+    const qLine = keyboardOverlayEl.querySelector('.kb-shortcut:nth-child(3)');
+    if (qLine) {
+      qLine.innerHTML = '<kbd>Q</kbd> Quick play: ' + (quickPlayEnabled ? 'ON' : 'OFF');
+    }
+  }
+
+  // ─── VISUAL GRID LINES ON PIT FLOOR ──────────────────────────────
+  function createGridLines() {
+    if (gridLinesGroup) return;
+    gridLinesGroup = new THREE.Group();
+    gridLinesGroup.position.y = 0.13; // Just above pit floor
+
+    const gridMat = new THREE.LineBasicMaterial({
+      color: 0x3a3a5e,
+      transparent: true,
+      opacity: 0.3
+    });
+
+    const halfW = MACHINE.width / 2 - 0.15;
+    const halfD = MACHINE.depth / 2 - 0.15;
+    const step = 0.5; // Grid spacing
+
+    // X-direction lines
+    for (let z = -halfD; z <= halfD; z += step) {
+      const geo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-halfW, 0, z),
+        new THREE.Vector3(halfW, 0, z)
+      ]);
+      gridLinesGroup.add(new THREE.Line(geo, gridMat));
+    }
+    // Z-direction lines
+    for (let x = -halfW; x <= halfW; x += step) {
+      const geo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(x, 0, -halfD),
+        new THREE.Vector3(x, 0, halfD)
+      ]);
+      gridLinesGroup.add(new THREE.Line(geo, gridMat));
+    }
+
+    scene.add(gridLinesGroup);
+  }
+
+  let autoDropPending = false;
+
   function handleCanvasClick(clientX, clientY) {
     if (state !== STATES.MOVING) return;
     const coords = screenToMachineCoords(clientX, clientY);
     if (!coords) return;
 
+    // Cancel any in-progress auto-drop countdown (player re-aimed)
+    cancelAutoDropCountdown();
+
     // Set target for smooth movement
     targetClawX = coords.x;
     targetClawZ = coords.z;
     hapticFeedback(10);
+
+    // Mark that we want auto-drop after claw arrives
+    autoDropPending = true;
+  }
+
+  let autoDropCountdownTimer = null;
+
+  function startAutoDropCountdown() {
+    if (autoDropCountdownTimer) return; // already running
+    const cdEl = document.getElementById('drop-countdown');
+    let count = 3;
+
+    function showCount() {
+      if (state !== STATES.MOVING) {
+        if (cdEl) { cdEl.classList.remove('visible'); cdEl.style.display = 'none'; }
+        autoDropCountdownTimer = null;
+        return;
+      }
+      if (count > 0) {
+        if (cdEl) {
+          cdEl.textContent = count;
+          cdEl.classList.remove('visible', 'fade-out');
+          cdEl.style.display = 'block';
+          // Force reflow for re-animation
+          void cdEl.offsetWidth;
+          cdEl.classList.add('visible');
+        }
+        count--;
+        autoDropCountdownTimer = setTimeout(showCount, 500);
+      } else {
+        if (cdEl) { cdEl.classList.remove('visible'); cdEl.classList.add('fade-out'); }
+        autoDropCountdownTimer = null;
+        autoDropPending = false;
+        if (state === STATES.MOVING) {
+          dropClaw();
+        }
+      }
+    }
+    showCount();
+  }
+
+  function cancelAutoDropCountdown() {
+    if (autoDropCountdownTimer) {
+      clearTimeout(autoDropCountdownTimer);
+      autoDropCountdownTimer = null;
+    }
+    const cdEl = document.getElementById('drop-countdown');
+    if (cdEl) { cdEl.classList.remove('visible'); cdEl.style.display = 'none'; }
   }
 
   function processClickToPosition(dt) {
@@ -3963,15 +4406,18 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     if (state !== STATES.MOVING) {
       targetClawX = null;
       targetClawZ = null;
+      autoDropPending = false;
+      cancelAutoDropCountdown();
       return;
     }
     if (targetClawX === null || targetClawZ === null) return;
 
-    // If keyboard or joystick is active, cancel click target
+    // If keyboard is active, cancel click target and auto-drop
     if ((moveInput.x !== 0 || moveInput.z !== 0) && !joystick.active && targetClawX !== null) {
-      // Keyboard overrides click target
       targetClawX = null;
       targetClawZ = null;
+      autoDropPending = false;
+      cancelAutoDropCountdown();
       return;
     }
 
@@ -3985,6 +4431,10 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       targetClawX = null;
       targetClawZ = null;
       updateClawPosition();
+      // Claw arrived — start auto-drop countdown
+      if (autoDropPending) {
+        startAutoDropCountdown();
+      }
       return;
     }
 
@@ -3994,6 +4444,11 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       clawZ = targetClawZ;
       targetClawX = null;
       targetClawZ = null;
+      updateClawPosition();
+      // Claw arrived — start auto-drop countdown
+      if (autoDropPending) {
+        startAutoDropCountdown();
+      }
     } else {
       clawX += (dx / dist) * step;
       clawZ += (dz / dist) * step;
@@ -4021,6 +4476,36 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       renderer.domElement.addEventListener('click', (e) => {
         handleCanvasClick(e.clientX, e.clientY);
       });
+
+      // Mouse hover preview (desktop only)
+      renderer.domElement.addEventListener('mousemove', handleMouseMove);
+      renderer.domElement.addEventListener('mouseleave', handleMouseLeave);
+
+      // Mouse wheel zoom (desktop only)
+      renderer.domElement.addEventListener('wheel', handleMouseWheel, { passive: false });
+
+      // Create hover preview element
+      mouseHoverPreviewEl = document.createElement('div');
+      mouseHoverPreviewEl.id = 'claw-hover-preview';
+      mouseHoverPreviewEl.className = 'claw-hover-preview';
+      container.appendChild(mouseHoverPreviewEl);
+
+      // Create Quick Play toggle button (desktop only)
+      const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (!isMobile) {
+        const qpBtn = document.createElement('button');
+        qpBtn.id = 'quick-play-toggle';
+        qpBtn.className = 'quick-play-btn';
+        qpBtn.textContent = 'Quick Play: OFF';
+        qpBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleQuickPlay();
+        });
+        container.appendChild(qpBtn);
+      }
+
+      // Initial cursor style
+      renderer.domElement.style.cursor = 'crosshair';
 
       // Touch tap to position (prevent conflicts with joystick)
       renderer.domElement.addEventListener('touchstart', (e) => {
@@ -4234,11 +4719,14 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     moveTimer = MACHINE.moveTimeLimit;
     targetClawX = null;
     targetClawZ = null;
+    keyAccel.x = 0;
+    keyAccel.z = 0;
     setState(STATES.MOVING);
     showTimer();
     showMobileControls(true);
     showTapHint();
     updateGrabButtonState();
+    showKeyboardOverlay(true);
 
     return true;
   }
@@ -4251,11 +4739,17 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     showMobileControls(false);
     targetClawX = null;
     targetClawZ = null;
+    autoDropPending = false;
+    cancelAutoDropCountdown();
     updateGrabButtonState();
     if (crosshairEl) crosshairEl.classList.remove('visible');
     if (dropShadowEl) dropShadowEl.classList.remove('visible');
     if (positionLineEl) positionLineEl.classList.remove('visible');
     if (tapHintEl) tapHintEl.classList.remove('visible');
+    if (mouseHoverPreviewEl) mouseHoverPreviewEl.classList.remove('visible');
+    showKeyboardOverlay(false);
+    // Cancel any Quick Play timer
+    if (quickPlayTimer) { clearTimeout(quickPlayTimer); quickPlayTimer = null; }
   }
 
   function updateStateMachine(dt) {
@@ -4267,7 +4761,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         break;
 
       case STATES.MOVING:
-        processKeyboardInput();
+        processKeyboardInput(dt);
         processJoystickInput();
 
         // Click-to-position smooth glide (does nothing if no target)
@@ -4546,6 +5040,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     updateConfetti(dt);
     updateCameraShake(dt);
 
+    // Desktop cursor style
+    updateCursorStyle();
+
     // Render
     renderer.render(scene, camera);
   }
@@ -4574,6 +5071,10 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     createVirtualControls();
+
+    // Desktop enhancements
+    createKeyboardOverlay();
+    createGridLines();
 
     // Init provably fair
     clientSeed = generateClientSeed();
@@ -4657,6 +5158,14 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     raycaster = null;
     if (raycastPlane && scene) { try { scene.remove(raycastPlane); } catch(e) {} }
     raycastPlane = null;
+    mouseHoverPreviewEl = null;
+    keyboardOverlayEl = null;
+    gridLinesGroup = null;
+    cameraZoom = 1.0;
+    quickPlayEnabled = false;
+    if (quickPlayTimer) { clearTimeout(quickPlayTimer); quickPlayTimer = null; }
+    keyAccel.x = 0;
+    keyAccel.z = 0;
   }
 
   // ─── EXPORT ────────────────────────────────────────────────────────
@@ -6052,76 +6561,81 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   }
 
   function showInterstitial() {
-    let overlay = $('#interstitial-overlay');
+    let overlay = document.getElementById('interstitial-overlay');
     if (overlay) overlay.remove();
+
+    const products = [
+      {name: 'Mini Claw Machine', url: 'https://www.amazon.com/s?k=mini+claw+machine&tag=spunkart-20', price: '$25-40'},
+      {name: 'Squishmallows Plush', url: 'https://www.amazon.com/s?k=squishmallows&tag=spunkart-20', price: '$15-30'},
+      {name: 'Jellycat Stuffed Animals', url: 'https://www.amazon.com/s?k=jellycat+plush&tag=spunkart-20', price: '$20-35'},
+      {name: 'Arcade Prize Bundle', url: 'https://www.amazon.com/s?k=arcade+prizes+bulk&tag=spunkart-20', price: '$15-25'},
+      {name: 'Claw Machine for Kids', url: 'https://www.amazon.com/s?k=claw+machine+kids&tag=spunkart-20', price: '$30-50'}
+    ];
+    const p = products[Math.floor(Math.random() * products.length)];
 
     overlay = document.createElement('div');
     overlay.id = 'interstitial-overlay';
     Object.assign(overlay.style, {
-      position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
-      background: 'rgba(0,0,0,0.95)', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', zIndex: '10001'
+      position:'fixed',top:'0',left:'0',width:'100%',height:'100%',
+      background:'rgba(0,0,0,0.9)',display:'flex',flexDirection:'column',
+      alignItems:'center',justifyContent:'center',zIndex:'10001'
     });
-
-    let countdown = 5;
-    overlay.innerHTML = `
-      <div style="text-align:center">
-        <div style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:20px">ADVERTISEMENT</div>
-        <div style="width:300px;height:250px;background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-          <div style="color:rgba(255,255,255,0.3);font-size:14px">Ad Placement<br>300x250</div>
-        </div>
-        <div id="interstitial-timer" style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:12px">Skip in ${countdown}s</div>
-        <button id="interstitial-skip" style="display:none;background:#FFD700;color:#000;border:none;padding:10px 24px;border-radius:8px;font-weight:bold;cursor:pointer" onclick="document.getElementById('interstitial-overlay').remove()">Skip Ad</button>
+    overlay.innerHTML = `<div style="text-align:center;max-width:320px">
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:12px">RECOMMENDED</div>
+      <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:24px;margin-bottom:16px">
+        <div style="font-size:40px;margin-bottom:12px">&#127919;</div>
+        <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-bottom:8px">${p.name}</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:16px">Starting at ${p.price}</div>
+        <a href="${p.url}" target="_blank" rel="noopener" style="display:inline-block;background:#f59e0b;color:#000;padding:10px 24px;border-radius:8px;font-weight:bold;text-decoration:none">Shop on Amazon</a>
       </div>
-    `;
+      <button onclick="document.getElementById('interstitial-overlay').remove()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.6);padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px">Continue Playing</button>
+    </div>`;
     document.body.appendChild(overlay);
-
-    const timer = setInterval(() => {
-      countdown--;
-      const timerEl = $('#interstitial-timer');
-      if (timerEl) timerEl.textContent = countdown > 0 ? `Skip in ${countdown}s` : '';
-      if (countdown <= 0) {
-        clearInterval(timer);
-        const skipBtn = $('#interstitial-skip');
-        if (skipBtn) skipBtn.style.display = 'inline-block';
-      }
-    }, 1000);
   }
 
   function showRewardedAd() {
-    let overlay = $('#rewarded-ad-overlay');
+    let overlay = document.getElementById('rewarded-ad-overlay');
     if (overlay) overlay.remove();
+
+    const products = [
+      {name: 'Mini Claw Machine', url: 'https://www.amazon.com/s?k=mini+claw+machine&tag=spunkart-20', price: '$25-40', emoji: '&#127919;'},
+      {name: 'Squishmallows Plush', url: 'https://www.amazon.com/s?k=squishmallows&tag=spunkart-20', price: '$15-30', emoji: '&#129528;'},
+      {name: 'Jellycat Stuffed Animals', url: 'https://www.amazon.com/s?k=jellycat+plush&tag=spunkart-20', price: '$20-35', emoji: '&#128049;'},
+      {name: 'Arcade Prize Bundle', url: 'https://www.amazon.com/s?k=arcade+prizes+bulk&tag=spunkart-20', price: '$15-25', emoji: '&#127881;'},
+      {name: 'Claw Machine for Kids', url: 'https://www.amazon.com/s?k=claw+machine+kids&tag=spunkart-20', price: '$30-50', emoji: '&#127922;'}
+    ];
+    const p = products[Math.floor(Math.random() * products.length)];
 
     overlay = document.createElement('div');
     overlay.id = 'rewarded-ad-overlay';
     Object.assign(overlay.style, {
-      position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
-      background: 'rgba(0,0,0,0.95)', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', zIndex: '10001'
+      position:'fixed',top:'0',left:'0',width:'100%',height:'100%',
+      background:'rgba(0,0,0,0.9)',display:'flex',flexDirection:'column',
+      alignItems:'center',justifyContent:'center',zIndex:'10001'
     });
 
-    let remaining = 15;
-    overlay.innerHTML = `
-      <div style="text-align:center">
-        <div style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:10px">REWARDED AD</div>
-        <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-bottom:20px">Watch for 1 Free Credit</div>
-        <div style="width:300px;height:250px;background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-          <div style="color:rgba(255,255,255,0.3);font-size:14px">Ad Content<br>300x250</div>
-        </div>
-        <div id="rewarded-timer" style="color:rgba(255,255,255,0.6);font-size:16px;margin-bottom:12px">${remaining}s remaining</div>
-        <div style="width:200px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto">
-          <div id="rewarded-progress" style="height:100%;background:#FFD700;border-radius:2px;width:0%;transition:width 1s linear"></div>
-        </div>
+    let remaining = 5;
+    overlay.innerHTML = `<div style="text-align:center;max-width:320px">
+      <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-bottom:16px">&#127775; Free Credit in ${remaining}s</div>
+      <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:24px;margin-bottom:16px">
+        <div style="font-size:40px;margin-bottom:12px">${p.emoji}</div>
+        <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-bottom:8px">${p.name}</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:16px">Starting at ${p.price}</div>
+        <a href="${p.url}" target="_blank" rel="noopener" style="display:inline-block;background:#f59e0b;color:#000;padding:10px 24px;border-radius:8px;font-weight:bold;text-decoration:none">Shop on Amazon</a>
       </div>
-    `;
+      <div id="rewarded-timer" style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:8px">${remaining}s remaining</div>
+      <div style="width:200px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto">
+        <div id="rewarded-progress" style="height:100%;background:#FFD700;border-radius:2px;width:0%;transition:width 1s linear"></div>
+      </div>
+    </div>`;
     document.body.appendChild(overlay);
 
     const timer = setInterval(() => {
       remaining--;
-      const timerEl = $('#rewarded-timer');
-      const prog = $('#rewarded-progress');
+      const timerEl = document.getElementById('rewarded-timer');
+      const prog = document.getElementById('rewarded-progress');
       if (timerEl) timerEl.textContent = remaining > 0 ? `${remaining}s remaining` : '';
-      if (prog) prog.style.width = `${((15 - remaining) / 15) * 100}%`;
+      if (prog) prog.style.width = `${((5 - remaining) / 5) * 100}%`;
 
       if (remaining <= 0) {
         clearInterval(timer);
@@ -6291,12 +6805,14 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     // Update the grab button to also start the game if in IDLE state
     const grabBtn = $('#btn-grab');
     if (grabBtn) {
+      grabBtn.textContent = 'TAP TO AIM';
       grabBtn.onclick = function() {
         if (window.ClawEngine && engineInitialized) {
           const state = window.ClawEngine.getCurrentState();
           if (state === 'IDLE') {
             playMachine(machine.id);
           } else if (state === 'MOVING') {
+            // Instant drop shortcut from button
             window.ClawEngine.dropClaw();
           }
         } else {
@@ -6330,7 +6846,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       updateStreak();
       recordPlay(machine.tier);
       updateCreditDisplays();
-      showToast('Tap where you want the claw, then press GRAB!', 'info');
+      showToast('Tap where you want the claw to drop!', 'info');
       return;
     }
 

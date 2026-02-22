@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
+<title>Claw.Pizza Admin</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #1a1a2e;
+  --surface2: #16162a;
+  --accent: #E63946;
+  --secondary: #FFD166;
+  --green: #2DC653;
+  --text: #f0f0f0;
+  --dim: #888;
+  --radius: 10px;
+  --glass-border: rgba(255,255,255,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--accent); color: #fff; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 3px; }
+
+/* Login */
+#login-screen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 2rem;
+}
+.login-box {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 2.5rem; width: 100%; max-width: 380px;
+  text-align: center;
+}
+.login-box h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+.login-box p { color: var(--dim); margin-bottom: 1.5rem; font-size: 0.9rem; }
+.login-box input {
+  width: 100%; padding: 0.75rem 1rem; background: var(--bg);
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  color: var(--text); font-size: 1rem; margin-bottom: 1rem;
+}
+.login-box input:focus { outline: none; border-color: var(--accent); }
+.login-box .error { color: var(--accent); font-size: 0.85rem; margin-bottom: 0.5rem; display: none; }
+
+/* Layout */
+#admin-panel { display: none; }
+.topbar {
+  background: var(--surface); border-bottom: 1px solid var(--glass-border);
+  padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar h1 { font-size: 1.1rem; }
+.topbar h1 span { color: var(--accent); }
+.sidebar {
+  position: fixed; left: 0; top: 49px; bottom: 0; width: 220px;
+  background: var(--surface); border-right: 1px solid var(--glass-border);
+  overflow-y: auto; padding: 1rem 0;
+}
+.sidebar a {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.65rem 1.25rem; color: var(--dim); text-decoration: none;
+  font-size: 0.9rem; transition: all 0.2s;
+}
+.sidebar a:hover, .sidebar a.active { color: var(--text); background: rgba(230,57,70,0.1); }
+.sidebar a.active { border-right: 3px solid var(--accent); color: var(--secondary); }
+.main { margin-left: 220px; padding: 1.5rem; min-height: calc(100vh - 49px); }
+
+/* Sections */
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-size: 1.3rem; margin-bottom: 1rem; }
+
+/* Cards / Stats */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem; margin-bottom: 1.5rem;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 1.25rem; text-align: center;
+}
+.stat-card .label { font-size: 0.8rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--secondary); margin-top: 0.25rem; }
+
+/* Forms */
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.85rem; color: var(--dim); margin-bottom: 0.3rem; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 0.6rem 0.8rem; background: var(--bg);
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  color: var(--text); font-size: 0.9rem;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+/* Buttons */
+.btn {
+  padding: 0.6rem 1.2rem; border-radius: var(--radius); font-size: 0.9rem;
+  font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #c62d3a; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--glass-border); }
+.btn-secondary:hover { background: #222244; }
+.btn-success { background: var(--green); color: #fff; }
+.btn-success:hover { background: #24a344; }
+.btn-danger { background: #8b0000; color: #fff; }
+.btn-danger:hover { background: #a00; }
+.btn-sm { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+
+/* Tables */
+.table-wrap {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+th { text-align: left; padding: 0.7rem 1rem; background: var(--surface2); color: var(--dim); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+td { padding: 0.65rem 1rem; border-top: 1px solid var(--glass-border); }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Panel boxes */
+.panel {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;
+}
+.panel h3 { font-size: 1rem; margin-bottom: 1rem; color: var(--secondary); }
+
+/* Activity feed */
+.feed-item {
+  padding: 0.6rem 0; border-bottom: 1px solid var(--glass-border);
+  font-size: 0.88rem; display: flex; gap: 0.75rem; align-items: flex-start;
+}
+.feed-item:last-child { border-bottom: none; }
+.feed-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+.feed-time { color: var(--dim); font-size: 0.78rem; margin-left: auto; white-space: nowrap; }
+
+/* Badge */
+.badge {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.badge-active { background: rgba(45,198,83,0.15); color: var(--green); }
+.badge-inactive { background: rgba(230,57,70,0.15); color: var(--accent); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--green);
+  color: #fff; padding: 0.75rem 1.25rem; border-radius: var(--radius);
+  font-size: 0.9rem; font-weight: 600; transform: translateY(100px);
+  opacity: 0; transition: all 0.3s; z-index: 999;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { background: var(--accent); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .topbar { flex-wrap: wrap; }
+  .mobile-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 1.5rem; background: var(--surface); border-bottom: 1px solid var(--glass-border); }
+  .mobile-nav a { white-space: nowrap; font-size: 0.8rem; color: var(--dim); text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid var(--glass-border); }
+  .mobile-nav a.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .form-row { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Claw.Pizza Admin</h1>
+    <p>Enter password to continue</p>
+    <div class="error" id="login-error">Incorrect password</div>
+    <input type="password" id="login-password" placeholder="Password" autofocus>
+    <button class="btn btn-primary" style="width:100%" onclick="attemptLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div id="admin-panel">
+  <div class="topbar">
+    <h1><span>Claw.Pizza</span> Admin</h1>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span id="connection-status" style="font-size:0.8rem;color:var(--green)">Connected</span>
+      <button class="btn btn-sm btn-secondary" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" style="display:none"></div>
+
+  <div class="sidebar">
+    <a href="#" data-section="stats" class="active">Stats Overview</a>
+    <a href="#" data-section="credits">Credit Management</a>
+    <a href="#" data-section="prizes">Prize Management</a>
+    <a href="#" data-section="machines">Machine Management</a>
+    <a href="#" data-section="email">Email / Waitlist</a>
+    <a href="#" data-section="activity">Recent Activity</a>
+    <a href="#" data-section="promo">Promo Codes</a>
+  </div>
+
+  <div class="main">
+
+    <!-- Stats Overview -->
+    <div class="section active" id="sec-stats">
+      <h2 class="section-title">Stats Overview</h2>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Total Plays</div><div class="value" id="st-plays">0</div></div>
+        <div class="stat-card"><div class="label">Total Wins</div><div class="value" id="st-wins">0</div></div>
+        <div class="stat-card"><div class="label">Total Players</div><div class="value" id="st-players">0</div></div>
+        <div class="stat-card"><div class="label">Signups</div><div class="value" id="st-signups">0</div></div>
+        <div class="stat-card"><div class="label">Online Now</div><div class="value" id="st-online" style="color:var(--green)">0</div></div>
+      </div>
+    </div>
+
+    <!-- Credit Management -->
+    <div class="section" id="sec-credits">
+      <h2 class="section-title">Credit Management</h2>
+      <div class="panel">
+        <h3>Search Player</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Username or Player ID</label>
+            <input type="text" id="credit-search" placeholder="Enter username or ID">
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-primary" onclick="searchPlayer()">Search</button>
+          </div>
+        </div>
+        <div id="player-result" style="margin-top:1rem;display:none">
+          <table><tr><th>Player</th><th>Credits</th><th>Plays</th><th>Wins</th></tr>
+          <tr><td id="pr-name">-</td><td id="pr-credits">-</td><td id="pr-plays">-</td><td id="pr-wins">-</td></tr></table>
+          <div style="margin-top:1rem;display:flex;gap:0.75rem;align-items:flex-end">
+            <div class="form-group" style="margin:0;flex:1">
+              <label>Add Credits</label>
+              <input type="number" id="credit-amount" placeholder="Amount" min="1">
+            </div>
+            <button class="btn btn-success" onclick="addCreditsToPlayer()">Add Credits</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Bulk Add Credits</h3>
+        <p style="font-size:0.85rem;color:var(--dim);margin-bottom:1rem">Give credits to every player in the system</p>
+        <div style="display:flex;gap:0.75rem;align-items:flex-end">
+          <div class="form-group" style="margin:0;flex:1">
+            <label>Credits per player</label>
+            <input type="number" id="bulk-credits" placeholder="Amount" min="1">
+          </div>
+          <button class="btn btn-primary" onclick="bulkAddCredits()">Add to All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prize Management -->
+    <div class="section" id="sec-prizes">
+      <h2 class="section-title">Prize Management</h2>
+      <div class="panel">
+        <h3>Add New Prize</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Name</label><input type="text" id="prize-name" placeholder="Prize name"></div>
+          <div class="form-group"><label>Image URL</label><input type="text" id="prize-image" placeholder="https://..."></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tier</label>
+            <select id="prize-tier"><option value="common">Common</option><option value="rare">Rare</option><option value="epic">Epic</option><option value="legendary">Legendary</option></select>
+          </div>
+          <div class="form-group"><label>Machine</label><input type="text" id="prize-machine" placeholder="Machine ID"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Drop Rate (%)</label><input type="number" id="prize-droprate" placeholder="e.g. 10" min="0" max="100" step="0.1"></div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-success" onclick="addPrize()">Add Prize</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Prize</th><th>Tier</th><th>Machine</th><th>Drop Rate</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="prizes-table"><tr><td colspan="6" style="color:var(--dim);text-align:center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Machine Management -->
+    <div class="section" id="sec-machines">
+      <h2 class="section-title">Machine Management</h2>
+      <div id="machines-list"><p style="color:var(--dim)">Loading machines...</p></div>
+    </div>
+
+    <!-- Email / Waitlist -->
+    <div class="section" id="sec-email">
+      <h2 class="section-title">Email / Waitlist</h2>
+      <div style="margin-bottom:1rem;display:flex;gap:0.75rem;align-items:center">
+        <span id="email-count" style="color:var(--dim);font-size:0.9rem">0 signups</span>
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Email</th><th>Date</th><th>Source</th></tr></thead>
+          <tbody id="email-table"><tr><td colspan="3" style="color:var(--dim);text-align:center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section" id="sec-activity">
+      <h2 class="section-title">Recent Activity</h2>
+      <div class="panel" id="activity-feed">
+        <p style="color:var(--dim)">Loading activity...</p>
+      </div>
+    </div>
+
+    <!-- Promo Codes -->
+    <div class="section" id="sec-promo">
+      <h2 class="section-title">Promo Codes</h2>
+      <div class="panel">
+        <h3>Create Promo Code</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Code</label><input type="text" id="promo-code" placeholder="e.g. PIZZA50" style="text-transform:uppercase"></div>
+          <div class="form-group"><label>Credits Reward</label><input type="number" id="promo-credits" placeholder="e.g. 500" min="1"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Max Uses (0 = unlimited)</label><input type="number" id="promo-maxuses" placeholder="0" min="0"></div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-success" onclick="createPromo()">Create Code</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Credits</th><th>Uses</th><th>Max</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="promo-table"><tr><td colspan="6" style="color:var(--dim);text-align:center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /admin-panel -->
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, onValue, set, update, push, get, remove, query, orderByChild, limitToLast }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const firebaseConfig = {
+  projectId: 'predict-network-ec767',
+  databaseURL: 'https://predict-network-ec767-default-rtdb.firebaseio.com'
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const ROOT = 'claw-pizza';
+
+const PASSWORD = 'spunkart2026';
+let currentPlayerKey = null;
+
+// --- Auth ---
+window.attemptLogin = function() {
+  const pw = document.getElementById('login-password').value;
+  if (pw === PASSWORD) {
+    sessionStorage.setItem('claw-admin', '1');
+    showPanel();
+  } else {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 2000);
+  }
+};
+
+window.logout = function() {
+  sessionStorage.removeItem('claw-admin');
+  location.reload();
+};
+
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.attemptLogin();
+});
+
+function showPanel() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  initNav();
+  initListeners();
+}
+
+if (sessionStorage.getItem('claw-admin') === '1') showPanel();
+
+// --- Navigation ---
+function initNav() {
+  const links = document.querySelectorAll('.sidebar a');
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const sec = a.dataset.section;
+      links.forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + sec).classList.add('active');
+      // mobile
+      document.querySelectorAll('#mobile-nav a').forEach(l => l.classList.remove('active'));
+      const mb = document.querySelector(`#mobile-nav a[data-section="${sec}"]`);
+      if (mb) mb.classList.add('active');
+    });
+  });
+
+  // mobile nav
+  const mobileNav = document.getElementById('mobile-nav');
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) mobileNav.style.display = 'flex';
+  links.forEach(a => {
+    const clone = a.cloneNode(true);
+    clone.addEventListener('click', e => {
+      e.preventDefault();
+      const sec = clone.dataset.section;
+      document.querySelectorAll('#mobile-nav a').forEach(l => l.classList.remove('active'));
+      clone.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + sec).classList.add('active');
+      links.forEach(l => l.classList.remove('active'));
+      const sb = document.querySelector(`.sidebar a[data-section="${sec}"]`);
+      if (sb) sb.classList.add('active');
+    });
+    mobileNav.appendChild(clone);
+  });
+  window.addEventListener('resize', () => {
+    mobileNav.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+  });
+}
+
+// --- Toast ---
+function toast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// --- Firebase Listeners ---
+function initListeners() {
+  // Stats
+  onValue(ref(db, `${ROOT}/stats`), snap => {
+    const d = snap.val() || {};
+    document.getElementById('st-plays').textContent = (d.total_plays || 0).toLocaleString();
+    document.getElementById('st-wins').textContent = (d.total_wins || 0).toLocaleString();
+    document.getElementById('st-players').textContent = (d.total_players || 0).toLocaleString();
+    document.getElementById('st-signups').textContent = (d.signups || 0).toLocaleString();
+    document.getElementById('st-online').textContent = (d.online_now || 0).toLocaleString();
+  });
+
+  // Prizes
+  onValue(ref(db, `${ROOT}/prizes`), snap => {
+    const data = snap.val() || {};
+    const tbody = document.getElementById('prizes-table');
+    const rows = Object.entries(data);
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--dim);text-align:center">No prizes yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(([key, p]) => `
+      <tr>
+        <td style="display:flex;align-items:center;gap:0.5rem">
+          ${p.image ? `<img src="${esc(p.image)}" style="width:28px;height:28px;border-radius:4px;object-fit:cover">` : ''}
+          ${esc(p.name || '-')}
+        </td>
+        <td><span class="badge badge-${p.tier === 'legendary' ? 'active' : (p.tier === 'epic' ? 'active' : 'inactive')}" style="${tierColor(p.tier)}">${esc(p.tier || '-')}</span></td>
+        <td>${esc(p.machine || '-')}</td>
+        <td>${p.drop_rate != null ? p.drop_rate + '%' : '-'}</td>
+        <td>${p.enabled !== false ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-inactive">Disabled</span>'}</td>
+        <td>
+          <button class="btn btn-sm btn-secondary" onclick="togglePrize('${key}', ${p.enabled !== false ? 'false' : 'true'})">${p.enabled !== false ? 'Disable' : 'Enable'}</button>
+          <button class="btn btn-sm btn-danger" onclick="removePrize('${key}')">Remove</button>
+        </td>
+      </tr>
+    `).join('');
+  });
+
+  // Machines
+  onValue(ref(db, `${ROOT}/machines`), snap => {
+    const data = snap.val() || {};
+    const container = document.getElementById('machines-list');
+    const entries = Object.entries(data);
+    if (!entries.length) {
+      container.innerHTML = '<p style="color:var(--dim)">No machines configured. They will appear once data is added to Firebase at /claw-pizza/machines/</p>';
+      return;
+    }
+    container.innerHTML = entries.map(([key, m]) => `
+      <div class="panel" style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+          <div>
+            <h3 style="color:var(--secondary);margin:0">${esc(m.name || key)}</h3>
+            <span style="font-size:0.8rem;color:var(--dim)">ID: ${esc(key)}</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            ${m.enabled !== false
+              ? '<span class="badge badge-active">Enabled</span>'
+              : '<span class="badge badge-inactive">Disabled</span>'
+            }
+            <button class="btn btn-sm btn-secondary" onclick="toggleMachine('${key}', ${m.enabled !== false ? 'false' : 'true'})">${m.enabled !== false ? 'Disable' : 'Enable'}</button>
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-top:1rem">
+          <div class="stat-card"><div class="label">Plays</div><div class="value" style="font-size:1.3rem">${(m.plays || 0).toLocaleString()}</div></div>
+          <div class="stat-card"><div class="label">Wins</div><div class="value" style="font-size:1.3rem">${(m.wins || 0).toLocaleString()}</div></div>
+          <div class="stat-card"><div class="label">Win Rate</div><div class="value" style="font-size:1.3rem">${m.plays ? ((m.wins || 0) / m.plays * 100).toFixed(1) + '%' : '0%'}</div></div>
+          <div class="stat-card"><div class="label">Grip Strength</div><div class="value" style="font-size:1.3rem">${m.grip_strength != null ? m.grip_strength + '%' : '50%'}</div></div>
+        </div>
+        <div class="form-row" style="margin-top:1rem">
+          <div class="form-group">
+            <label>Tier</label>
+            <select onchange="updateMachineField('${key}','tier',this.value)">
+              <option value="bronze" ${m.tier==='bronze'?'selected':''}>Bronze</option>
+              <option value="silver" ${m.tier==='silver'?'selected':''}>Silver</option>
+              <option value="gold" ${m.tier==='gold'?'selected':''}>Gold</option>
+              <option value="diamond" ${m.tier==='diamond'?'selected':''}>Diamond</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Grip Strength (%)</label>
+            <div style="display:flex;gap:0.5rem">
+              <input type="number" value="${m.grip_strength != null ? m.grip_strength : 50}" min="0" max="100" id="grip-${key}">
+              <button class="btn btn-sm btn-primary" onclick="updateMachineField('${key}','grip_strength',parseInt(document.getElementById('grip-${key}').value))">Set</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  });
+
+  // Email / Waitlist
+  onValue(ref(db, `${ROOT}/waitlist`), snap => {
+    const data = snap.val() || {};
+    const entries = Object.entries(data);
+    document.getElementById('email-count').textContent = entries.length + ' signups';
+    const tbody = document.getElementById('email-table');
+    if (!entries.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--dim);text-align:center">No signups yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([, e]) => `
+      <tr>
+        <td>${esc(e.email || '-')}</td>
+        <td>${e.timestamp ? new Date(e.timestamp).toLocaleString() : '-'}</td>
+        <td>${esc(e.source || '-')}</td>
+      </tr>
+    `).join('');
+    window._waitlistData = entries.map(([, e]) => e);
+  });
+
+  // Activity
+  const actQ = query(ref(db, `${ROOT}/activity`), orderByChild('timestamp'), limitToLast(50));
+  onValue(actQ, snap => {
+    const data = snap.val() || {};
+    const feed = document.getElementById('activity-feed');
+    const entries = Object.entries(data).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+    if (!entries.length) {
+      feed.innerHTML = '<p style="color:var(--dim)">No activity yet</p>';
+      return;
+    }
+    feed.innerHTML = entries.map(([, a]) => {
+      const icon = a.type === 'win' ? '&#127942;' : a.type === 'signup' ? '&#128100;' : '&#127922;';
+      return `<div class="feed-item">
+        <span class="feed-icon">${icon}</span>
+        <span>${esc(a.message || a.type || '-')}</span>
+        <span class="feed-time">${a.timestamp ? timeAgo(a.timestamp) : ''}</span>
+      </div>`;
+    }).join('');
+  });
+
+  // Promo codes
+  onValue(ref(db, `${ROOT}/promo_codes`), snap => {
+    const data = snap.val() || {};
+    const tbody = document.getElementById('promo-table');
+    const entries = Object.entries(data);
+    if (!entries.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--dim);text-align:center">No promo codes yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = entries.map(([key, p]) => `
+      <tr>
+        <td style="font-weight:600;letter-spacing:0.05em">${esc(key)}</td>
+        <td>${(p.credits || 0).toLocaleString()}</td>
+        <td>${(p.uses || 0).toLocaleString()}</td>
+        <td>${p.max_uses ? p.max_uses.toLocaleString() : 'Unlimited'}</td>
+        <td>${p.enabled !== false ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-inactive">Disabled</span>'}</td>
+        <td>
+          <button class="btn btn-sm btn-secondary" onclick="togglePromo('${esc(key)}', ${p.enabled !== false ? 'false' : 'true'})">${p.enabled !== false ? 'Disable' : 'Enable'}</button>
+        </td>
+      </tr>
+    `).join('');
+  });
+}
+
+// --- Actions ---
+
+// Credit management
+window.searchPlayer = async function() {
+  const term = document.getElementById('credit-search').value.trim();
+  if (!term) return toast('Enter a username or ID', true);
+  const snap = await get(ref(db, `${ROOT}/players`));
+  const data = snap.val() || {};
+  let found = null;
+  for (const [key, p] of Object.entries(data)) {
+    if (key === term || (p.username && p.username.toLowerCase() === term.toLowerCase())) {
+      found = [key, p];
+      break;
+    }
+  }
+  if (!found) return toast('Player not found', true);
+  currentPlayerKey = found[0];
+  const p = found[1];
+  document.getElementById('pr-name').textContent = p.username || found[0];
+  document.getElementById('pr-credits').textContent = (p.credits || 0).toLocaleString();
+  document.getElementById('pr-plays').textContent = (p.plays || 0).toLocaleString();
+  document.getElementById('pr-wins').textContent = (p.wins || 0).toLocaleString();
+  document.getElementById('player-result').style.display = 'block';
+};
+
+window.addCreditsToPlayer = async function() {
+  if (!currentPlayerKey) return;
+  const amount = parseInt(document.getElementById('credit-amount').value);
+  if (!amount || amount < 1) return toast('Enter a valid amount', true);
+  const snap = await get(ref(db, `${ROOT}/players/${currentPlayerKey}/credits`));
+  const current = snap.val() || 0;
+  await set(ref(db, `${ROOT}/players/${currentPlayerKey}/credits`), current + amount);
+  document.getElementById('pr-credits').textContent = (current + amount).toLocaleString();
+  document.getElementById('credit-amount').value = '';
+  toast(`Added ${amount.toLocaleString()} credits`);
+};
+
+window.bulkAddCredits = async function() {
+  const amount = parseInt(document.getElementById('bulk-credits').value);
+  if (!amount || amount < 1) return toast('Enter a valid amount', true);
+  if (!confirm(`Add ${amount} credits to ALL players?`)) return;
+  const snap = await get(ref(db, `${ROOT}/players`));
+  const data = snap.val() || {};
+  const updates = {};
+  for (const [key, p] of Object.entries(data)) {
+    updates[`${ROOT}/players/${key}/credits`] = (p.credits || 0) + amount;
+  }
+  if (Object.keys(updates).length === 0) return toast('No players found', true);
+  await update(ref(db), updates);
+  document.getElementById('bulk-credits').value = '';
+  toast(`Added ${amount} credits to ${Object.keys(updates).length} players`);
+};
+
+// Prize management
+window.addPrize = async function() {
+  const name = document.getElementById('prize-name').value.trim();
+  const image = document.getElementById('prize-image').value.trim();
+  const tier = document.getElementById('prize-tier').value;
+  const machine = document.getElementById('prize-machine').value.trim();
+  const dropRate = parseFloat(document.getElementById('prize-droprate').value);
+  if (!name) return toast('Prize name is required', true);
+  const prizeData = { name, tier, enabled: true, created: Date.now() };
+  if (image) prizeData.image = image;
+  if (machine) prizeData.machine = machine;
+  if (!isNaN(dropRate)) prizeData.drop_rate = dropRate;
+  await push(ref(db, `${ROOT}/prizes`), prizeData);
+  document.getElementById('prize-name').value = '';
+  document.getElementById('prize-image').value = '';
+  document.getElementById('prize-machine').value = '';
+  document.getElementById('prize-droprate').value = '';
+  toast('Prize added');
+};
+
+window.togglePrize = async function(key, enabled) {
+  await update(ref(db, `${ROOT}/prizes/${key}`), { enabled: enabled === 'true' || enabled === true });
+  toast(enabled === 'true' || enabled === true ? 'Prize enabled' : 'Prize disabled');
+};
+
+window.removePrize = async function(key) {
+  if (!confirm('Remove this prize permanently?')) return;
+  await remove(ref(db, `${ROOT}/prizes/${key}`));
+  toast('Prize removed');
+};
+
+// Machine management
+window.toggleMachine = async function(key, enabled) {
+  await update(ref(db, `${ROOT}/machines/${key}`), { enabled: enabled === 'true' || enabled === true });
+  toast(enabled === 'true' || enabled === true ? 'Machine enabled' : 'Machine disabled');
+};
+
+window.updateMachineField = async function(key, field, value) {
+  await update(ref(db, `${ROOT}/machines/${key}`), { [field]: value });
+  toast(`Machine ${field.replace('_', ' ')} updated`);
+};
+
+// Email export
+window.exportCSV = function() {
+  const data = window._waitlistData || [];
+  if (!data.length) return toast('No data to export', true);
+  const csv = 'Email,Date,Source\n' + data.map(e =>
+    `"${(e.email || '').replace(/"/g, '""')}","${e.timestamp ? new Date(e.timestamp).toISOString() : ''}","${(e.source || '').replace(/"/g, '""')}"`
+  ).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'claw-pizza-waitlist.csv'; a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV downloaded');
+};
+
+// Promo codes
+window.createPromo = async function() {
+  const code = document.getElementById('promo-code').value.trim().toUpperCase();
+  const credits = parseInt(document.getElementById('promo-credits').value);
+  const maxUses = parseInt(document.getElementById('promo-maxuses').value) || 0;
+  if (!code) return toast('Code is required', true);
+  if (!credits || credits < 1) return toast('Credits must be at least 1', true);
+  const existing = await get(ref(db, `${ROOT}/promo_codes/${code}`));
+  if (existing.val()) return toast('Code already exists', true);
+  await set(ref(db, `${ROOT}/promo_codes/${code}`), {
+    credits, max_uses: maxUses, uses: 0, enabled: true, created: Date.now()
+  });
+  document.getElementById('promo-code').value = '';
+  document.getElementById('promo-credits').value = '';
+  document.getElementById('promo-maxuses').value = '';
+  toast('Promo code created');
+};
+
+window.togglePromo = async function(code, enabled) {
+  await update(ref(db, `${ROOT}/promo_codes/${code}`), { enabled: enabled === 'true' || enabled === true });
+  toast(enabled === 'true' || enabled === true ? 'Code enabled' : 'Code disabled');
+};
+
+// --- Helpers ---
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function tierColor(tier) {
+  const colors = { common: 'background:rgba(136,136,136,0.15);color:#aaa', rare: 'background:rgba(70,130,230,0.15);color:#6cacff', epic: 'background:rgba(160,70,230,0.15);color:#c77dff', legendary: 'background:rgba(255,209,102,0.15);color:#FFD166' };
+  return colors[tier] || colors.common;
+}
+
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return s + 's ago';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+
+// Connection monitor
+const connRef = ref(db, '.info/connected');
+onValue(connRef, snap => {
+  const el = document.getElementById('connection-status');
+  if (el) {
+    el.textContent = snap.val() ? 'Connected' : 'Disconnected';
+    el.style.color = snap.val() ? 'var(--green)' : 'var(--accent)';
+  }
+});
+</script>
+</body>
+</html>
