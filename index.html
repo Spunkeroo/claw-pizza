@@ -3000,11 +3000,11 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     homeZ: -0.5,
     dropZoneX: 2.8,
     dropZoneZ: 0,
-    moveSpeed: 2.5,
+    moveSpeed: 3.5,
     dropSpeed: 3.0,
     liftSpeed: 1.8,
     returnSpeed: 2.2,
-    moveTimeLimit: 30,
+    moveTimeLimit: 45,
     clawOpenAngle: Math.PI / 5,
     clawClosedAngle: Math.PI / 14,
     cableMinLen: 0.3,
@@ -3079,7 +3079,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   // Click-to-position state
   let targetClawX = null;  // null = no target, use keyboard/joystick
   let targetClawZ = null;
-  let smoothMoveSpeed = 5.0;  // speed for smooth glide to target
+  let smoothMoveSpeed = 7.0;  // speed for smooth glide to target
   let crosshairEl = null;
   let dropShadowEl = null;
   let positionLineEl = null;
@@ -3108,7 +3108,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
   const CAMERA_ZOOM_STEP = 0.05;
   // Smooth WASD acceleration
   let keyAccel = { x: 0, z: 0 };
-  const KEY_ACCEL_RATE = 4.0;   // how fast speed ramps up (units/s^2)
+  const KEY_ACCEL_RATE = 6.0;   // how fast speed ramps up (units/s^2)
   const KEY_ACCEL_MAX = 1.0;    // max multiplier
   const KEY_DECEL_RATE = 8.0;   // how fast it decelerates when released
 
@@ -4507,39 +4507,40 @@ function getOutcome(serverSeed, clientSeed, nonce) {
       // Initial cursor style
       renderer.domElement.style.cursor = 'crosshair';
 
-      // Touch tap to position (prevent conflicts with joystick)
-      renderer.domElement.addEventListener('touchstart', (e) => {
-        if (state !== STATES.MOVING) return;
-        // Only handle single finger taps on the canvas
-        if (e.touches.length === 1) {
-          const touch = e.touches[0];
-          // Check if touch is on UI elements
-          const target = e.target;
-          if (target === renderer.domElement || target.closest('.play-canvas-container') === container) {
-            handleCanvasClick(touch.clientX, touch.clientY);
-            hapticFeedback(10);
-          }
-        }
-      }, { passive: true });
+      // Unified touch handler: distinguishes taps from swipes
+      let touchStartX = 0, touchStartY = 0, touchStartTime = 0, isDragging = false, touchMoved = false;
+      const TAP_THRESHOLD = 12; // pixels moved before it counts as a swipe
+      const SWIPE_SENSITIVITY = 0.018; // increased from 0.008 for better responsiveness
 
-      // Swipe to fine-tune on mobile
-      let swipeStartX = 0, swipeStartY = 0, swiping = false;
       renderer.domElement.addEventListener('touchstart', (e) => {
         if (state !== STATES.MOVING || e.touches.length !== 1) return;
-        swipeStartX = e.touches[0].clientX;
-        swipeStartY = e.touches[0].clientY;
-        swiping = true;
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartTime = Date.now();
+        isDragging = true;
+        touchMoved = false;
       }, { passive: true });
 
       renderer.domElement.addEventListener('touchmove', (e) => {
-        if (!swiping || state !== STATES.MOVING || e.touches.length !== 1) return;
+        if (!isDragging || state !== STATES.MOVING || e.touches.length !== 1) return;
         const touch = e.touches[0];
-        const deltaX = (touch.clientX - swipeStartX) * 0.008;
-        const deltaZ = (touch.clientY - swipeStartY) * 0.008;
+        const totalDX = touch.clientX - touchStartX;
+        const totalDY = touch.clientY - touchStartY;
 
-        if (Math.abs(deltaX) > 0.001 || Math.abs(deltaZ) > 0.001) {
+        // Check if this is a swipe (moved past threshold)
+        if (!touchMoved && Math.sqrt(totalDX * totalDX + totalDY * totalDY) > TAP_THRESHOLD) {
+          touchMoved = true;
+          // Cancel any pending click-to-position when user starts swiping
           targetClawX = null;
           targetClawZ = null;
+          autoDropPending = false;
+          cancelAutoDropCountdown();
+        }
+
+        if (touchMoved) {
+          const deltaX = (touch.clientX - touchStartX) * SWIPE_SENSITIVITY;
+          const deltaZ = (touch.clientY - touchStartY) * SWIPE_SENSITIVITY;
           clawX += deltaX;
           clawZ += deltaZ;
           const halfW = MACHINE.width / 2 - 0.3;
@@ -4547,13 +4548,25 @@ function getOutcome(serverSeed, clientSeed, nonce) {
           clawX = Math.max(-halfW, Math.min(halfW, clawX));
           clawZ = Math.max(-halfD, Math.min(halfD, clawZ));
           updateClawPosition();
-          swipeStartX = touch.clientX;
-          swipeStartY = touch.clientY;
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
         }
       }, { passive: true });
 
-      renderer.domElement.addEventListener('touchend', () => { swiping = false; }, { passive: true });
-      renderer.domElement.addEventListener('touchcancel', () => { swiping = false; }, { passive: true });
+      renderer.domElement.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        // If it was a quick tap (not a drag), treat as click-to-position
+        if (!touchMoved && (Date.now() - touchStartTime) < 300) {
+          const target = e.target;
+          if (target === renderer.domElement || target.closest('.play-canvas-container') === container) {
+            handleCanvasClick(touchStartX, touchStartY);
+            hapticFeedback(10);
+          }
+        }
+      }, { passive: true });
+
+      renderer.domElement.addEventListener('touchcancel', () => { isDragging = false; }, { passive: true });
     }
 
     // --- Joystick (secondary, mobile) ---
@@ -4578,7 +4591,8 @@ function getOutcome(serverSeed, clientSeed, nonce) {
         e.preventDefault();
         if (!joystick.active) return;
         const touch = e.touches[0];
-        const maxDist = 40;
+        const maxDist = 55; // increased from 40 for easier control
+        const deadZone = 8; // ignore tiny movements to prevent drift
         let dx = touch.clientX - joystick.startX;
         let dy = touch.clientY - joystick.startY;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -4586,8 +4600,16 @@ function getOutcome(serverSeed, clientSeed, nonce) {
           dx = (dx / dist) * maxDist;
           dy = (dy / dist) * maxDist;
         }
-        joystick.dx = dx / maxDist;
-        joystick.dy = dy / maxDist;
+        // Apply dead zone — no movement for tiny inputs
+        if (dist < deadZone) {
+          joystick.dx = 0;
+          joystick.dy = 0;
+        } else {
+          // Scale from dead zone edge to max, so full range still reaches 1.0
+          const scale = (dist - deadZone) / (maxDist - deadZone);
+          joystick.dx = (dx / dist) * Math.min(scale, 1.0);
+          joystick.dy = (dy / dist) * Math.min(scale, 1.0);
+        }
         existingKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
       }, { passive: false });
 
