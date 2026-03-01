@@ -5362,7 +5362,7 @@ function getOutcome(serverSeed, clientSeed, nonce) {
 
   const BTC_ADDRESS = 'bc1pkepg42ctsvsxk499qu02qqyyz88gwjchnjpsu22wmng9rhpfv3jqw2t2hm';
   const AMAZON_TAG = 'spunk01-20';
-  const ADMIN_PASSWORD = 'claw2026admin';
+  const ADMIN_HASH = 'e76eb85b0ca5ec88b23544d844db221cfd5a9659c47a074ed2604da268c0c0a7';
 
   const MACHINES = [
     {
@@ -7260,9 +7260,9 @@ function getOutcome(serverSeed, clientSeed, nonce) {
     renderAdminDashboard(container);
   }
 
-  function _adminLogin() {
+  async function _adminLogin() {
     const input = $('#admin-password');
-    if (input && input.value === ADMIN_PASSWORD) {
+    if (input && await sha256(input.value) === ADMIN_HASH) {
       adminAuthed = true;
       lsSet('claw_admin_auth', true);
       renderAdmin();
