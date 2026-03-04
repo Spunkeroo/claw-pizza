@@ -1459,6 +1459,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--mozzarella); out
 .tip-tabs{display:flex;gap:.5rem;justify-content:center;margin-bottom:.75rem;}.tip-tab{padding:.3rem 1rem;border-radius:999px;border:1px solid #7c3aed;background:transparent;color:#c084fc;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}.tip-tab.active{background:#7c3aed;color:#fff;border-color:#a855f7;}
 @media(max-width:600px){.tip-spunk-btn{padding:0.35rem 0.75rem;font-size:0.78rem;}.tip-modal{padding:1.5rem;}}
 </style>
+<style id="vtr-css">
+.vtr-badge{position:fixed;bottom:76px;left:12px;z-index:9997;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:5px 12px 5px 8px;font-size:0.72rem;font-weight:700;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;pointer-events:none;transition:opacity 0.4s;letter-spacing:0.3px;box-shadow:0 2px 16px rgba(0,0,0,0.4);}
+.vtr-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;animation:vtrPulse 2s ease-in-out infinite;}
+@keyframes vtrPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5);}60%{box-shadow:0 0 0 5px rgba(34,197,94,0);}}
+@media(max-width:768px){.vtr-badge{bottom:64px;left:8px;font-size:0.68rem;padding:4px 10px 4px 7px;}}
+@media(max-width:400px){.vtr-badge{bottom:60px;}}
+</style>
 </head>
 <body>
 <div id="sa-promo-bar" style="background:linear-gradient(90deg,#ff5f1f,#ff8c42);padding:12px 20px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;position:relative;z-index:9999">
@@ -7806,6 +7813,45 @@ if ('serviceWorker' in navigator) {
     }).catch(function(){});
   };
   document.addEventListener('keydown',function(e){if(e.key==='Escape')window.closeTipModal();});
+})();
+</script>
+
+<div class="vtr-badge" id="vtr-badge"><span class="vtr-dot"></span><span id="vtr-count">...</span></div>
+<script id="vtr-js">
+(function(){
+  if(window._vtrInit)return;window._vtrInit=true;
+  var DB='https://predict-network-ec767-default-rtdb.firebaseio.com';
+  var site=(location.hostname||'local').replace(/\./g,'_').replace(/[#$\[\]]/g,'_');
+  var sid='s'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+  var sRef=DB+'/vtr/'+site+'/s/'+sid+'.json';
+  var allRef=DB+'/vtr/'+site+'/s.json';
+  var now=Date.now;
+
+  function ping(){fetch(sRef,{method:'PUT',body:JSON.stringify({t:now()}),headers:{'Content-Type':'application/json'}}).catch(function(){});}
+
+  function refresh(){
+    fetch(allRef).then(function(r){return r.json();}).then(function(d){
+      var n=1;
+      if(d&&typeof d==='object'){
+        var vals=Object.values(d);
+        n=Math.max(1,vals.filter(function(v){return v&&v.t&&(now()-v.t)<25000;}).length);
+        // prune stale sessions
+        Object.entries(d).forEach(function(e){if(e[1]&&e[1].t&&(now()-e[1].t)>60000)fetch(DB+'/vtr/'+site+'/s/'+e[0]+'.json',{method:'DELETE'}).catch(function(){});});
+      }
+      var el=document.getElementById('vtr-count');
+      if(el)el.textContent=n+(n===1?' visitor':' visitors')+' online';
+    }).catch(function(){var el=document.getElementById('vtr-count');if(el)el.textContent='1 visitor online';});
+  }
+
+  // daily hit count
+  var day=new Date().toISOString().slice(0,10);
+  var hRef=DB+'/vtr/'+site+'/hits/'+day+'.json';
+  fetch(hRef).then(function(r){return r.json();}).then(function(n){fetch(hRef,{method:'PUT',body:JSON.stringify((n||0)+1),headers:{'Content-Type':'application/json'}}).catch(function(){});}).catch(function(){});
+
+  window.addEventListener('pagehide',function(){fetch(sRef,{method:'DELETE',keepalive:true}).catch(function(){});});
+
+  ping();refresh();
+  setInterval(function(){ping();refresh();},10000);
 })();
 </script>
 </body>
